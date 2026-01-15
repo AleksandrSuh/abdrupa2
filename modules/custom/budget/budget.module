@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Global attachments for the Budget module.
+ */
+
+use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
+
+/**
+ * Implements hook_page_attachments().
+ */
+function budget_page_attachments(array &$attachments) {
+  // Подключаем библиотеку ко всем страницам.
+  $attachments['#attached']['library'][] = 'budget/global_assets';
+}

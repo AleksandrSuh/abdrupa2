@@ -1,0 +1,5 @@
+name: 'Budget'
+type: module
+description: 'Original budget site'
+core_version_requirement: ^11
+package: Custom

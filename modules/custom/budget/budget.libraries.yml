@@ -1,0 +1,21 @@
+global_assets:
+  css:
+    theme:
+      /sites/default/files/budget/css/reset.css: { }
+      /sites/default/files/budget/css/style.css: { }
+      /sites/default/files/budget/assets/18ca603e/jui/css/base/jquery-ui.css: { }
+      /sites/default/files/budget/css/main.css: { }
+  js:
+    /sites/default/files/budget/js/highcharts/highcharts.js: { }
+    /sites/default/files/budget/js/k_custom.js: { }
+    /sites/default/files/budget/js/scripts.js: { }
+    /sites/default/files/budget/js/jquery.form.min.js: { }
+    /sites/default/files/budget/js/jquery.cookie.min.js: { }
+    /sites/default/files/budget/js/missed.js: { }
+    /sites/default/files/budget/js/utils.js: { }
+    /sites/default/files/budget/js/v_custom.js: { }
+    /sites/default/files/budget/js/commonController.js: { }
+    /sites/default/files/budget/js/main.js: { }
+    https://code.highcharts.com/highcharts.js: { type: external }
+  dependencies:
+    - core/jquery
