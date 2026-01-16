@@ -1,0 +1,5 @@
+name: 'Budget Theme'
+type: theme
+description: 'Тема городского бюджета'
+core_version_requirement: ^11
+base theme: false

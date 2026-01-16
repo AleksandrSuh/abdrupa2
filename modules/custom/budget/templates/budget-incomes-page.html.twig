@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head><meta name='csrf-token-name' content='csrftoken'/>
+  <meta name='csrf-token-value' content='188a8bb5daf32229331b0dcb2a86ea02a1917362a739e780bc29c20c760776a5b852993ec33cd2a8'/>
+  <meta name='hmac-token-name' content='Ajax-Token'/>
+
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <link rel="icon" href="../favicon.ico?v=1" type="image/x-icon" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/reset.css" />
+  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/style.css" />
+  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/assets/18ca603e/jui/css/base/jquery-ui.css" />
+  <script charset="utf-8" src="/sites/default/files/budget/689d8d9d0faa42eb2e57dc39.js%3F1755155593159"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/assets/18ca603e/jquery.min.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/highcharts/highcharts.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/k_custom.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/scripts.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/jquery.form.min.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/jquery.cookie.min.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/missed.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/utils.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/v_custom.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/k_custom.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/commonController.js"></script>
+  <script type="text/javascript" src="/sites/default/files/budget/js/main.js"></script>
+  <title>Публичный бюджет Екатеринбурга - Доходы бюджета</title>
+
+  <!--[if IE]>
+  <script type="text/javascript" src="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/js/jquery.placeholder.js"></script>    <script type="text/javascript" src="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/js/html5.js"></script>    <![endif]-->
+  <!--[if IE 8]>
+  <link rel="stylesheet" type="text/css" href="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/css/style_ie8.css" />    <![endif]-->
+  <script type="text/javascript" src="http://new.ekburg.ru/js/portalheader.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('.dumb-cell').hide();
+      /*$('.date-cell').css('padding-right', '15px');*/
+    });
+  </script>
+  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/main.css" />
+</head>
+<body>
+
+<noscript><img src="/sites/default/files/budget/87c433d961160370ee7d1453b621c12e.gif" width="0" height="0" alt="" /></noscript>
+
+<div class="body">
+  <div class="gradientTop"></div>
+  <div class="gradientBot"></div>
+  <div class="contentTop"></div>
+  <div class="contentBot"></div>
+  <div id="badBrowserAlert" class="badBrowser">
+    Вы используете устаревшую версию браузера, могут быть ошибки совместимости при просмотре графики.
+    <span>x</span>
+  </div>
+  <!-- Шапка -->
+  <header class="maxWidth header">
+    <div class="e-table">
+      <div class="e-cell">
+        <a href="../index.html" ><img src="/sites/default/files/budget/img/logo.png" alt="Публичный бюджет Екатеринбурга"/></a>
+      </div>
+      <div class="e-cell">
+        <div class="h_title">Публичный бюджет</div>
+        <div class="h_title_mini">Екатеринбурга</div>
+      </div>
+      <div class="e-cell align-right align-top">
+        <div class="h_name">Департамент финансов</div>
+        <div class="h_name_mini">Администрации города Екатеринбурга</div>
+      </div>
+      <div class="e-cell align-right align-top">
+        <ul class="topMenu">
+          <li>
+            <a href="../site/map.html">Карта сайта</a>
+          </li>
+          <li>
+            <a href="../feedback.html">Обратная связь</a>
+          </li>
+        </ul>
+        <!--span class="g-create-treatment">
+            <span class="dotted" data-popup-open="treatment">Задать вопрос</span>
+        </span>
+      <a href=""  class="dotted" >Обратная связь</a-->
+        <div class="inputSearch_parent dml_15">
+          <form method="get" action="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/search/search">
+            <div class="g-header__right__search">
+              <input
+                type="text"
+                class="inputSearch"
+                placeholder="Поиск по порталу"
+                name="query"
+              />
+              <input type="submit" class="inputSubmit" value=""/>
+            </div>
+          </form>
+          <div class="iSp_border"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <nav class="menu">
+      <ul id="yw0">
+        <li><a href="../about/index.html"><span>О бюджете</span></a></li>
+        <li><a href="../budgetproject/index.html"><span>Проект бюджета</span></a></li>
+        <li class="active"><a href="index.html"><span>Бюджет Екатеринбурга</span></a></li>
+        <li><a href="../execution/index.html"><span>Исполнение бюджета</span></a></li>
+        <li><a href="../monitoring/cities_comparison.html"><span>Мониторинг и анализ</span></a></li>
+        <li><a href="../questions/allquestions.html"><span>Часто задаваемые вопросы</span></a></li>
+        <li><a href="../payments/allpayments.html"><span>Информация о платежных документах</span></a></li>
+      </ul>        </nav>
+  </header>
+  <section class="content">
+    <div class="real_content">
+      <div class="g_inner">
+
+        <!--Двухколоночный-->
+        <div class="content_grid">
+          <aside class="CG_sidebar">
+            <div class="CG_sidebar_plate">
+              <a href="index.html">Основные показатели бюджета</a><a href="incomes.html" class="active">Доходы бюджета</a><a href="expenses.html">Расходы бюджета</a><div class="CG_sidebar_plate subitem"><a href="expenses.html">Расходы в разрезе отраслей</a></div><a href="funding.html">Источники финансирования дефицита бюджета</a><a href="acts.html">Решение о бюджете города Екатеринбурга</a>				</div>
+          </aside>
+          <div class="CG_right">
+            <div class="breadcrumbs">
+              <a href="../index.html">Главная</a>
+              <div>|</div>
+
+              <a href="index.html">Бюджет Екатеринбурга</a>
+
+              <div>|</div>
+
+              <span>Доходы бюджета</span>
+
+            </div>
+
+
+
+            <h1>Доходы бюджета</h1>
+            <h3>Доходы бюджета муниципального образования «город Екатеринбург» на 2025 год и плановый период 2026 и 2027 годов, млн руб.</h3>
+            <div class="intro-text">{{ intro_text|default('Здесь будет вводный текст') }}</div>
+            <div id="ajaxLoader"></div>
+            <div id='infographics-1'></div>
+            <!--h3>Динамика доходов бюджета Екатеринбурга, млн руб.</h3>
+            <div class="g-data">
+              <table class="budget_indices">
+                <colgroup>
+                  <col/>
+                  <col style="width: 150px;"/>
+                  <col style="width: 150px;"/>
+                  <col style="width: 150px;"/>
+                </colgroup>
+                <thead>
+                <tr>
+                                                        <th>Наименование доходов</th>
+                                                        <th>2014 год</th>
+                                                        <th>2015 год</th>
+                                                        <th>2016 год</th>
+                </tr>
+                </thead>
+                <tbody id="infotable">
+                </tbody>
+              </table>
+            </div-->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $(function () {
+        var series = [],
+          table = [],
+          data = {"id":"4","token":"8b6605db8e7afeb7cf3ebba64dfb70d2","appViewTitle":"04. Доходы бюджета (бюджет)","appViewMetaData":{"field":[{"id":"1","data_type":"NUMBER","title":"1"},{"id":"2","data_type":"NUMBER","title":"2025"},{"id":"3","data_type":"NUMBER","title":"2026"},{"id":"4","data_type":"NUMBER","title":"2027"}]},"data":[{"row":{"field":[{"id":"31","value":"ВСЕГО, в т.ч."},{"id":"32","value":"94285000"},{"id":"33","value":"90612000"},{"id":"34","value":"94541000"}]}},{"row":{"field":[{"id":"31","value":"Налог на доходы физических лиц"},{"id":"32","value":"22661000"},{"id":"33","value":"23010000"},{"id":"34","value":"25035000"}]}},{"row":{"field":[{"id":"31","value":"Налог, взимаемый в связи с применением упрощенной системы налогообложения"},{"id":"32","value":"7597000"},{"id":"33","value":"7975000"},{"id":"34","value":"8972000"}]}},{"row":{"field":[{"id":"31","value":"Земельный налог"},{"id":"32","value":"2954000"},{"id":"33","value":"2954000"},{"id":"34","value":"2954000"}]}},{"row":{"field":[{"id":"31","value":"Доходы, получаемые в виде арендной платы за земельные участки, а также средства от продажи права на заключение договоров аренды земельных участков"},{"id":"32","value":"2262000"},{"id":"33","value":"2262000"},{"id":"34","value":"2262000"}]}},{"row":{"field":[{"id":"31","value":"Другие доходы от использования имущества, находящегося в государственной и муниципальной собственности"},{"id":"32","value":"1097000"},{"id":"33","value":"1099000"},{"id":"34","value":"1101000"}]}},{"row":{"field":[{"id":"31","value":"Доходы от продажи материальных и нематериальных активов"},{"id":"32","value":"1552000"},{"id":"33","value":"1261000"},{"id":"34","value":"1261000"}]}},{"row":{"field":[{"id":"31","value":"Другие доходы"},{"id":"32","value":"12748000"},{"id":"33","value":"12504000"},{"id":"34","value":"13042000"}]}},{"row":{"field":[{"id":"31","value":"Безвозмездные поступления"},{"id":"32","value":"43414000"},{"id":"33","value":"39547000"},{"id":"34","value":"39914000"}]}}]},
+          categories = [];
+
+        if (typeof data != 'undefined' && typeof data.data != 'undefined' ) {
+          $.each(data.data, function( key, val ) {
+            var name = jsonfld(val, 0);
+
+            var dy = [
+              {y: parseFloat(jsonfld(val, 1) / 1e3), isSum: true},
+              {y: parseFloat(jsonfld(val, 2) / 1e3), isSum: true},
+              {y: parseFloat(jsonfld(val, 3) / 1e3), isSum: true}
+            ];
+
+            //table.push([name, dy[0], dy[1], dy[2]]);
+            if (key != 0) {
+              series.push({
+                name: name,
+                data: dy
+              });
+            }
+          });
+
+          for (var i = 1; i < 4; i++) {
+            categories.push(data.appViewMetaData.field[i].title);
+          }
+
+          var opts = {
+            xAxis: {
+              categories: categories
+            },
+            yAxis: {
+              stackLabels: {
+                enabled:true,
+                formatter: function () {
+                  return formatNumber(this.total, 0);
+                }
+              }
+            },
+            tooltip: {
+              formatter: function () {
+                return this.series.name + ': ' + formatNumber(this.y, 0);
+              }
+            },
+            series: series
+          };
+          $('#infographics-1').highcharts($.extend(true, optionsStackedColumn(), opts));
+
+
+          //fillTable($('#infotable'),table,undefined,[0]);
+          $('#ajaxLoader').removeClass('ajaxLoader');
+        }
+      });
+    </script>
+
+  </section>
+  <div class="icons_links">
+    <div class="g_inner">
+      <h1 class="main_title">Полезные ссылки</h1>
+      <div class="IL_grid">
+        <a href="http://minfin.midural.ru/" class="IL_cell" target="_blank">
+          <img src="/sites/default/files/budget/img/link_minfin.png" alt=""/>
+          <span>Министерство финансов Свердловской области</span>
+        </a>
+        <a href="http://sverdlovsk.roskazna.ru/" class="IL_cell"target="_blank">
+          <img src="/sites/default/files/budget/img/link_ufk.png" alt=""/>
+          <span>УФК по Свердловской области</span>
+        </a>
+        <a href="http://xn--80acgfbsl1azdqr.xn--p1ai/" class="IL_cell"target="_blank">
+          <img src="/sites/default/files/budget/img/link_portal_ekb.png" alt=""/>
+          <span>Официальный портал Екатеринбурга</span>
+        </a>
+        <a href="http://xn--80appbun8c.xn--80acgfbsl1azdqr.xn--p1ai/" class="IL_cell"target="_blank">
+          <img src="/sites/default/files/budget/img/link_portal_depfin_ekb.png" alt=""/>
+          <span>Официальный портал Департамента финансов Екатеринбурга</span>
+        </a>
+        <a href="http://government.ru/" class="IL_cell"target="_blank">
+          <img src="/sites/default/files/budget/img/link_rf_site.png" alt=""/>
+          <span>Сайт Российской Федерации</span>
+        </a>
+        <a href="http://www.gosuslugi.ru/" class="IL_cell"target="_blank">
+          <img src="/sites/default/files/budget/img/link_gosuslugi.png" alt=""/>
+          <span>Госуслуги</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer_links">
+    <div class="g_inner">
+      <div class="FL_grid">
+        <div class="FL_cell">
+          <h2><a href="../about/index.html">О бюджете</a></h2>
+          <a href="../about/index.html">Справочная информация о бюджете</a>
+          <a href="../about/glossary.html">Азбука бюджета</a>
+          <a href="../about/graphics.html">График подготовки проекта бюджета</a>
+          <a href="../about/acts.html">Нормативная база</a>
+        </div>
+        <div class="FL_cell">
+          <h2><a href="../budgetproject/index.html">Проект бюджета</a></h2>
+          <a href="../budgetproject/index.html">Основные показатели проекта бюджета</a>
+          <a href="../budgetproject/courses.html">Основные направления бюджетной и налоговой политики</a>
+          <a href="../budgetproject/incomes.html">Доходы бюджета</a>
+          <a href="../budgetproject/expenses.html">Расходы бюджета</a>
+          <a href="../budgetproject/funding.html">Источники финансирования дефицита бюджета</a>
+          <a href="../budgetproject/acts.html">Проект Решения о бюджете города Екатеринбурга</a>
+        </div>
+        <div class="FL_cell">
+          <h2><a href="index.html">Бюджет Екатеринбурга</a></h2>
+          <a href="index.html">Основные показатели бюджета</a>
+          <a href="incomes.html">Доходы бюджета</a>
+          <a href="expenses.html">Расходы бюджета</a>
+          <a href="funding.html">Источники финансирования дефицита бюджета</a>
+          <a href="acts.html">Решение о бюджете города Екатеринбурга</a>
+          <a href="http://финансы.екатеринбург.рф/proekt-byudjeta-goroda-ekaterinburga-v-dostupnoy-dlya-grajdan-forme/" target="_blank">Бюджет для граждан</a>
+        </div>
+        <div class="FL_cell">
+          <h2><a href="../execution/index.html">Исполнение бюджета</a></h2>
+          <a href="../execution/index.html">Основные показатели бюджета</a>
+          <a href="../execution/incomes.html">Доходы бюджета</a>
+          <a href="../execution/expenses.html">Расходы бюджета</a>
+          <a href="../execution/funding.html">Источники финансирования дефицита бюджета</a>
+          <a href="../execution/dynamics.html">Динамика основных показателей бюджета Екатеринбурга</a>
+          <a href="../execution/investment.html">Бюджетные инвестиции</a>
+          <a href="../execution/report.html">Отчет об исполнении бюджета</a>
+        </div>
+        <div class="FL_cell">
+          <h2><a href="../monitoring/cities_comparison.html">Мониторинг и анализ</a></h2>
+          <a href="../monitoring/cities_comparison.html">Сравнение с другими городами</a>
+        </div>
+        <div class="FL_cell">
+          <h2><a href="../questions/allquestions.html">Часто задаваемые вопросы</a></h2>
+        </div>
+        <div class="FL_cell">
+          <h2><a href="../payments/allpayments.html">Информация о платежных документах</a></h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="g_inner">
+      <div class="footer_left">
+				<span class="btnScroll_top">
+					Наверх
+				</span>
+      </div>
+      <div class="footer_right">
+        Департамент финансов<br/>Администрации города Екатеринбурга © 2014-2026            </div>
+      <div class="footer_right-metrika"><!-- Yandex.Metrika informer -->
+        <a href="https://metrika.yandex.ru/stat/?id=47213394&amp;from=informer"
+           target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/47213394/3_1_FFFFFFFF_EFEFEFFF_0_pageviews"
+                                               style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="47213394" data-lang="ru" /></a>
+        <!-- /Yandex.Metrika informer --></div>
+      <div class="footer_right">
+        <!-- Yandex.Metrika counter -->
+        <script type="text/javascript" >
+          (function (d, w, c) {
+            (w[c] = w[c] || []).push(function() {
+              try {
+                w.yaCounter47213394 = new Ya.Metrika({
+                  id:47213394,
+                  clickmap:true,
+                  trackLinks:true,
+                  accurateTrackBounce:true
+                });
+              } catch(e) { }
+            });
+
+            var n = d.getElementsByTagName("script")[0],
+              s = d.createElement("script"),
+              f = function () { n.parentNode.insertBefore(s, n); };
+            s.type = "text/javascript";
+            s.async = true;
+            s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+            if (w.opera == "[object Opera]") {
+              d.addEventListener("DOMContentLoaded", f, false);
+            } else { f(); }
+          })(document, window, "yandex_metrika_callbacks");
+        </script>
+        <noscript><div><img src="https://mc.yandex.ru/watch/47213394" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+        <!-- /Yandex.Metrika counter -->
+      </div>
+    </div>
+  </div>
+
+
+  <div id="openDialog">
+  </div></div>
+<div class="popups_bg"></div>
+<div class="popup" id="treatment">
+  <div class="cross"></div>
+  <h1>
+    Задать вопрос
+    <img src="/sites/default/files/budget/img/speaker.png" alt=""/>
+  </h1>
+  <div data-step="1" data-open-first="true">
+    <p class="popup_description">Все поля обязательны для заполнения</p>
+    <div class="popup_form_grid">
+      <div class="PFG_line">
+        <div class="PFG_cell">
+          <label>ФИО:</label>
+        </div>
+        <div class="PFG_cell">
+          <input id="feedback-form-name-1" type="text"/>
+        </div>
+      </div>
+      <div class="PFG_line error-line error-name-1">
+        <div class="PFG_cell"></div>
+        <div class="PFG_cell error-block"></div>
+      </div>
+      <div class="PFG_line">
+        <div class="PFG_cell">
+          <label>Эл. почта:</label>
+        </div>
+        <div class="PFG_cell">
+          <input id="feedback-form-email-1" type="text"/>
+        </div>
+      </div>
+      <div class="PFG_line error-line error-email-1">
+        <div class="PFG_cell"></div>
+        <div class="PFG_cell error-block"></div>
+      </div>
+      <div class="PFG_line">
+        <div class="PFG_cell">
+          <label>Текст вопроса:</label>
+        </div>
+        <div class="PFG_cell">
+          <textarea id="feedback-form-message-1" ></textarea>
+        </div>
+      </div>
+      <div class="PFG_line error-line error-message-1">
+        <div class="PFG_cell"></div>
+        <div class="PFG_cell error-block"></div>
+      </div>
+      <div class="PFG_line">
+        <div class="PFG_cell">
+          <img id="yw3" src="../feedback/captcha/v/69675210b4f2f" alt="" />                </div>
+        <div class="PFG_cell">
+          <p>Введите текст с изображения</p>
+          <input id="feedback-form-verifyCode-1" type="text"/>
+        </div>
+      </div>
+      <div class="PFG_line error-line error-verifyCode-1">
+        <div class="PFG_cell"></div>
+        <div class="PFG_cell error-block"></div>
+      </div>
+      <div class="PFG_line">
+        <div class="PFG_cell">
+
+        </div>
+        <div class="PFG_cell">
+          <span class="btn inactive" id="feedback-send-btn-1">Отправить</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-step="2">
+    <p class="popup_message">Спасибо, Ваш вопрос принят!</p>
+    <span class="btn" data-step-open="1">Отправить ещё</span>
+  </div>
+</div>
+<script>
+  function initFeedbackSendButton() {
+    $('.popup_form_grid').on('keyup', function(){
+      var valid = true;
+      $(this).find('input, textarea').each(function(){
+        valid = !!$(this).val() && valid;
+      });
+      if(!valid){
+        $('#feedback-send-btn-1').addClass('inactive');
+      }
+      else{
+        $('#feedback-send-btn-1').removeClass('inactive');
+      }
+    });
+
+    $('#feedback-send-btn-1').click(function(e) {
+      if($(this).hasClass('inactive')){
+        return;
+      }
+      e.preventDefault();
+      var sendBtn = this;
+      $.ajax({type: "POST", url: "/ajax_feedback/addfeed",
+        data: {
+          name: $('#feedback-form-name-1').val(),
+          email: $('#feedback-form-email-1').val(),
+          message: $('#feedback-form-message-1').val(),
+          verifyCode: $('#feedback-form-verifyCode-1').val()
+        }
+      }).done(function( msg ) {
+        var str = '';
+        if (msg.added == undefined && msg.errors == undefined) {
+          alert('Не удалось отправить сообщение.');
+          return;
+        }
+        $('.error-line').hide();
+        if (msg.errors) {
+          for (field in msg.errors) {
+            if(msg.errors[field]) {
+              var $errorContainer = $('.error-' + field + '-1');
+              $errorContainer.find('.error-block').html(msg.errors[field]);
+              $errorContainer.css('display', 'table-row');
+            }
+          }
+          if (typeof msg.errors['verifyCode'] != 'undefined') {
+            $('#captchaRefresh-1').trigger('click');
+          }
+          $('.PFG_line input[type="text"], .PFG_line textarea').focus(function() {
+            var id = $(this).attr('id');
+            id = id.replace('feedback-form-', '');
+            $('.error-' + id).hide();
+          });
+        } else {
+          $('#feedback-form-name-1').val('');
+          $('#feedback-form-email-1').val('');
+          $('#feedback-form-message-1').val('');
+          $('#feedback-form-verifyCode-1').val('');
+          $('.g-create-treatment__hint').fadeOut();
+        }
+        if (msg.added == 1) {
+          $('[data-step]').hide();
+          $('[data-step="2"]').fadeIn(function () {
+            $('#captchaRefresh-1').trigger('click');
+          });
+        }
+      });
+    });
+  }
+
+  initFeedbackSendButton();
+
+</script>
+<script type="text/javascript" src="/sites/default/files/budget/assets/18ca603e/jui/js/jquery-ui.min.js"></script>
+<script type="text/javascript">
+  /*<![CDATA[*/
+  jQuery(function($) {
+    jQuery('#openDialog').dialog({'title':'','autoOpen':false,'modal':true,'width':250});
+    jQuery('#yw3').after("<a class='captchaRefresh' id='captchaRefresh-1' href='#'>Обнови</a>");
+    jQuery(document).on('click', '#captchaRefresh-1, #yw3', function(){
+      jQuery.ajax({
+        url: "\/feedback\/captcha\/refresh\/1",
+        dataType: 'json',
+        cache: false,
+        success: function(data) {
+          jQuery('#yw3').attr('src', data['url']);
+          jQuery('body').data('/feedback/captcha.hash', [data['hash1'], data['hash2']]);
+        }
+      });
+      return false;
+    });
+
+  });
+  /*]]>*/
+</script>
+</body>
+</html>
