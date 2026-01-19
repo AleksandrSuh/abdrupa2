@@ -17,6 +17,37 @@ use Drupal\Core\Render\Markup;
 class BICBlock extends BlockBase {
 
   public function build() {
+
+    $build = [];
+
+    // Контейнер для графика
+    $build['chart'] = [
+      '#markup' => '<div id="infographics-1" style="min-width: 310px; height: 400px; margin: 0 auto"></div>',
+    ];
+
+    // Loader (если есть в вашем HTML)
+    $build['loader'] = [
+      '#markup' => '<div id="ajaxLoader" class="ajaxLoader"></div>',
+    ];
+
+    // Передаем URL для AJAX
+    $build['#attached'] = [
+      'library' => ['budget/incomes_chart2'],
+      'drupalSettings' => [
+        'budget' => [
+          'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.view_data')
+            ->setOption('query', ['format' => 'json'])
+            ->toString(),
+          'fallbackData' => [
+            // Можно оставить пустым или добавить минимальные данные
+          ]
+        ]
+      ]
+    ];
+
+    return $build;
+
+
     $data = [
       ['name' => 'Пеньки', 'y' => 300],
       ['name' => 'Мороз', 'y' => 3400],

@@ -9,7 +9,7 @@ incomes_chart2:
   version: 1.x
   header: true
   js:
-    js/test-jquery.js: {}
+    #js/test-jquery.js: {}
     js/incomes-chart2.js: {}
   dependencies:
     - core/jquery

@@ -1,0 +1,121 @@
+<?php
+
+/**
+ * @file
+ * Install and update functions for the budget_import module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function budget_import_schema() {
+  $schema = [];
+
+  // Проверяем, существует ли уже таблица
+  try {
+    $database = \Drupal::database();
+    if (!$database->schema()->tableExists('budget_incomes')) {
+      $schema['budget_incomes'] = [
+        'description' => 'Stores budget income data',
+        'fields' => [
+          'id' => [
+            'description' => 'Primary key',
+            'type' => 'serial',
+            'unsigned' => TRUE,
+            'not null' => TRUE,
+          ],
+          'year' => [
+            'description' => 'Year',
+            'type' => 'int',
+            'size' => 'normal',
+            'not null' => TRUE,
+          ],
+          'category' => [
+            'description' => 'Income category',
+            'type' => 'varchar',
+            'length' => 255,
+            'not null' => TRUE,
+          ],
+          'amount' => [
+            'description' => 'Amount',
+            'type' => 'numeric',
+            'precision' => 15,
+            'scale' => 2,
+            'not null' => TRUE,
+          ],
+          'created' => [
+            'description' => 'Creation timestamp',
+            'type' => 'int',
+            'not null' => TRUE,
+            'default' => 0,
+          ],
+        ],
+        'primary key' => ['id'],
+        'unique keys' => [
+          'unique_year_category' => ['year', 'category'],
+        ],
+        'indexes' => [
+          'year' => ['year'],
+          'category' => ['category'],
+          'created' => ['created'],
+        ],
+      ];
+    }
+  }
+  catch (\Exception $e) {
+    // Логируем ошибку, но не прерываем выполнение
+    \Drupal::logger('budget_import')->error('Error checking table: @error', ['@error' => $e->getMessage()]);
+  }
+
+  return $schema;
+}
+
+/**
+ * Add some sample data on module install.
+ */
+function budget_import_install() {
+  // Проверяем, есть ли данные в таблице
+  $database = \Drupal::database();
+
+  try {
+    if ($database->schema()->tableExists('budget_incomes')) {
+      $count = $database->select('budget_incomes')
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+
+      if ($count == 0) {
+        // Вставим тестовые данные если таблица пустая
+        $sample_data = [
+          [2025, 'Налог на доходы физических лиц', 22661000.00],
+          [2026, 'Налог на доходы физических лиц', 23010000.00],
+          [2027, 'Налог на доходы физических лиц', 25035000.00],
+          [2025, 'Земельный налог', 2954000.00],
+          [2026, 'Земельный налог', 2954000.00],
+          [2027, 'Земельный налог', 2954000.00],
+        ];
+
+        foreach ($sample_data as $data) {
+          $database->insert('budget_incomes')
+            ->fields(['year', 'category', 'amount', 'created'])
+            ->values([
+              'year' => $data[0],
+              'category' => $data[1],
+              'amount' => $data[2],
+              'created' => \Drupal::time()->getRequestTime(),
+            ])
+            ->execute();
+        }
+
+        \Drupal::messenger()->addMessage(t('Модуль Budget Import установлен. Добавлены тестовые данные.'));
+      } else {
+        \Drupal::messenger()->addMessage(t('Модуль Budget Import установлен. В таблице уже есть @count записей.', ['@count' => $count]));
+      }
+    } else {
+      \Drupal::messenger()->addWarning(t('Таблица budget_incomes не существует. Создайте её через update hook или SQL.'));
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::messenger()->addError(t('Ошибка при установке: @error', ['@error' => $e->getMessage()]));
+  }
+}

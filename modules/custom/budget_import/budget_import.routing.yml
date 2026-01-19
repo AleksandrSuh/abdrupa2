@@ -1,0 +1,25 @@
+budget_import.import_form:
+  path: '/admin/budget/import'
+  defaults:
+    _form: '\Drupal\budget_import\Form\ImportXlsxForm'
+    _title: 'Импорт данных бюджета'
+  requirements:
+    _permission: 'administer site configuration'
+
+budget_import.view_data:
+  path: '/admin/budget/data'
+  defaults:
+    _controller: '\Drupal\budget_import\Controller\BudgetDataController::viewData'
+    _title: 'Просмотр данных бюджета'
+  requirements:
+    _permission: 'administer site configuration'
+
+budget_import.api_json:
+  path: '/api/budget/incomes'
+  defaults:
+    _controller: '\Drupal\budget_import\Controller\BudgetDataController::apiData'
+    _title: 'Budget Incomes API'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE
