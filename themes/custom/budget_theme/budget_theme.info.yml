@@ -3,3 +3,5 @@ type: theme
 description: 'Тема городского бюджета'
 core_version_requirement: ^11
 base theme: false
+libraries:
+  - budget_theme/head-styles-scripts

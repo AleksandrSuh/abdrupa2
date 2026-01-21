@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * Template for main menu.
+ */
+#}
+{% import _self as menus %}
+
+{{ menus.menu_links(items, attributes, 0) }}
+
+{% macro menu_links(items, attributes, menu_level) %}
+  {% import _self as menus %}
+  {% if items %}
+    <ul id="yw0">
+      {% for item in items %}
+        <li>
+          <a href="{{ item.url }}"{{ item.attributes }}>
+            <span>{{ item.title }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endmacro %}

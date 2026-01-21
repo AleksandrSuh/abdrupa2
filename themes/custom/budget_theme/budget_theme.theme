@@ -1,1 +1,7 @@
 <?php
+/*function budget_theme_page_attachments_alter(array &$attachments) {
+  // Для главной страницы
+  //if (\Drupal::service('path.matcher')->isFrontPage()) {
+    $attachments['#attached']['library'][] = 'budget_theme/head-styles-scripts';
+  //}
+}*/

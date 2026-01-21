@@ -2,7 +2,7 @@
   'use strict';
 
   function loadHighchartsIfNeeded(callback) {
-    console.log('Checking Highcharts...');
+    //console.log('Checking Highcharts...');
 
     if (typeof Highcharts !== 'undefined') {
       callback();
@@ -10,7 +10,7 @@
     }
 
     var localScript = document.createElement('script');
-    localScript.src = '/sites/default/files/budget/js/highcharts/highcharts.js';
+    localScript.src = '/themes/custom/budget_theme/js/highcharts/highcharts.js';
     localScript.onload = function () {
       callback();
     };
@@ -75,22 +75,21 @@
               return formatNumber(this.total, 0);
             }
           },
-          title: {
+          /*title: {
             text: 'Тысячи рублей'
-          }
+          }*/
         },
         tooltip: {
           formatter: function() {
             // Форматируем полную сумму (умножаем на 1000, т.к. мы делили на 1e3)
             var fullValue = this.y * 1000;
-            return '<b>' + this.series.name + '</b><br/>' +
-              this.x + ': <b>' + formatNumber(fullValue, 0) + ' руб.</b>';
+            return '<b>' + this.series.name + ' ' + formatNumber(fullValue, 0) + ' руб.</b>';
           }
         },
         series: series,
-        title: {
+        /*title: {
           text: data.appViewTitle || 'Доходы бюджета'
-        }
+        }*/
       };
 
       // Объединяем с базовыми настройками
@@ -106,8 +105,10 @@
 
   // Функция для загрузки данных через AJAX
   function loadBudgetData() {
-    var jsonUrl = Drupal.url('admin/budget/data?format=json');
-console.log('loadBudgetData!');
+    var settings = drupalSettings.budget || {};
+    var jsonUrl = settings.ajaxUrl || Drupal.url('api/budget/incomes?format=json');
+    //var jsonUrl = Drupal.url('admin/budget/data?format=json');
+    console.log('Используем URL:', jsonUrl);
     $.ajax({
       url: jsonUrl,
       type: 'GET',

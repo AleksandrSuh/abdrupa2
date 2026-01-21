@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html>
-<head><meta name='csrf-token-name' content='csrftoken'/>
+<head>
+  <meta name='csrf-token-name' content='csrftoken'/>
   <meta name='csrf-token-value' content='188a8bb5daf32229331b0dcb2a86ea02a1917362a739e780bc29c20c760776a5b852993ec33cd2a8'/>
   <meta name='hmac-token-name' content='Ajax-Token'/>
 
   <meta content="IE=edge" http-equiv="X-UA-Compatible">
   <link rel="icon" href="../favicon.ico?v=1" type="image/x-icon" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+<!--
   <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/reset.css" />
   <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/style.css" />
+  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/assets/4bc1a20d/listview/styles.css">
   <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/assets/18ca603e/jui/css/base/jquery-ui.css" />
+  -->
   <!--script charset="utf-8" src="/sites/default/files/budget/689d8d9d0faa42eb2e57dc39.js%3F1755155593159"></script-->
+  <!--
   <script type="text/javascript" src="/sites/default/files/budget/assets/18ca603e/jquery.min.js"></script>
+  -->
   <!--script type="text/javascript" src="/sites/default/files/budget/js/highcharts/highcharts.js"></script-->
+  <!--
   <script type="text/javascript" src="/sites/default/files/budget/js/k_custom.js"></script>
   <script type="text/javascript" src="/sites/default/files/budget/js/scripts.js"></script>
   <script type="text/javascript" src="/sites/default/files/budget/js/jquery.form.min.js"></script>
@@ -24,25 +30,18 @@
   <script type="text/javascript" src="/sites/default/files/budget/js/k_custom.js"></script>
   <script type="text/javascript" src="/sites/default/files/budget/js/commonController.js"></script>
   <script type="text/javascript" src="/sites/default/files/budget/js/main.js"></script>
+  -->
   <title>{{ head_title }}</title>
 
   <!--[if IE]>
-  <script type="text/javascript" src="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/js/jquery.placeholder.js"></script>    <script type="text/javascript" src="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/js/html5.js"></script>    <![endif]-->
+  <script type="text/javascript" src="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/js/jquery.placeholder.js"></script>
+<script type="text/javascript" src="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/js/html5.js"></script>    <![endif]-->
   <!--[if IE 8]>
   <link rel="stylesheet" type="text/css" href="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/css/style_ie8.css" />    <![endif]-->
   <script type="text/javascript" src="http://new.ekburg.ru/js/portalheader.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $('.dumb-cell').hide();
-      /*$('.date-cell').css('padding-right', '15px');*/
-    });
-  </script>
-  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/main.css" />
+  <!--link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/main.css" /-->
 </head>
 <body>
-
-<noscript><img src="/sites/default/files/budget/87c433d961160370ee7d1453b621c12e.gif" width="0" height="0" alt="" /></noscript>
-
 <div class="body">
   <div class="gradientTop"></div>
   <div class="gradientBot"></div>
@@ -56,15 +55,11 @@
   <header class="maxWidth header">
     <div class="e-table">
       <div class="e-cell">
-        <a href="../index.html" ><img src="/sites/default/files/budget/img/logo.png" alt="Публичный бюджет Екатеринбурга"/></a>
+        <a href="/" ><img src="/{{ active_theme_path() }}/img/logo.png" alt="Публичный бюджет Екатеринбурга"/></a>
       </div>
       <div class="e-cell">
         <div class="h_title">Публичный бюджет</div>
         <div class="h_title_mini">Екатеринбурга</div>
-      </div>
-      <div class="e-cell align-right align-top">
-        <div class="h_name">Департамент финансов</div>
-        <div class="h_name_mini">Администрации города Екатеринбурга</div>
       </div>
       <div class="e-cell align-right align-top">
         <ul class="topMenu">
@@ -95,20 +90,18 @@
         </div>
 
       </div>
+      <div class="e-cell align-right align-top">
+        <div class="h_name">Департамент финансов</div>
+        <div class="h_name_mini">Администрации города Екатеринбурга</div>
+      </div>
     </div>
 
     <nav class="menu">
-      <ul id="yw0">
-        <li><a href="../about/index.html"><span>О бюджете</span></a></li>
-        <li><a href="../budgetproject/index.html"><span>Проект бюджета</span></a></li>
-        <li class="active"><a href="index.html"><span>Бюджет Екатеринбурга</span></a></li>
-        <li><a href="../execution/index.html"><span>Исполнение бюджета</span></a></li>
-        <li><a href="../monitoring/cities_comparison.html"><span>Мониторинг и анализ</span></a></li>
-        <li><a href="../questions/allquestions.html"><span>Часто задаваемые вопросы</span></a></li>
-        <li><a href="../payments/allpayments.html"><span>Информация о платежных документах</span></a></li>
-      </ul>        </nav>
+      {{ page.primary_menu }}
+    </nav>
   </header>
   <section class="content">
+    {% if not is_front %}
     <div class="real_content">
       <div class="g_inner">
         <!--Двухколоночный-->
@@ -127,41 +120,472 @@
             </div>
           </aside>
           <div class="CG_right">
-            <h1>
-              {{ page.name }}
-            </h1>
             {{ page.content }}
           </div>
         </div>
       </div>
     </div>
+    {% else %}
+      <div class="maxWidth infoBlocksContent">
+        <table class="e-table">
+          <colgroup>
+            <col>
+            <col width="24">
+            <col>
+            <col width="24">
+            <col>
+          </colgroup>
+          <tr>
+            <td>
+              <div class="whiteInfoBlock">
+                <a href="budget/index.html" class="title">Основные параметры бюджета, млн руб.</a>
+                <table class="infoVertTableText">
+                  <colgroup>
+                    <col width="80">
+                    <col>
+                    <col width="17">
+                    <col>
+                    <col width="17">
+                    <col>
+                  </colgroup>
+                  <tr>
+                    <td></td>
+                    <td class="to_center">2025</td>
+                    <td></td>
+                    <td class="to_center">2026</td>
+                    <td></td>
+                    <td class="to_center">2027</td>
+                  </tr>
+                </table>
+                <table class="infoVertTable">
+                  <tr class="blue_text">
+                    <td class="to_bottom" style="width:80px;"><div>Доходы</div></td>
+                    <td style="width:72px;">
+                      <div class="infoVert bot">
+                        <div class="text">94 285</div>
+                        <div class="iV_progress blue" style="height: 100%;">
+                          <div class="text">94 285</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td></td>
+                    <td style="width:72px;">
+                      <div class="infoVert bot">
+                        <div class="text">90 612</div>
+                        <div class="iV_progress blue" style="height: 96%;">
+                          <div class="text">90 612</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td></td>
+                    <td style="width:72px;">
+                      <div class="infoVert bot">
+                        <div class="text">94 541</div>
+                        <div class="iV_progress blue" style="height: 100%;">
+                          <div class="text">94 541</div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="red_text">
+                    <td class="to_top" style="width:80px;"><div>Расходы</div></td>
+                    <td style="width:72px;">
+                      <div class="infoVert top">
+                        <div class="text">104 069</div>
+                        <div class="iV_progress red" style="height: 100%;">
+                          <div class="text">104 069</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td></td>
+                    <td style="width:72px;">
+                      <div class="infoVert top">
+                        <div class="text">93 626</div>
+                        <div class="iV_progress red" style="height: 90%;">
+                          <div class="text">93 626</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td></td>
+                    <td style="width:72px;">
+                      <div class="infoVert top">
+                        <div class="text">95 713</div>
+                        <div class="iV_progress red" style="height: 92%;">
+                          <div class="text">95 713</div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="green_text">
+                    <td class="to_bottom" style="width:80px;"><div>Дефицит</div></td>
+                    <td style="width:72px;">
+                      <div class="infoVert bot">
+                        <div class="text">-9 784</div>
+                        <div class="iV_progress green" style="height: 100%;">
+                          <div class="text">-9 784</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td></td>
+                    <td style="width:72px;">
+                      <div class="infoVert bot">
+                        <div class="text">-3 014</div>
+                        <div class="iV_progress green" style="height: 100%;">
+                          <div class="text">-3 014</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td></td>
+                    <td style="width:72px;">
+                      <div class="infoVert bot">
+                        <div class="text">-1 172</div>
+                        <div class="iV_progress green" style="height: 100%;">
+                          <div class="text">-1 172</div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="yellow_text">
+                    <td class="to_top" style="width:80px;"><div>Муниципальный<br/>долг</div></td>
+                    <td style="width:72px;">
+                      <div class="infoVert top">
+                        <div class="text">450</div>
+                        <div class="iV_progress yellow" style="height: 100%;">
+                          <div class="text">450</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td></td>
+                    <td style="width:72px;">
+                      <div class="infoVert top">
+                        <div class="text">937</div>
+                        <div class="iV_progress yellow" style="height: 100%;">
+                          <div class="text">937</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td></td>
+                    <td style="width:72px;">
+                      <div class="infoVert top">
+                        <div class="text">1 597</div>
+                        <div class="iV_progress yellow" style="height: 100%;">
+                          <div class="text">1 597</div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </td>
+            <td></td>
+            <td>
+              <div class="whiteInfoBlock">
+                <a href="execution/index.html"  class="title">Исполнение бюджета, млн руб.</a>
+                <div class="date block_2">Исполнено на дату 01.12.2025</div>
+                <table class="infoTable">
+                  <colgroup>
+                    <col width="55">
+                    <col>
+                    <col width="80">
+                  </colgroup>
+                  <tr>
+                    <td></td>
+                    <td>Факт</td>
+                    <td>План</td>
+                  </tr>
+                  <tr class="blue_text">
+                    <td>Доходы</td>
+                    <td>
+                      <div class="infoGraph">
+                        <div class="ipg_text">
+                          84 045                                <div class="mini_text">89,1%</div>
+                        </div>
+                        <div class="ig_progress blue" style="width: 89%;">
+                          <div class="ipg_text">
+                            84 045                                    <div class="mini_text">89,1 %</div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="execution_text">94 285</div>
+                      <p class="execution_price">млн руб.</p>
+                    </td>
+                  </tr>
+                  <tr class="red_text">
+                    <td>Расходы</td>
+                    <td>
+                      <div class="infoGraph">
+                        <div class="ipg_text">
+                          87 950                                <div class="mini_text">84,5%</div>
+                        </div>
+                        <div class="ig_progress red" style="width: 84%;">
+                          <div class="ipg_text">
+                            87 950                                    <div class="mini_text">84,5 %</div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="execution_text">104 069</div>
+                      <p class="execution_price">млн руб.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </td>
+            <td></td>
+            <td>
+              <div class="whiteInfoBlock">
+                <a href="about/graphics.html" class="title">График подготовки бюджета</a>
+                <img src="img/graphic_shedule.png" alt="">
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="5" class="line_caption"></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="whiteInfoBlock bottomBlock">
+                <a href="budget/incomes.html" class="title">Структура доходов</a>
+                <div id="incomes_chart"></div>
+              </div>
+            </td>
+            <td></td>
+            <td>
+              <div class="whiteInfoBlock bottomBlock">
+                <a href="budget/expenses.html" class="title">Структура расходов</a>
+                <div id="expenses_chart"></div>
+              </div>
+            </td>
+            <td></td>
+            <td>
+              <div class="whiteInfoBlock bottomBlock">
+                <a href="execution/expenses_municipals.html" class="title">Программный бюджет</a>
+                <div id="program_chart"></div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="what_is_budget">
+        <div class="g_inner">
+          <div class="WIB_grid">
+            <div class="WIB_cell">
+              <h1 class="main_title"><a href="about/index.html">Что такое бюджет?</a></h1>
+              <img src="img/what_is_budget.png" alt="" class="WIB_image"/>
+              <div class="WIB_text">
+                <p>Бюджет муниципального образования «город Екатеринбург» – форма образования и расходования денежных средств, предназначенных для финансового обеспечения задач и функций муниципального образования «город Екатеринбург».</p>
+                <p>Доходы бюджета – поступающие в бюджет денежные средства, за исключением источников финансирования бюджета.</p>
+                <p>Расходы бюджета – выплачиваемые из бюджета денежные средства, за исключением источников погашения дефицита бюджета.</p>
+                <p>Дефицит бюджета – превышение расходов бюджета над его доходами.</p>
+                <p>Профицит бюджета – превышение доходов бюджета над его расходами.</p>
+                <a href="about/index.html"><span class="btn">Подробнее</span></a>
+              </div>
+            </div>
+            <div class="WIB_cell">
+              <div class="plate">
+                <h3>Принципы</h3>
+                <p>Сбалансированность бюджета по доходам и расходам — основополагающее требование, предъявляемое к органам, составляющим и утверждающим бюджет.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="g_inner">
+          <!--div class="title_with_button">
+              <h1 class="main_title"><a href="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/news/allnews">Новости</a></h1>
+          </div-->
+          <div id="yw1" class="list-view">
+            <div class="items">
+              <div class="title_with_button">
+                <table>
+                  <tr>
+                    <td>
+                      <h1 class="main_title"><a href="news/allnews.html">Новости</a></h1>
+                    </td>
+                    <td>
+                      17.07.2020			</td>
+                    <td>
+                      <a href="news/publ/id/142.html">Запуск портала инициативного бюджетирования "Екатеринбург, предлагай!"</a>
+                      <!--p></p-->
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div><div class="keys" style="display:none" title="/"><span>142</span></div>
+          </div>        <!--a class="all_news_link" href="">Все новости</a-->
+        </div>
+      </div><style type="text/css">
+      #ekb-news {position: relative; z-index: 999;}
+      #ekb-news .nws {width: 20%; margin-right: 5%; float: left;}
+      #ekb-news .nws .dt {font-size: 11px; color: #888888; margin-bottom: 5px;}
+      #ekb-news .nws a {font-size: 14px; color: #006419; text-decoration: none;}
+      #ekb-news .cap {margin-bottom: 15px; font-size: 15px;}
+      #ekb-news h3 {color: #395063;}
+      .clear {clear: both;}
+    </style>
+      <div id="ekb-news">
+        <div class="g_inner">
+          <div class="cap"><h3>Новости Екатеринбурга</h3></div>
+          <div class="clear"></div>
+          <div class="nws">
+            <p class="dt">14 января 2026, 10:55</p>
+            <a href="https://xn--80acgfbsl1azdqr.xn--p1ai/news/99864-itogi-goda-ekaterinburg-prodolzhaet-formirovat-obrazovatelnoe-prostranstvo" target="_blank"><p>Итоги года: Екатеринбург продолжает формировать образовательное пространство</p></a>
+          </div>
+          <div class="nws">
+            <p class="dt">13 января 2026, 17:24</p>
+            <a href="https://xn--80acgfbsl1azdqr.xn--p1ai/news/99863-aleksey-orlov-pozdravil-veterana-velikoy-otechestvennoy-voyny-s-dnem-rozhdeniya" target="_blank"><p>Алексей Орлов поздравил ветерана Великой Отечественной войны с днем рождения</p></a>
+          </div>
+          <div class="nws">
+            <p class="dt">13 января 2026, 16:30</p>
+            <a href="https://xn--80acgfbsl1azdqr.xn--p1ai/news/99862-ekaterinburg-gotovitsya-bezopasno-okunutsya-na-kreshchenie-gospodnya" target="_blank"><p>Екатеринбург готовится безопасно окунуться на Крещение Господня</p></a>
+          </div>
+          <div class="nws">
+            <p class="dt">13 января 2026, 14:04</p>
+            <a href="https://xn--80acgfbsl1azdqr.xn--p1ai/news/99861-passazhiry-ekaterinburga-kupili-bolee-215-tysyach-proezdnykh-biletov" target="_blank"><p>Пассажиры Екатеринбурга купили более 215 тысяч проездных билетов</p></a>
+          </div>
+          <div class="clear"></div>
+        </div>
+      </div><script>
+      $(function () {
+        var incomesData = {"id":"4","token":"8b6605db8e7afeb7cf3ebba64dfb70d2","appViewTitle":"04. Доходы бюджета (бюджет)","appViewMetaData":{"field":[{"id":"1","data_type":"NUMBER","title":"1"},{"id":"2","data_type":"NUMBER","title":"2025"},{"id":"3","data_type":"NUMBER","title":"2026"},{"id":"4","data_type":"NUMBER","title":"2027"}]},"data":[{"row":{"field":[{"id":"31","value":"ВСЕГО, в т.ч."},{"id":"32","value":"94285000"},{"id":"33","value":"90612000"},{"id":"34","value":"94541000"}]}},{"row":{"field":[{"id":"31","value":"Налог на доходы физических лиц"},{"id":"32","value":"22661000"},{"id":"33","value":"23010000"},{"id":"34","value":"25035000"}]}},{"row":{"field":[{"id":"31","value":"Налог, взимаемый в связи с применением упрощенной системы налогообложения"},{"id":"32","value":"7597000"},{"id":"33","value":"7975000"},{"id":"34","value":"8972000"}]}},{"row":{"field":[{"id":"31","value":"Земельный налог"},{"id":"32","value":"2954000"},{"id":"33","value":"2954000"},{"id":"34","value":"2954000"}]}},{"row":{"field":[{"id":"31","value":"Доходы, получаемые в виде арендной платы за земельные участки, а также средства от продажи права на заключение договоров аренды земельных участков"},{"id":"32","value":"2262000"},{"id":"33","value":"2262000"},{"id":"34","value":"2262000"}]}},{"row":{"field":[{"id":"31","value":"Другие доходы от использования имущества, находящегося в государственной и муниципальной собственности"},{"id":"32","value":"1097000"},{"id":"33","value":"1099000"},{"id":"34","value":"1101000"}]}},{"row":{"field":[{"id":"31","value":"Доходы от продажи материальных и нематериальных активов"},{"id":"32","value":"1552000"},{"id":"33","value":"1261000"},{"id":"34","value":"1261000"}]}},{"row":{"field":[{"id":"31","value":"Другие доходы"},{"id":"32","value":"12748000"},{"id":"33","value":"12504000"},{"id":"34","value":"13042000"}]}},{"row":{"field":[{"id":"31","value":"Безвозмездные поступления"},{"id":"32","value":"43414000"},{"id":"33","value":"39547000"},{"id":"34","value":"39914000"}]}}]},
+          expensesData = {"id":"1","token":"58ed38709f2f8786427de5578a1ba3d6","appViewTitle":"05. Расходы в разрезе отраслей (бюджет)","appViewMetaData":{"field":[{"id":"1","data_type":"NUMBER","title":"1"},{"id":"2","data_type":"NUMBER","title":"2025"},{"id":"3","data_type":"NUMBER","title":"2026"},{"id":"4","data_type":"NUMBER","title":"2027"}]},"data":[{"row":{"field":[{"id":"1","value":"0100"},{"id":"2","value":"ОБЩЕГОСУДАРСТВЕННЫЕ ВОПРОСЫ"},{"id":"3","value":"7654000"},{"id":"4","value":"7038000"},{"id":"5","value":"7182000"}]}},{"row":{"field":[{"id":"1","value":"0300"},{"id":"2","value":"НАЦИОНАЛЬНАЯ БЕЗОПАСНОСТЬ И ПРАВООХРАНИТЕЛЬНАЯ ДЕЯТЕЛЬНОСТЬ"},{"id":"3","value":"400000"},{"id":"4","value":"385000"},{"id":"5","value":"381000"}]}},{"row":{"field":[{"id":"1","value":"0400"},{"id":"2","value":"НАЦИОНАЛЬНАЯ ЭКОНОМИКА"},{"id":"3","value":"31995000"},{"id":"4","value":"22596000"},{"id":"5","value":"19484000"}]}},{"row":{"field":[{"id":"1","value":"0500"},{"id":"2","value":"ЖИЛИЩНО-КОММУНАЛЬНОЕ ХОЗЯЙСТВО"},{"id":"3","value":"6551000"},{"id":"4","value":"3625000"},{"id":"5","value":"4477000"}]}},{"row":{"field":[{"id":"1","value":"0600"},{"id":"2","value":"ОХРАНА ОКРУЖАЮЩЕЙ СРЕДЫ"},{"id":"3","value":"228000"},{"id":"4","value":"248000"},{"id":"5","value":"259000"}]}},{"row":{"field":[{"id":"1","value":"0700"},{"id":"2","value":"ОБРАЗОВАНИЕ"},{"id":"3","value":"46798000"},{"id":"4","value":"48703000"},{"id":"5","value":"51334000"}]}},{"row":{"field":[{"id":"1","value":"0800"},{"id":"2","value":"КУЛЬТУРА, КИНЕМАТОГРАФИЯ"},{"id":"3","value":"2593000"},{"id":"4","value":"2467000"},{"id":"5","value":"2461000"}]}},{"row":{"field":[{"id":"1","value":"1000"},{"id":"2","value":"СОЦИАЛЬНАЯ ПОЛИТИКА"},{"id":"3","value":"5085000"},{"id":"4","value":"4522000"},{"id":"5","value":"4654000"}]}},{"row":{"field":[{"id":"1","value":"1100"},{"id":"2","value":"ФИЗИЧЕСКАЯ КУЛЬТУРА И СПОРТ"},{"id":"3","value":"2631000"},{"id":"4","value":"2559000"},{"id":"5","value":"2509000"}]}},{"row":{"field":[{"id":"1","value":"1200"},{"id":"2","value":"СРЕДСТВА МАССОВОЙ ИНФОРМАЦИИ"},{"id":"3","value":"134000"},{"id":"4","value":"129000"},{"id":"5","value":"132000"}]}},{"row":{"field":[{"id":"1","value":"1300"},{"id":"2","value":"ОБСЛУЖИВАНИЕ ГОСУДАРСТВЕННОГО И МУНИЦИПАЛЬНОГО ДОЛГА"},{"id":"3","value":"0"},{"id":"4","value":"2000"},{"id":"5","value":"50000"}]}},{"row":{"field":[{"id":"1","value":"2000"},{"id":"2","value":"ПРОЧИЕ РАСХОДЫ"},{"id":"3","value":"0"},{"id":"4","value":"1352000"},{"id":"5","value":"2790000"}]}},{"row":{"field":[{"id":"1","value":""},{"id":"2","value":"ИТОГО"},{"id":"3","value":"104069000"},{"id":"4","value":"93626000"},{"id":"5","value":"95713000"}]}}]};
+
+        drawPieChart(incomesData, 'incomes_chart');
+        drawPieChart(expensesData, 'expenses_chart', 1, 'last');
+      });
+      function drawPieChart(data, containerId, indexOffset, totalRowNum) {
+        var series = [],
+          sum = 0,
+          name = '';
+        if (typeof indexOffset == 'undefined')
+          indexOffset = 0;
+
+        if (typeof data == 'undefined' || typeof data.data == 'undefined' )
+          return;
+
+        if (typeof totalRowNum == 'undefined')
+          totalRowNum = 0;
+        else if (totalRowNum == 'last')
+          totalRowNum = data.data.length - 1;
+
+        $.each(data.data, function( key, val ) {
+          name = jsonfld(val, 0 + indexOffset).toLowerCase();
+          name = name.substr(0, 1).toUpperCase() + name.substr(1);
+          name = name;
+
+          if (key != totalRowNum) {
+            sum = parseFloat(jsonfld(val, 1 + indexOffset)) / 1e3;
+            series.push([name, parseInt(sum)]);
+          }
+        });
+
+        var opts = {
+          chart: {
+            height: 440
+          },
+          plotOptions: {
+            pie: { showInLegend: true }
+          },
+          tooltip: {
+            formatter: function () { return this.point.name + ': <b>' + this.y.numberFormat(0, ',', ' ') + ' млн руб.</b>'},
+            useHTML: true
+          },
+          series: [{
+            data: series
+          }],
+          legend: {
+            itemDistance: 2,
+            padding: 0,
+            itemStyle: {
+              fontSize: '10px',
+              itemWidth: 30
+            },
+            labelFormatter: function () { return cutTextForTooltip(this.name, 58); },
+            useHTML: true,
+            itemWidth: 200,
+            width: 342,
+            symbolWidth: 12,
+            symbolPadding: 3,
+            margin: 0
+          }
+        };
+        $('#'+ containerId).highcharts($.extend(true, optionsPieLegend(), opts));
+      }
+
+      $('#program_chart').highcharts({
+        colors:['#00BEB8','#33D8AA','#46E685','#89DE88','#AAD475','#FEE18E','#FCCD34','#F9A632','#F44F2C','#F14242','#BE214D','#97197D'],
+        chart: {
+          plotBackgroundColor: null,
+          plotBorderWidth: null,
+          plotShadow: false
+        },
+        title: {
+          text: ''
+        },
+        tooltip: {
+          enabled: false
+        },
+        plotOptions: {
+          pie: {
+            startAngle: 185,
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              format: '<h1>{y}%</h1><br>{point.name}',
+              useHTML: true,
+              style: {
+                color: 'black'
+              }
+            }
+          }
+        },
+        series: [{
+          type: 'pie',
+          data: [
+            ['Программный<br>бюджет',   90],
+            {
+              name: 'Непрограммный<br>бюджет',
+              y: 10,
+              sliced: true,
+              selected: true
+            }
+          ]
+        }]
+      });
+    </script>
+    {% endif %}
   </section>
   <div class="icons_links">
     <div class="g_inner">
       <h1 class="main_title">Полезные ссылки</h1>
       <div class="IL_grid">
         <a href="http://minfin.midural.ru/" class="IL_cell" target="_blank">
-          <img src="/sites/default/files/budget/img/link_minfin.png" alt=""/>
+          <img src="/{{ active_theme_path() }}/img/link_minfin.png" alt=""/>
           <span>Министерство финансов Свердловской области</span>
         </a>
         <a href="http://sverdlovsk.roskazna.ru/" class="IL_cell"target="_blank">
-          <img src="/sites/default/files/budget/img/link_ufk.png" alt=""/>
+          <img src="/{{ active_theme_path() }}/img/link_ufk.png" alt=""/>
           <span>УФК по Свердловской области</span>
         </a>
         <a href="http://xn--80acgfbsl1azdqr.xn--p1ai/" class="IL_cell"target="_blank">
-          <img src="/sites/default/files/budget/img/link_portal_ekb.png" alt=""/>
+          <img src="/{{ active_theme_path() }}/img/link_portal_ekb.png" alt=""/>
           <span>Официальный портал Екатеринбурга</span>
         </a>
         <a href="http://xn--80appbun8c.xn--80acgfbsl1azdqr.xn--p1ai/" class="IL_cell"target="_blank">
-          <img src="/sites/default/files/budget/img/link_portal_depfin_ekb.png" alt=""/>
+          <img src="/{{ active_theme_path() }}/img/link_portal_depfin_ekb.png" alt=""/>
           <span>Официальный портал Департамента финансов Екатеринбурга</span>
         </a>
         <a href="http://government.ru/" class="IL_cell"target="_blank">
-          <img src="/sites/default/files/budget/img/link_rf_site.png" alt=""/>
+          <img src="/{{ active_theme_path() }}/img/link_rf_site.png" alt=""/>
           <span>Сайт Российской Федерации</span>
         </a>
         <a href="http://www.gosuslugi.ru/" class="IL_cell"target="_blank">
-          <img src="/sites/default/files/budget/img/link_gosuslugi.png" alt=""/>
+          <img src="/{{ active_theme_path() }}/img/link_gosuslugi.png" alt=""/>
           <span>Госуслуги</span>
         </a>
       </div>
@@ -274,7 +698,7 @@
   <div class="cross"></div>
   <h1>
     Задать вопрос
-    <img src="/sites/default/files/budget/img/speaker.png" alt=""/>
+    <img src="/{{ active_theme_path() }}/img/speaker.png" alt=""/>
   </h1>
   <div data-step="1" data-open-first="true">
     <p class="popup_description">Все поля обязательны для заполнения</p>
@@ -410,12 +834,20 @@
     });
   }
 
-  initFeedbackSendButton();
+  // Основной код
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof jQuery === 'undefined') {
+      console.error('jQuery not found');
+      return;
+    }
 
+    var $ = jQuery;
+    initFeedbackSendButton();
+  });
 </script>
-<script type="text/javascript" src="/sites/default/files/budget/assets/18ca603e/jui/js/jquery-ui.min.js"></script>
+<!--script type="text/javascript" src="/sites/default/files/budget/assets/18ca603e/jui/js/jquery-ui.min.js"></script-->
 <script type="text/javascript">
-  /*<![CDATA[*/
+  <![CDATA[
   jQuery(function($) {
     //jQuery('#openDialog').dialog({'title':'','autoOpen':false,'modal':true,'width':250});
     jQuery('#yw3').after("<a class='captchaRefresh' id='captchaRefresh-1' href='#'>Обнови</a>");
@@ -433,7 +865,7 @@
     });
 
   });
-  /*]]>*/
+  ]]>
 </script>
 </body>
 </html>

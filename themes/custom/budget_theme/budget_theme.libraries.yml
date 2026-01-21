@@ -1,0 +1,24 @@
+head-styles-scripts:
+  version: 1.0
+  css:
+    theme:
+      css/reset.css: {}
+      css/style.css: {}
+      assets/4bc1a20d/listview/styles.css: {}
+      assets/18ca603e/jui/css/base/jquery-ui.css: {}
+      css/main.css: {}
+  js:
+    assets/18ca603e/jquery.min.js: {}
+    js/k_custom.js: {}
+    js/scripts.js: {}
+    js/jquery.form.min.js: {}
+    js/jquery.cookie.min.js: {}
+    js/missed.js: {}
+    js/utils.js: {}
+    js/v_custom.js: {}
+    js/commonController.js: {}
+    js/main.js: {}
+    assets/18ca603e/jui/js/jquery-ui.min.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

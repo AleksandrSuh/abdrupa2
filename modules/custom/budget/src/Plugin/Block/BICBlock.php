@@ -22,12 +22,12 @@ class BICBlock extends BlockBase {
 
     // Контейнер для графика
     $build['chart'] = [
-      '#markup' => '<div id="infographics-1" style="min-width: 310px; height: 400px; margin: 0 auto"></div>',
+      '#markup' => '<div id="infographics-1">&nbsp;</div>',
     ];
 
     // Loader (если есть в вашем HTML)
     $build['loader'] = [
-      '#markup' => '<div id="ajaxLoader" class="ajaxLoader"></div>',
+      '#markup' => '<div id="ajaxLoader" class="ajaxLoader">&nbsp;</div>',
     ];
 
     // Передаем URL для AJAX
@@ -35,7 +35,7 @@ class BICBlock extends BlockBase {
       'library' => ['budget/incomes_chart2'],
       'drupalSettings' => [
         'budget' => [
-          'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.view_data')
+          'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.api_json')
             ->setOption('query', ['format' => 'json'])
             ->toString(),
           'fallbackData' => [
