@@ -1,0 +1,4 @@
+services:
+  budget_import.data_service:
+    class: Drupal\budget_import\Service\BudgetDataService
+    arguments: ['@database']

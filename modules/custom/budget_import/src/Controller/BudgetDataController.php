@@ -45,11 +45,82 @@ class BudgetDataController extends ControllerBase {
   public function viewData(Request $request) {
     // Если запрошен JSON формат
     if ($request->query->get('format') === 'json') {
-      return new JsonResponse($this->generateBudgetJson());
+      // Можно добавить параметр type для выбора таблицы
+      $type = $request->query->get('type', 'incomes');
+      return new JsonResponse($this->generateBudgetJson($type));
     }
 
-    // Получаем данные из базы
-    $query = $this->database->select('budget_incomes', 'b')
+    $build = [];
+
+    // 1. ТАБЛИЦА ДОХОДОВ
+    $build['incomes_title'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'h2',
+      '#value' => $this->t('Доходы бюджета'),
+      '#attributes' => ['class' => ['section-title']],
+    ];
+
+    $incomes_data = $this->getTableData('budget_incomes');
+    $build['incomes_table'] = $this->buildTable(
+      $incomes_data['rows'],
+      $incomes_data['header'],
+      $this->t('Нет данных о доходах. Импортируйте данные сначала.')
+    );
+
+    // 2. ТАБЛИЦА РАСХОДОВ
+    $build['expenses_title'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'h2',
+      '#value' => $this->t('Расходы бюджета'),
+      '#attributes' => ['class' => ['section-title']],
+      '#weight' => 10,
+    ];
+
+    $expenses_data = $this->getTableData('budget_expenses');
+    $build['expenses_table'] = $this->buildTable(
+      $expenses_data['rows'],
+      $expenses_data['header'],
+      $this->t('Нет данных о расходах. Импортируйте данные сначала.'),
+      ['class' => ['expenses-table']]
+    );
+
+    // 3. СВОДНАЯ ИНФОРМАЦИЯ
+    $build['summary'] = $this->buildSummary($incomes_data, $expenses_data);
+
+    // 4. КНОПКИ ДЕЙСТВИЙ
+    $build['actions'] = [
+      '#type' => 'actions',
+      '#weight' => 100,
+      'import' => [
+        '#type' => 'link',
+        '#title' => $this->t('Импортировать данные'),
+        '#url' => \Drupal\Core\Url::fromRoute('budget_import.import_form'),
+        '#attributes' => ['class' => ['button', 'button--primary']],
+      ],
+      'json_incomes' => [
+        '#type' => 'link',
+        '#title' => $this->t('Доходы в JSON'),
+        '#url' => \Drupal\Core\Url::fromRoute('budget_import.view_data')
+          ->setOption('query', ['format' => 'json', 'type' => 'incomes']),
+        '#attributes' => ['class' => ['button']],
+      ],
+      'json_expenses' => [
+        '#type' => 'link',
+        '#title' => $this->t('Расходы в JSON'),
+        '#url' => \Drupal\Core\Url::fromRoute('budget_import.view_data')
+          ->setOption('query', ['format' => 'json', 'type' => 'expenses']),
+        '#attributes' => ['class' => ['button']],
+      ],
+    ];
+
+    // 5. CSS СТИЛИ
+    //$build['#attached']['library'][] = 'budget_import/table';
+
+    return $build;
+  }
+
+  private function getTableData($table_name) {
+    $query = $this->database->select($table_name, 'b')
       ->fields('b', ['year', 'category', 'amount'])
       ->orderBy('category')
       ->orderBy('year');
@@ -58,109 +129,182 @@ class BudgetDataController extends ControllerBase {
 
     // Группируем по категориям
     $categories = [];
+    $all_years = [];
+
     foreach ($results as $row) {
       $categories[$row->category][$row->year] = $row->amount;
+      $all_years[$row->year] = $row->year;
     }
 
-    $years = [2026,2027,2028];
+    // Сортируем годы
+    sort($all_years);
 
-    // Формируем таблицу
-    $header = ['Категория', $years[0], $years[1], $years[2], 'Всего'];
+    // Если нет годов, используем дефолтные
+    if (empty($all_years)) {
+      $all_years = [2026, 2027, 2028];
+    }
+
+    // Формируем заголовок таблицы
+    $header = ['Категория'];
+    foreach ($all_years as $year) {
+      $header[] = (string) $year;
+    }
+    $header[] = 'Всего';
+
+    // Формируем строки таблицы
     $rows = [];
+    $year_totals = array_fill_keys($all_years, 0);
+    $grand_total = 0;
 
-    $total_2025 = 0;
-    $total_2026 = 0;
-    $total_2027 = 0;
+    foreach ($categories as $category => $years_data) {
+      $row_data = [$category];
+      $row_total = 0;
 
-    foreach ($categories as $category => $years_n) {
-      $amount_2025 = $years_n[$years[0]] ?? 0;
-      $amount_2026 = $years_n[$years[1]] ?? 0;
-      $amount_2027 = $years_n[$years[2]] ?? 0;
-      $total = $amount_2025 + $amount_2026 + $amount_2027;
+      foreach ($all_years as $year) {
+        $amount = $years_data[$year] ?? 0;
+        $row_data[] = [
+          'data' => number_format($amount, 2, '.', ' '),
+          'class' => ['number-cell'],
+        ];
+        $row_total += $amount;
+        $year_totals[$year] += $amount;
+      }
 
-      $rows[] = [
-        $category,
-        [
-          'data' => number_format($amount_2025, 2, '.', ' '),
-          'class' => ['number-cell'],
-        ],
-        [
-          'data' => number_format($amount_2026, 2, '.', ' '),
-          'class' => ['number-cell'],
-        ],
-        [
-          'data' => number_format($amount_2027, 2, '.', ' '),
-          'class' => ['number-cell'],
-        ],
-        [
-          'data' => number_format($total, 2, '.', ' '),
-          'class' => ['number-cell', 'total-cell'],
-        ],
+      $row_data[] = [
+        'data' => number_format($row_total, 2, '.', ' '),
+        'class' => ['number-cell', 'total-cell'],
+      ];
+      $grand_total += $row_total;
+
+      $rows[] = $row_data;
+    }
+
+    // Итоговая строка "ВСЕГО"
+    if (!empty($rows)) {
+      $total_row = [['data' => '<strong>ВСЕГО</strong>', 'class' => ['total-row']]];
+
+      foreach ($all_years as $year) {
+        $total_row[] = [
+          'data' => '<strong>' . number_format($year_totals[$year], 2, '.', ' ') . '</strong>',
+          'class' => ['number-cell', 'total-row'],
+        ];
+      }
+
+      $total_row[] = [
+        'data' => '<strong>' . number_format($grand_total, 2, '.', ' ') . '</strong>',
+        'class' => ['number-cell', 'total-row', 'grand-total'],
       ];
 
-      $total_2025 += $amount_2025;
-      $total_2026 += $amount_2026;
-      $total_2027 += $amount_2027;
+      $rows[] = $total_row;
     }
 
-    // Итоговая строка
-    $rows[] = [
-      [
-        'data' => '<strong>ВСЕГО</strong>',
-        'class' => ['total-row'],
-      ],
-      [
-        'data' => '<strong>' . number_format($total_2025, 2, '.', ' ') . '</strong>',
-        'class' => ['number-cell', 'total-row'],
-      ],
-      [
-        'data' => '<strong>' . number_format($total_2026, 2, '.', ' ') . '</strong>',
-        'class' => ['number-cell', 'total-row'],
-      ],
-      [
-        'data' => '<strong>' . number_format($total_2027, 2, '.', ' ') . '</strong>',
-        'class' => ['number-cell', 'total-row'],
-      ],
-      [
-        'data' => '<strong>' . number_format($total_2025 + $total_2026 + $total_2027, 2, '.', ' ') . '</strong>',
-        'class' => ['number-cell', 'total-row', 'grand-total'],
-      ],
+    return [
+      'header' => $header,
+      'rows' => $rows,
+      'year_totals' => $year_totals,
+      'grand_total' => $grand_total,
+      'years' => $all_years,
+    ];
+  }
+
+  /**
+   * Строит таблицу из данных.
+   */
+  private function buildTable($rows, $header, $empty_text, $attributes = []) {
+    $default_attributes = [
+      'class' => ['budget-data-table', 'sticky-enabled'],
     ];
 
-    $build = [];
+    $attributes = array_merge($default_attributes, $attributes);
 
-    $build['table'] = [
+    return [
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#empty' => $this->t('Нет данных. Импортируйте данные сначала.'),
-      '#attributes' => [
-        'class' => ['budget-data-table', 'sticky-enabled'],
+      '#empty' => $empty_text,
+      '#attributes' => $attributes,
+    ];
+  }
+
+  /**
+   * Строит сводную информацию.
+   */
+  private function buildSummary($incomes_data, $expenses_data) {
+    $build = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['budget-summary']],
+      '#weight' => 5,
+    ];
+
+    // Считаем баланс по годам
+    $balance_by_year = [];
+    $years = array_unique(
+      array_merge($incomes_data['years'] ?? [], $expenses_data['years'] ?? [])
+    );
+
+    sort($years);
+
+    if (empty($years)) {
+      return $build;
+    }
+
+    $build['title'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'h3',
+      '#value' => $this->t('Сводная информация'),
+      '#attributes' => ['class' => ['summary-title']],
+    ];
+
+    // Таблица баланса
+    $balance_header = ['Год', 'Доходы', 'Расходы', 'Баланс'];
+    $balance_rows = [];
+
+    foreach ($years as $year) {
+      $income = $incomes_data['year_totals'][$year] ?? 0;
+      $expense = $expenses_data['year_totals'][$year] ?? 0;
+      $balance = $income - $expense;
+
+      $balance_class = $balance >= 0 ? 'positive-balance' : 'negative-balance';
+
+      $balance_rows[] = [
+        $year,
+        ['data' => number_format($income, 2, '.', ' '), 'class' => ['number-cell']],
+        ['data' => number_format($expense, 2, '.', ' '), 'class' => ['number-cell']],
+        [
+          'data' => number_format($balance, 2, '.', ' '),
+          'class' => ['number-cell', 'balance-cell', $balance_class],
+        ],
+      ];
+    }
+
+    // Итоги
+    $total_income = $incomes_data['grand_total'] ?? 0;
+    $total_expense = $expenses_data['grand_total'] ?? 0;
+    $total_balance = $total_income - $total_expense;
+
+    $total_balance_class = $total_balance >= 0 ? 'positive-balance' : 'negative-balance';
+
+    $balance_rows[] = [
+      ['data' => '<strong>ИТОГО</strong>', 'class' => ['total-row']],
+      [
+        'data' => '<strong>' . number_format($total_income, 2, '.', ' ') . '</strong>',
+        'class' => ['number-cell', 'total-row'],
       ],
-      '#attached' => [
-        'library' => ['budget_import/table'],
+      [
+        'data' => '<strong>' . number_format($total_expense, 2, '.', ' ') . '</strong>',
+        'class' => ['number-cell', 'total-row'],
+      ],
+      [
+        'data' => '<strong>' . number_format($total_balance, 2, '.', ' ') . '</strong>',
+        'class' => ['number-cell', 'total-row', 'balance-cell', $total_balance_class],
       ],
     ];
 
-    $build['actions'] = [
-      '#type' => 'actions',
-      'import' => [
-        '#type' => 'link',
-        '#title' => $this->t('Импортировать данные'),
-        '#url' => \Drupal\Core\Url::fromRoute('budget_import.import_form'),
-        '#attributes' => [
-          'class' => ['button', 'button--primary'],
-        ],
-      ],
-      'json' => [
-        '#type' => 'link',
-        '#title' => $this->t('Получить данные в формате JSON'),
-        '#url' => \Drupal\Core\Url::fromRoute('budget_import.view_data')
-          ->setOption('query', ['format' => 'json']),
-        '#attributes' => [
-          'class' => ['button'],
-        ],
-      ],
+    $build['balance_table'] = [
+      '#type' => 'table',
+      '#header' => $balance_header,
+      '#rows' => $balance_rows,
+      '#attributes' => ['class' => ['balance-table']],
     ];
 
     return $build;

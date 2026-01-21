@@ -1,0 +1,6 @@
+budget_import.import_action:
+  route_name: budget_import.import_form
+  title: 'Импортировать данные'
+  appears_on:
+    - budget_import.view_data
+    - entity.node.canonical  # Если нужно на страницах материалов

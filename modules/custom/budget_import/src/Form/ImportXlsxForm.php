@@ -125,10 +125,11 @@ class ImportXlsxForm extends FormBase {
           $this->clearExistingData();
         }
 
-        $imported = $this->importXlsxData($file_path);
+        $imported_incomes = $this->importXlsxData($file_path, 'incomes');
+        $imported_expenses = $this->importXlsxData($file_path, 'expenses');
 
         $this->messenger()->addMessage(
-          $this->t('Успешно импортировано @count записей.', ['@count' => $imported])
+          $this->t('Успешно записано строк: @count1 доходов, @count2 расходов.', ['@count1' => $imported_incomes, '@count2' => $imported_expenses])
         );
 
         // Перенаправляем на просмотр данных
@@ -168,32 +169,47 @@ class ImportXlsxForm extends FormBase {
   private function clearExistingData() {
     $connection = \Drupal::database();
     $connection->truncate('budget_incomes')->execute();
+    $connection->truncate('budget_expenses')->execute();
     $this->messenger()->addMessage($this->t('Существующие данные очищены.'));
   }
 
   /**
    * Import data from XLSX file.
    */
-  private function importXlsxData($file_path) {
+  private function importXlsxData($file_path, $type = 'incomes') {
     if (!class_exists('\PhpOffice\PhpSpreadsheet\IOFactory')) {
       throw new \Exception('Установите PhpSpreadsheet: ddev composer require phpoffice/phpspreadsheet');
     }
 
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file_path);
-    $worksheet = $spreadsheet->getSheet(0);
+    if ($type === 'incomes') {
+      $worksheet = $spreadsheet->getSheet(0);  // Первый лист - доходы
+      $table_name = 'budget_incomes';
+    } elseif ($type === 'expenses') {
+      $worksheet = $spreadsheet->getSheet(1);  // Второй лист - расходы
+      $table_name = 'budget_expenses';
+    }
 
     \Drupal::logger('budget_import')->info(
-      'Используем лист: @sheet (индекс 0)',
+      'Используем лист: @sheet ',
       ['@sheet' => $worksheet->getTitle()]
     );
 
     $imported_count = 0;
     $highestRow = $worksheet->getHighestRow();
 
+    if($type === 'incomes')
+    {
+      $year_column = 'D';      // Колонка D = Год
+      $value_column = 'E';     // Колонка E = Значение
+      $category_column = 'F';  // Колонка F = Название категории
+    } elseif ($type === 'expenses') {
+      $year_column = 'E';      // Год
+      $value_column = 'F';     //  Значение
+      $category_column = 'G';  // Название категории
+    }
     // Структура для первого листа (доходы)
-    $year_column = 'D';      // Колонка D = Год
-    $value_column = 'E';     // Колонка E = Значение
-    $category_column = 'F';  // Колонка F = Название категории
+
     $start_row = 3;          // Данные начинаются с строки 3
 
     // Сначала вычислим все значения в колонке года
@@ -224,7 +240,7 @@ class ImportXlsxForm extends FormBase {
       $category = trim($category_raw ?? '');
 
       // Пропускаем пустые строки
-      if (empty($category) || empty($year) || empty($value)) {
+      if (empty($category) || empty($year)) {
         continue;
       }
 
@@ -265,7 +281,7 @@ class ImportXlsxForm extends FormBase {
       }
 
       // Сохраняем
-      if ($this->saveBudgetData($year, $category, $parsed_value)) {
+      if ($this->saveBudgetData($year, $category, $parsed_value, $table_name)) {
         $imported_count++;
 
         // ДЕБАГ первых 3 записей
@@ -318,12 +334,12 @@ class ImportXlsxForm extends FormBase {
   /**
    * Обновленный saveBudgetData для лучшего логирования
    */
-  private function saveBudgetData($year, $category, $amount) {
+  private function saveBudgetData($year, $category, $amount, $table_name) {
     $connection = \Drupal::database();
     $time = \Drupal::time()->getRequestTime();
 
     try {
-      $sql = <<<SQL
+      /*$sql = <<<SQL
 INSERT INTO {budget_incomes} (year, category, amount, created)
 VALUES (:year, :category, :amount, :created)
 ON CONFLICT (year, category)
@@ -335,7 +351,18 @@ SQL;
         ':category' => $category,
         ':amount' => $amount,
         ':created' => $time,
-      ]);
+      ]);*/
+
+      $query = $connection->merge($table_name)
+        ->keys(['year' => $year, 'category' => $category])  // Уникальные ключи
+        ->fields([
+          'year' => $year,
+          'category' => $category,
+          'amount' => $amount,
+          'created' => $time,
+        ]);
+
+      $query->execute();
 
       return true;
     }

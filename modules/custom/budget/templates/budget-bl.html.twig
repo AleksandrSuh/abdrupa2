@@ -1,0 +1,166 @@
+
+<div class="diagram">
+  <table class="infoVertTableText">
+    <colgroup>
+      <col width="150">
+      <col>
+      <col width="17">
+      <col>
+      <col width="17">
+      <col>
+    </colgroup>
+    <tr>
+      {% for item in data.incomes %}
+      <td></td>
+      <td class="to_center">{{ item.year }}</td>
+      {% endfor %}
+    </tr>
+  </table>
+
+  <table class="infoVertTable">
+    <colgroup>
+      <col width="150">
+      <col>
+      <col width="17">
+      <col>
+      <col width="17">
+      <col>
+    </colgroup>
+    <tr class="blue_text with-line">
+      <td class="to_bottom"><div>Доходы</div></td>
+      {% for item in data.incomes %}
+      <td>
+        <div class="infoVert bot">
+          <div class="text">{{ item.amount }}</div>
+          <div class="iV_progress blue" style="height: 100%;">
+            <div class="text">{{ item.amount }}</div>
+          </div>
+        </div>
+      </td>
+        {% if not loop.last %}
+      <td></td>
+        {% endif %}
+      {% endfor %}
+      <!--td>
+        <div class="infoVert bot">
+          <div class="text">90 612</div>
+          <div class="iV_progress blue" style="height: 96%;">
+            <div class="text">90 612</div>
+          </div>
+        </div>
+      </td>
+      <td></td>
+      <td>
+        <div class="infoVert bot">
+          <div class="text">94 541</div>
+          <div class="iV_progress blue" style="height: 100%;">
+            <div class="text">94 541</div>
+          </div>
+        </div>
+      </td-->
+    </tr>
+    <tr class="red_text">
+      <td class="to_top"><div>Расходы</div></td>
+      {% for item in data.expenses %}
+      <td>
+        <div class="infoVert top">
+          <div class="text">{{ item.amount }}</div>
+          <div class="iV_progress red" style="height: 100%;">
+            <div class="text">{{ item.amount }}</div>
+          </div>
+        </div>
+      </td>
+      {% if not loop.last %}
+        <td></td>
+      {% endif %}
+      {% endfor %}
+      <!--td>
+        <div class="infoVert top">
+          <div class="text">93 626</div>
+          <div class="iV_progress red" style="height: 90%;">
+            <div class="text">93 626</div>
+          </div>
+        </div>
+      </td>
+      <td></td>
+      <td>
+        <div class="infoVert top">
+          <div class="text">95 713</div>
+          <div class="iV_progress red" style="height: 92%;">
+            <div class="text">95 713</div>
+          </div>
+        </div>
+      </td-->
+    </tr>
+  </table>
+  <table class="infoVertTable">
+    <colgroup>
+      <col width="150">
+      <col>
+      <col width="17">
+      <col>
+      <col width="17">
+      <col>
+    </colgroup>
+    <tr class="green_text with-line">
+      <td class="to_bottom"><div>Дефицит</div></td>
+      {% for item in data.deficit %}
+      <td>
+        <div class="infoVert bot">
+          <div class="text">{{ item.amount }}</div>
+          <div class="iV_progress green" style="height: 100%;">
+            <div class="text">{{ item.amount }}</div>
+          </div>
+        </div>
+      </td>
+        {% if not loop.last %}
+          <td></td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+
+  <table class="infoVertTable">
+    <colgroup>
+      <col width="150">
+      <col>
+      <col width="17">
+      <col>
+      <col width="17">
+      <col>
+    </colgroup>
+
+    <tr class="turq_text with-line">
+      <td class="to_top"><div>Муниципальный<br/>долг</div></td>
+      <td>
+        <div class="infoVert top">
+          <div class="text">450</div>
+          <div class="iV_progress turq" style="height: 100%;">
+            <div class="text">450</div>
+          </div>
+        </div>
+      </td>
+      <td></td>
+      <td>
+        <div class="infoVert top">
+          <div class="text">937</div>
+          <div class="iV_progress turq" style="height: 100%;">
+            <div class="text">937</div>
+          </div>
+        </div>
+      </td>
+      <td></td>
+      <td>
+        <div class="infoVert top">
+          <div class="text">1 597</div>
+          <div class="iV_progress turq" style="height: 100%;">
+            <div class="text">1 597</div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+</div>
+
+

@@ -22,7 +22,15 @@ function budget_page_attachments(array &$attachments) {
   return [
     'budget_incomes_page' => [
       'variables' => ['income_data' => NULL],
-      'template' => 'budget-incomes-page',
+      'template' => 'budget-incomes-page', // пробовали ставить html целиком
     ],
   ];
 }*/
+function budget_theme($existing, $type, $theme, $path) {
+  return [
+    'budget_bl' => [
+      'variables' => ['data' => []],
+      'template' => 'budget-bl', // Имя файла шаблона без расширения.
+    ],
+  ];
+}
