@@ -63,16 +63,24 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
     $arData = [];
     foreach ($data as $type => $arBudData)
     {
-      foreach ($arBudData as $year => $arCategs)
-      {
-        $summ = 0;
-        foreach ($arCategs as $value)
+        foreach ($arBudData as $year => $arCategs)
         {
-          $summ += $value;
+          if($type == 'mundolg')
+          {
+            $res_summ = $arCategs / 1000;
+            $arData[$type][] = ['year' => $year, 'summ' => $res_summ, 'amount' => number_format($res_summ, 0, '.', ' ')];
+          }
+          else
+          {
+            $summ = 0;
+            foreach ($arCategs as $value)
+            {
+              $summ += $value;
+            }
+            $res_summ = $summ / 1000;
+            $arData[$type][] = ['year' => $year, 'summ' => $res_summ, 'amount' => number_format($res_summ, 0, '.', ' ')];
+          }
         }
-        $res_summ = $summ / 1000;
-        $arData[$type][] = ['year' => $year, 'summ' => $res_summ, 'amount' => number_format($res_summ, 0, '.', ' ')];
-      }
     }
 
     $arData['deficit'] = [];
@@ -81,7 +89,6 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
       $summ = $arDatum['summ'] - $arData['expenses'][$key]['summ'];
       $arData['deficit'][$key] = ['year' => $arDatum['year'], 'summ' => $summ, 'amount' => number_format($summ, 0, '.', ' ')];
     }
-
 
     echo MyHelper::printPre($arData);
     /*$build['#theme'] = 'budget_bl'; // нужно объявить эту тему в *.module файле.
@@ -94,22 +101,44 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
     $build['#h1'] = '<h1>Основные показатели бюджета, млн руб.</h1>';
 
     return $build;*/
-
-    return [
-      'crumb' => [
-        '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
+    //$route_name = \Drupal::routeMatch()->getRouteName();
+    $path_matcher = \Drupal::service('path.matcher');
+    $is_front = $path_matcher->isFrontPage();
+    if($is_front)
+    {
+      $build = [
+        'content' => [
+          '#theme' => 'budget_bl_main',
+          '#data' => $arData,
+          '#weight' => 1,
+        ],
+      ];
+    }
+    else
+    {
+      $build = [
+        'crumb' => [
+          '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
                   <div>|</div><span>Бюджет Екатеринбурга</span>
                   <div>|</div><span>Основные показатели бюджета</span></div>',
-      ],
-      'h1' => [
-        '#markup' => '<h1>Основные показатели бюджета, млн руб.</h1>',
-        '#weight' => 0,
-      ],
-      'content' => [
-        '#theme' => 'budget_bl',
-        '#data' => $arData,
-        '#weight' => 1,
-      ],
+        ],
+        'h1' => [
+          '#markup' => '<h1>Основные показатели бюджета, млн руб.</h1>',
+          '#weight' => 0,
+        ],
+        'content' => [
+          '#theme' => 'budget_bl',
+          '#data' => $arData,
+          '#weight' => 1,
+        ],
+      ];
+    }
+    $build['#cache'] = [
+      'contexts' => ['url.path'], // Разный кэш для разных урл
+      'tags' => $this->getCacheTags(), // Теги для инвалидации при изменении данных
     ];
+
+    return $build;
+
   }
 }

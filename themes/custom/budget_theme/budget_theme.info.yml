@@ -5,3 +5,18 @@ core_version_requirement: ^11
 base theme: false
 libraries:
   - budget_theme/head-styles-scripts
+regions:
+  header: 'Header'
+  primary_menu: 'Primary menu'
+  secondary_menu: 'Secondary menu'
+  highlighted: 'Highlighted'
+  content: 'Content'
+  sidebar_first: 'Sidebar first'
+  sidebar_second: 'Sidebar second'
+  footer: 'Footer'
+  help: 'Help'
+  home_budget: 'Home budget'
+  home_realiz: 'Home budget realiz'
+  home_image: 'Home image'
+  home_incomes: 'Home incomes'
+  home_expenses: 'Home expenses'

@@ -1,0 +1,86 @@
+<div class="whiteInfoBlock">
+  <a href="/budget" class="title">Основные параметры бюджета, млн руб.</a>
+  <table class="infoVertTableText">
+    <colgroup>
+      <col width="80">
+      <col>
+      <col width="17">
+      <col>
+      <col width="17">
+      <col>
+    </colgroup>
+    <tr>
+      {% for item in data.incomes %}
+        <td></td>
+        <td class="to_center">{{ item.year }}</td>
+      {% endfor %}
+    </tr>
+  </table>
+  <table class="infoVertTable">
+    <tr class="blue_text">
+      <td class="to_bottom" style="width:80px;"><div>Доходы</div></td>
+
+      {% for item in data.incomes %}
+        <td style="width:72px;">
+          <div class="infoVert bot">
+            <div class="text">{{ item.amount }}</div>
+            <div class="iV_progress blue" style="height: 100%;">
+              <div class="text">{{ item.amount }}</div>
+            </div>
+          </div>
+        </td>
+        {% if not loop.last %}
+          <td></td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    <tr class="red_text">
+      <td class="to_top" style="width:80px;"><div>Расходы</div></td>
+      {% for item in data.expenses %}
+        <td style="width:72px;">
+          <div class="infoVert top">
+            <div class="text">{{ item.amount }}</div>
+            <div class="iV_progress red" style="height: 100%;">
+              <div class="text">{{ item.amount }}</div>
+            </div>
+          </div>
+        </td>
+        {% if not loop.last %}
+          <td></td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    <tr class="green_text">
+      <td class="to_bottom" style="width:80px;"><div>Дефицит</div></td>
+      {% for item in data.deficit %}
+        <td style="width:72px;">
+          <div class="infoVert bot">
+            <div class="text">{{ item.amount }}</div>
+            <div class="iV_progress green" style="height: 100%;">
+              <div class="text">{{ item.amount }}</div>
+            </div>
+          </div>
+        </td>
+        {% if not loop.last %}
+          <td></td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    <tr class="yellow_text">
+      <td class="to_top" style="width:80px;"><div>Муниципальный<br/>долг</div></td>
+      {% for item in data.mundolg %}
+        <td style="width:72px;">
+          <div class="infoVert top">
+            <div class="text">{{ item.amount }}</div>
+            <div class="iV_progress turq" style="height: 100%;">
+              <div class="text">{{ item.amount }}</div>
+            </div>
+          </div>
+        </td>
+        {% if not loop.last %}
+          <td></td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+</div>

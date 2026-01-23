@@ -52,6 +52,14 @@ class BudgetDataService {
       $data['expenses'][$row->year][$row->category] = intval($row->amount);
     }
 
+    $query = $this->database->select('budget_mundolg', 'bt');
+    $query->fields('bt', ['year', 'amount']);
+    $results = $query->execute()->fetchAll();
+
+    foreach ($results as $row) {
+      $data['mundolg'][$row->year] = intval($row->amount);
+    }
+
     return $data;
   }
 

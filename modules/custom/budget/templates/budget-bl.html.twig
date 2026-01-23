@@ -1,4 +1,3 @@
-
 <div class="diagram">
   <table class="infoVertTableText">
     <colgroup>
@@ -132,32 +131,19 @@
 
     <tr class="turq_text with-line">
       <td class="to_top"><div>Муниципальный<br/>долг</div></td>
+      {% for item in data.mundolg %}
       <td>
         <div class="infoVert top">
-          <div class="text">450</div>
+          <div class="text">{{ item.amount }}</div>
           <div class="iV_progress turq" style="height: 100%;">
-            <div class="text">450</div>
+            <div class="text">{{ item.amount }}</div>
           </div>
         </div>
       </td>
-      <td></td>
-      <td>
-        <div class="infoVert top">
-          <div class="text">937</div>
-          <div class="iV_progress turq" style="height: 100%;">
-            <div class="text">937</div>
-          </div>
-        </div>
-      </td>
-      <td></td>
-      <td>
-        <div class="infoVert top">
-          <div class="text">1 597</div>
-          <div class="iV_progress turq" style="height: 100%;">
-            <div class="text">1 597</div>
-          </div>
-        </div>
-      </td>
+        {% if not loop.last %}
+          <td></td>
+        {% endif %}
+      {% endfor %}
     </tr>
   </table>
 

@@ -32,5 +32,9 @@ function budget_theme($existing, $type, $theme, $path) {
       'variables' => ['data' => []],
       'template' => 'budget-bl', // Имя файла шаблона без расширения.
     ],
+    'budget_bl_main' => [
+      'variables' => ['data' => []],
+      'template' => 'budget-bl_main',
+    ],
   ];
 }

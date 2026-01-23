@@ -1,5 +1,5 @@
 name: 'Budget Import'
 type: module
-description: 'Data Import income budget from XLSX files to PostgreSQL'
+description: 'Импорт данных по бюджету из XLSX файла в базу сайта PostgreSQL'
 core_version_requirement: ^11
 package: Custom

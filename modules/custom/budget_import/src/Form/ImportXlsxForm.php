@@ -25,14 +25,15 @@ class ImportXlsxForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['description'] = [
       '#markup' => '<div class="messages messages--status">
-        <p>Загрузите XLSX-файл с данными бюджета. Формат файла:</p>
+        <p>Загрузите XLSX-файл "Проект бюджета". Формат файла:</p>
+        <p>Лист "Доходы (план)"</p>
         <ul>
           <li>Столбец A,B,C: игнорировать</li>
           <li>Столбец D: год</li>
           <li>Столбец E: Значение (с разделителем тысяч пробелом и запятой для копеек)</li>
           <li>Столбец F: Название категории</li>
         </ul>
-        <p>Первая строка - заголовки.</p>
+        <p>1,2-я строки - заголовки.</p>
       </div>',
     ];
 
@@ -127,6 +128,7 @@ class ImportXlsxForm extends FormBase {
 
         $imported_incomes = $this->importXlsxData($file_path, 'incomes');
         $imported_expenses = $this->importXlsxData($file_path, 'expenses');
+        $imported_mundolg = $this->importXlsxData($file_path, 'mundolg');
 
         $this->messenger()->addMessage(
           $this->t('Успешно записано строк: @count1 доходов, @count2 расходов.', ['@count1' => $imported_incomes, '@count2' => $imported_expenses])
@@ -182,12 +184,15 @@ class ImportXlsxForm extends FormBase {
     }
 
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file_path);
+    $table_name = 'budget_incomes';
     if ($type === 'incomes') {
       $worksheet = $spreadsheet->getSheet(0);  // Первый лист - доходы
-      $table_name = 'budget_incomes';
     } elseif ($type === 'expenses') {
       $worksheet = $spreadsheet->getSheet(1);  // Второй лист - расходы
       $table_name = 'budget_expenses';
+    } elseif ($type === 'mundolg') {
+      $worksheet = $spreadsheet->getSheet(3);  // Второй лист - расходы
+      $table_name = 'budget_mundolg';
     }
 
     \Drupal::logger('budget_import')->info(
@@ -198,6 +203,7 @@ class ImportXlsxForm extends FormBase {
     $imported_count = 0;
     $highestRow = $worksheet->getHighestRow();
 
+    $start_row = 3;          // Данные начинаются с строки 3
     if($type === 'incomes')
     {
       $year_column = 'D';      // Колонка D = Год
@@ -207,20 +213,27 @@ class ImportXlsxForm extends FormBase {
       $year_column = 'E';      // Год
       $value_column = 'F';     //  Значение
       $category_column = 'G';  // Название категории
+    } elseif ($type === 'mundolg') {
+      $year_column = 'A';      // Год
+      $value_column = 'B';     //  Значение
+      $category_column = false;
+      $start_row = 2;          // Данные начинаются с строки 3
     }
-    // Структура для первого листа (доходы)
 
-    $start_row = 3;          // Данные начинаются с строки 3
 
     // Сначала вычислим все значения в колонке года
     // чтобы формулы ссылались на правильные вычисленные значения
-    $worksheet->getCell($year_column . '3')->getCalculatedValue(); // Принудительно вычисляем базовую ячейку
+    $worksheet->getCell($year_column . $start_row)->getCalculatedValue(); // Принудительно вычисляем базовую ячейку
 
     for ($row = $start_row; $row <= $highestRow; $row++) {
       // Используем метод getCellValue для поддержки формул
       $year_raw = $this->getCellValue($worksheet, $year_column . $row);
       $value_raw = $this->getCellValue($worksheet, $value_column . $row);
-      $category_raw = $this->getCellValue($worksheet, $category_column . $row);
+      if($category_column)
+      {
+        $category_raw = $this->getCellValue($worksheet, $category_column . $row);
+      }
+
 
       // ДЕБАГ первых 10 строк
       if ($row <= $start_row + 10) {
@@ -237,17 +250,21 @@ class ImportXlsxForm extends FormBase {
 
       $year = trim($year_raw ?? '');
       $value = trim($value_raw ?? '');
-      $category = trim($category_raw ?? '');
+        $category = trim($category_raw ?? '');
+
 
       // Пропускаем пустые строки
-      if (empty($category) || empty($year)) {
+      if (($category_column && empty($category)) || empty($year)) {
         continue;
       }
 
-      // Пропускаем строки с "ВСЕГО", "Итого"
-      if (stripos($category, 'ВСЕГО') !== false ||
-        stripos($category, 'Итого') !== false) {
-        continue;
+      if($category_column)
+      {
+        // Пропускаем строки с "ВСЕГО", "Итого"
+        if (stripos($category, 'ВСЕГО') !== false ||
+          stripos($category, 'Итого') !== false) {
+          continue;
+        }
       }
 
       // Проверяем, что год - это число (а не формула в текстовом виде)
@@ -352,15 +369,23 @@ SQL;
         ':amount' => $amount,
         ':created' => $time,
       ]);*/
+      $arKeys = ['year' => $year];
+      $arFields = [
+        'year' => $year,
+        'amount' => $amount,
+        'created' => $time,
+      ];
+      if(!empty($category))
+      {
+        $arKeys['category'] = $category;
+        $arFields['category'] = $category;
+      }
+
+
 
       $query = $connection->merge($table_name)
-        ->keys(['year' => $year, 'category' => $category])  // Уникальные ключи
-        ->fields([
-          'year' => $year,
-          'category' => $category,
-          'amount' => $amount,
-          'created' => $time,
-        ]);
+        ->keys($arKeys)  // Уникальные ключи
+        ->fields($arFields);
 
       $query->execute();
 
