@@ -19,6 +19,7 @@ head-styles-scripts:
     js/commonController.js: {}
     js/main.js: {}
     assets/18ca603e/jui/js/jquery-ui.min.js: {}
+    https://new.ekburg.ru/js/portalheader.js: { type: external }
   dependencies:
     - core/jquery
     - core/drupal

@@ -2,7 +2,7 @@
   'use strict';
 
   function loadHighchartsIfNeeded(callback) {
-    //console.log('Checking Highcharts...');
+    console.log('loadHighchartsIfNeeded, Checking Highcharts...');
 
     if (typeof Highcharts !== 'undefined') {
       callback();
@@ -32,6 +32,8 @@
 
   // Основная функция для построения графика
   function buildChart(data) {
+    console.log('buildChart');
+    console.log(data);
     var series = [],
       categories = [];
 
@@ -108,7 +110,7 @@
     var settings = drupalSettings.budget || {};
     var jsonUrl = settings.ajaxUrl || Drupal.url('api/budget/incomes?format=json');
     //var jsonUrl = Drupal.url('admin/budget/data?format=json');
-    console.log('Используем URL:', jsonUrl);
+    console.log('loadBudgetData, Используем URL:', jsonUrl);
     $.ajax({
       url: jsonUrl,
       type: 'GET',
@@ -170,6 +172,7 @@
         console.log('Элемент #infographics-1 не найден');
         return;
       }
+      console.log('loadHighchartsIfNeeded');
 
       // Загружаем данные
       loadBudgetData();

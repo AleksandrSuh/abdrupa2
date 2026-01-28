@@ -310,11 +310,11 @@ class BudgetDataController extends ControllerBase {
     return $build;
   }
 
-  private function generateBudgetJson() {
+  private function generateBudgetJson($type_page) {
     $database = \Drupal::database();
 
     // Получаем все данные, отсортированные по категории и году
-    $query = $database->select('budget_incomes', 'b')
+    $query = $database->select('budget_'.$type_page, 'b')
       ->fields('b', ['category', 'year', 'amount'])
       ->orderBy('b.category')
       ->orderBy('b.year');
@@ -495,7 +495,10 @@ class BudgetDataController extends ControllerBase {
    * API endpoint for budget incomes data.
    */
   public function apiData(Request $request) {
-    $data = $this->generateBudgetJson();
+
+    $type_page = $request->query->get('type_data', 'incomes');
+
+    $data = $this->generateBudgetJson($type_page);
 
     // Можно вернуть в разных форматах
     $format = $request->query->get('format', 'json');

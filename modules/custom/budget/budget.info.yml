@@ -1,5 +1,5 @@
 name: 'Budget'
 type: module
-description: 'Original budget site'
+description: 'Модуль для обработки и вывода данных по бюджету'
 core_version_requirement: ^11
 package: Custom

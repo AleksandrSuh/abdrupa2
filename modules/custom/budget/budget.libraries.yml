@@ -19,7 +19,6 @@ incomes_expenses_chart_main:
   version: 1.x
   header: true
   js:
-    #js/test-jquery.js: {}
     js/incomes_expenses_chart_main.js: {}
   dependencies:
     - core/jquery
