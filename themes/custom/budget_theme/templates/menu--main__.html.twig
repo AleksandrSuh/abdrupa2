@@ -1,0 +1,65 @@
+{#
+/**
+ * @file
+ * Template for main menu.
+ */
+#}
+
+{#{% set footer_mode = items[0]['content']['#menu_name'] == 'main' and region == 'secondary_menu' %}#}
+{# ЭКСТРЕМАЛЬНАЯ ОТЛАДКА #}
+<script>
+  console.log('=== MENU DEBUG ===');
+  console.log('All template variables:', {{ _context|json_encode|raw }});
+  console.log('Elements:', {{ elements|default({})|json_encode|raw }});
+</script>
+
+<div style="background: #ff0000; color: white; padding: 20px; margin: 20px 0;">
+  <h3>ЭКСТРЕМАЛЬНАЯ ОТЛАДКА:</h3>
+  <p><strong>Все ключи в _context:</strong> {{ _context|keys|join(', ') }}</p>
+
+  {% if elements is defined %}
+    <p><strong>Ключи в elements:</strong> {{ elements|keys|join(', ') }}</p>
+  {% else %}
+    <p><strong>elements НЕ ОПРЕДЕЛЕН!</strong></p>
+  {% endif %}
+
+  <p><strong>Количество items:</strong> {{ items|length }}</p>
+</div>
+
+{% if menu_display == 'footer' %}
+  {# Рендеринг для футера #}
+    {% for item in items %}
+       <div class="FL_cell">
+          <h2><a href="{{ item.url }}"{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>{{ item.title }}</a></h2>
+         {% if item.below %}
+          {% for subitem in item.below %}
+          <a href="{{ subitem.url }}" class=" {{ subitem.in_active_trail ? 'active-trail' }} {{ subitem.is_active ? 'active' }}">{{ subitem.title }}</a>
+          {% endfor %}
+         {% endif %}
+       </div>
+    {% endfor %}
+
+{% elseif menu_display == 'sidebar' %}
+  СИдебар!!!
+{% else %}
+
+{% import _self as menus %}
+
+{{ menus.menu_links(items, attributes, 0) }}
+
+{% macro menu_links(items, attributes, menu_level) %}
+  {% import _self as menus %}
+  {% if items %}
+    <ul id="yw0">
+      {% for item in items %}
+        <li{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>
+          <a href="{{ item.url }}">
+            <span>{{ item.title }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endmacro %}
+
+{% endif %}

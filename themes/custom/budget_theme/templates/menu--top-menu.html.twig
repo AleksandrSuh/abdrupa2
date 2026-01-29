@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Template for main menu.
+ */
+#}
+
+{#{% set footer_mode = items[0]['content']['#menu_name'] == 'main' and region == 'secondary_menu' %}#}
+аыаываывваыва ываываыва ываываыва
+{% import _self as menus %}
+
+{{ menus.menu_links(items, attributes, 0) }}
+
+{% macro menu_links(items, attributes, menu_level) %}
+  {% import _self as menus %}
+  {% if items %}
+    <ul id="yw0">
+      {% for item in items %}
+        <li{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>
+          <a href="{{ item.url }}">
+            <span>{{ item.title }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endmacro %}

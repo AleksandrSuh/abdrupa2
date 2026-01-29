@@ -19,7 +19,29 @@
 
 
   function loadBudgetData() {
+    var settings = drupalSettings.budget || {};
+    var jsonUrl = settings.ajaxUrl;
+    //var jsonUrl = Drupal.url('admin/budget/data?format=json');
+    console.log('loadBudgetData, Используем URL:', jsonUrl);
+    $.ajax({
+      url: jsonUrl,
+      type: 'GET',
+      dataType: 'json',
+      cache: false, // Отключаем кеш для актуальных данных
+      success: function(response) {
+        console.log('Данные успешно загружены:', response);
+        //buildChart(response);
 
+        drawPieChart(response.incomesData, 'incomes_chart');
+        drawPieChart(response.expensesData, 'expenses_chart');//, 1, 'last');
+      },
+      error: function(xhr, status, error) {
+        console.error('Ошибка загрузки данных:', error);
+
+      }
+    });
+
+/*
     $(function () {
       var incomesData = {
           "id": "4",
@@ -204,7 +226,7 @@
 
       drawPieChart(incomesData, 'incomes_chart');
       drawPieChart(expensesData, 'expenses_chart', 1, 'last');
-    });
+    });*/
 
     function drawPieChart(data, containerId, indexOffset, totalRowNum) {
       var series = [],
@@ -222,9 +244,23 @@
         totalRowNum = data.data.length - 1;
 
       $.each(data.data, function (key, val) {
-        name = jsonfld(val, 0 + indexOffset).toLowerCase();
+        /*name = jsonfld(val, 0 + indexOffset).toLowerCase();
         name = name.substr(0, 1).toUpperCase() + name.substr(1);
-        name = name;
+        name = name;*/
+        name = jsonfld(val, 0 + indexOffset);
+
+        // Приведение к строке и защита от null/undefined
+        if (name == null) {
+          name = ''; // или обработать как ошибку/пропуск
+        } else {
+          name = String(name).trim(); // гарантируем строку и убираем лишние пробелы
+        }
+        // Капитализация первого символа
+        if (name.length > 0) {
+          name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+        } else {
+          name = '';
+        }
 
         if (key != totalRowNum) {
           sum = parseFloat(jsonfld(val, 1 + indexOffset)) / 1e3;

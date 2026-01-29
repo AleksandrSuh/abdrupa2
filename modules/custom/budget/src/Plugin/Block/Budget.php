@@ -90,7 +90,7 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
       $arData['deficit'][$key] = ['year' => $arDatum['year'], 'summ' => $summ, 'amount' => number_format($summ, 0, '.', ' ')];
     }
 
-    echo MyHelper::printPre($arData);
+    //echo MyHelper::printPre($arData);
     /*$build['#theme'] = 'budget_bl'; // нужно объявить эту тему в *.module файле.
     $build['#data'] = $data;
     $build['#crumb'] = '<div class="breadcrumbs"><a href="/">Главная</a>

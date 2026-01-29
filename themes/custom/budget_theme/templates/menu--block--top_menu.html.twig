@@ -4,6 +4,9 @@
  * Template for main menu.
  */
 #}
+
+{#{% set footer_mode = items[0]['content']['#menu_name'] == 'main' and region == 'secondary_menu' %}#}
+
 {% import _self as menus %}
 
 {{ menus.menu_links(items, attributes, 0) }}
@@ -13,8 +16,8 @@
   {% if items %}
     <ul id="yw0">
       {% for item in items %}
-        <li>
-          <a href="{{ item.url }}"{{ item.attributes }}>
+        <li{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>
+          <a href="{{ item.url }}">
             <span>{{ item.title }}</span>
           </a>
         </li>

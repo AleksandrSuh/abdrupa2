@@ -1,0 +1,51 @@
+{# templates/menu.html.twig #}
+{% if attributes['data-block-id'] == 'top_menu' %}
+
+  {% import _self as menus %}
+
+  {{ menus.menu_links(items, attributes, 0) }}
+
+  {% macro menu_links(items, attributes, menu_level) %}
+    {% import _self as menus %}
+    {% if items %}
+      <ul id="yw0">
+        {% for item in items %}
+          <li{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>
+            <a href="{{ item.url }}">
+              <span>{{ item.title }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endmacro %}
+
+{% elseif attributes['data-block-id'] == 'left_menu' %}
+
+  <div class="CG_sidebar_plate">
+    {% for item in items %}
+      <a href="{{ item.url }}"{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>{{ item.title }}</a>
+    {% endfor %}
+  </div>
+
+{% elseif attributes['data-block-id'] == 'foot_menu' %}
+
+  {% for item in items %}
+    <div class="FL_cell">
+      <h2><a href="{{ item.url }}"{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>{{ item.title }}</a></h2>
+      {% if item.below %}
+        {% for subitem in item.below %}
+          <a href="{{ subitem.url }}" class=" {{ subitem.in_active_trail ? 'active-trail' }} {{ subitem.is_active ? 'active' }}">{{ subitem.title }}</a>
+        {% endfor %}
+      {% endif %}
+    </div>
+  {% endfor %}
+
+{% else %}
+  <!-- Default -->
+  <ul>
+    {% for item in items %}
+      <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}

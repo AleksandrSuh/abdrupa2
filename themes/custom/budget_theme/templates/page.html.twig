@@ -106,17 +106,18 @@
         <!--Двухколоночный-->
         <div class="content_grid">
           <aside class="CG_sidebar">
-            <div class="CG_sidebar_plate">
-              <p>
+            {{ page.sidebar_first }}
+            <!--div class="CG_sidebar_plate">
+
                 <a href="index.html">Основные показатели бюджета</a><a class="active" href="incomes.html">Доходы бюджета</a><a href="expenses.html">Расходы бюджета</a>
-              </p>
+
               <div class="CG_sidebar_plate subitem">
                 <a href="expenses.html">Расходы в разрезе отраслей</a>
               </div>
-              <p>
+
                 <a href="funding.html">Источники финансирования дефицита бюджета</a><a href="acts.html">Решение о бюджете города Екатеринбурга</a>
-              </p>
-            </div>
+
+            </div-->
           </aside>
           <div class="CG_right">
             {{ page.content }}
@@ -142,7 +143,7 @@
             <td></td>
             <td>
               <div class="whiteInfoBlock">
-                <a href="execution/index.html"  class="title">Исполнение бюджета, млн руб.</a>
+                <a href="/execution"  class="title">Исполнение бюджета, млн руб.</a>
                 <div class="date block_2">Исполнено на дату 01.12.2025</div>
                 <table class="infoTable">
                   <colgroup>
@@ -199,7 +200,7 @@
             <td></td>
             <td>
               <div class="whiteInfoBlock">
-                <a href="about/graphics" class="title">График подготовки бюджета</a>
+                <a href="/about/graphics" class="title">График подготовки бюджета</a>
                 <img src="/{{ active_theme_path() }}/img/graphic_shedule.png" alt="">
               </div>
             </td>
@@ -224,7 +225,7 @@
             <td></td>
             <td>
               <div class="whiteInfoBlock bottomBlock">
-                <a href="execution/expenses_municipals.html" class="title">Программный бюджет</a>
+                <a href="/execution/expenses_municipals" class="title">Программный бюджет</a>
                 <div id="program_chart"></div>
               </div>
             </td>
@@ -236,7 +237,7 @@
           <div class="WIB_grid">
             <div class="WIB_cell">
               <h1 class="main_title"><a href="about/index.html">Что такое бюджет?</a></h1>
-              <img src="img/what_is_budget.png" alt="" class="WIB_image"/>
+              <img src="/{{ active_theme_path() }}/img/what_is_budget.png" alt="" class="WIB_image"/>
               <div class="WIB_text">
                 <p>Бюджет муниципального образования «город Екатеринбург» – форма образования и расходования денежных средств, предназначенных для финансового обеспечения задач и функций муниципального образования «город Екатеринбург».</p>
                 <p>Доходы бюджета – поступающие в бюджет денежные средства, за исключением источников финансирования бюджета.</p>
@@ -349,7 +350,8 @@
   <div class="footer_links">
     <div class="g_inner">
       <div class="FL_grid">
-        <div class="FL_cell">
+        {{ page.secondary_menu }}
+        <!--div class="FL_cell">
           <h2><a href="../about/index.html">О бюджете</a></h2>
           <a href="../about/index.html">Справочная информация о бюджете</a>
           <a href="../about/glossary.html">Азбука бюджета</a>
@@ -393,7 +395,7 @@
         </div>
         <div class="FL_cell">
           <h2><a href="../payments/allpayments.html">Информация о платежных документах</a></h2>
-        </div>
+        </div-->
       </div>
     </div>
   </div>
@@ -567,7 +569,7 @@
   });
 </script>
 <!--script type="text/javascript" src="/sites/default/files/budget/assets/18ca603e/jui/js/jquery-ui.min.js"></script-->
-<script type="text/javascript">
+<!--script type="text/javascript">
   jQuery(function($) {
     //jQuery('#openDialog').dialog({'title':'','autoOpen':false,'modal':true,'width':250});
     jQuery('#yw3').after("<a class='captchaRefresh' id='captchaRefresh-1' href='#'>Обнови</a>");
@@ -584,6 +586,6 @@
       return false;
     });
   });
-</script>
+</script-->
 </body>
 </html>

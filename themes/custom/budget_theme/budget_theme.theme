@@ -1,7 +1,21 @@
 <?php
-/*function budget_theme_page_attachments_alter(array &$attachments) {
-  // Для главной страницы
-  //if (\Drupal::service('path.matcher')->isFrontPage()) {
-    $attachments['#attached']['library'][] = 'budget_theme/head-styles-scripts';
-  //}
-}*/
+
+
+function budget_theme_preprocess_block(&$variables) {
+  // Проверяем, что это блок меню
+  if ($variables['plugin_id'] == 'system_menu_block:main') {
+    // Получаем ID блока
+    $block_id = $variables['elements']['#id'] ?? '';
+
+    // Добавляем класс с ID блока к меню
+    $variables['content']['#attributes']['class'][] = 'menu-block-' . str_replace('-', '_', $block_id);
+
+    // Debug
+    //\Drupal::messenger()->addMessage('Block ID: ' . $block_id);
+    //\Drupal::messenger()->addMessage('Plugin ID: ' . $variables['plugin_id']);
+
+    if (isset($variables['content']['#items'])) {
+      $variables['content']['#attributes']['data-block-id'] = $block_id;
+    }
+  }
+}

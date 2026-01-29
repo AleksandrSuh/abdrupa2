@@ -310,10 +310,9 @@ class BudgetDataController extends ControllerBase {
     return $build;
   }
 
-  private function generateBudgetJson($type_page) {
+  private function getBudgetDataForType($type_page) {
     $database = \Drupal::database();
 
-    // Получаем все данные, отсортированные по категории и году
     $query = $database->select('budget_'.$type_page, 'b')
       ->fields('b', ['category', 'year', 'amount'])
       ->orderBy('b.category')
@@ -414,6 +413,26 @@ class BudgetDataController extends ControllerBase {
       $data['data'][] = [
         'row' => ['field' => $category_fields]
       ];
+    }
+
+    return $data;
+  }
+
+  private function generateBudgetJson($type_page) {
+    //$database = \Drupal::database();
+
+    if($type_page == 'all')
+    {
+      $data = [];
+      $arTypes = ['incomes','expenses'];
+      foreach ($arTypes as $type)
+      {
+        $data[$type.'Data'] = $this->getBudgetDataForType($type);
+      }
+    }
+    else
+    {
+      $data = $this->getBudgetDataForType($type_page);
     }
 
     return $data;

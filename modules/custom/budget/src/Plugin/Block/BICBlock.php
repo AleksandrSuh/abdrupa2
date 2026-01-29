@@ -60,7 +60,7 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
         'drupalSettings' => [
           'budget' => [
             'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.api_json')
-              ->setOption('query', ['format' => 'json'])
+              ->setOption('query', ['format' => 'json', 'type_data' => 'all'])
               ->toString(),
             'fallbackData' => [
               // Можно оставить пустым или добавить минимальные данные
