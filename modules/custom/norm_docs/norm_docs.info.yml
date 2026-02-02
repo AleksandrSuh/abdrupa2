@@ -1,0 +1,8 @@
+name: 'Normativ Base Documents'
+type: module
+description: 'Вывод документов на странице "Нормативная база"'
+core_version_requirement: ^11
+package: Custom
+dependencies:
+  - drupal:node
+  - drupal:taxonomy

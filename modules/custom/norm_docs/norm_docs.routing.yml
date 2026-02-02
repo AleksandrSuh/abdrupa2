@@ -1,0 +1,7 @@
+norm_docs.normative_documents:
+  path: '/about/acts'
+  defaults:
+    _title: 'Нормативная правовая база'
+    _controller: '\Drupal\norm_docs\Controller\NormativeDocumentsController::page'
+  requirements:
+    _permission: 'access content'

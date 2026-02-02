@@ -1,0 +1,66 @@
+{# views-view-unformatted.html.twig или лучше views-view-unformatted--budget-abc--page.html.twig #}
+{# { drupal_block('system_breadcrumb_block') } #}
+
+
+
+{# Шаг 1: Собираем все уникальные первые буквы #}
+{% set all_letters = [] %}
+{% for row in rows %}
+  {% set current_title = row.content['#view'].style_plugin.getField(loop.index0, 'title')|striptags|trim %}
+  {% set current_letter = current_title|first|upper %}
+
+  {# Проверяем, что это буква и добавляем если еще нет #}
+  {% if current_letter matches '/^[А-ЯA-Z]/u' and current_letter not in all_letters %}
+    {% set all_letters = all_letters|merge([current_letter]) %}
+  {% endif %}
+{% endfor %}
+
+{# Сортируем буквы #}
+{# % set all_letters = all_letters|sort %#}
+
+{# Шаг 2: Выводим алфавитный указатель #}
+<div class="gray_plate azbuka_plate">
+  {% for letter in all_letters %}
+    <div class="letter">
+      <span>{{ letter }}</span>
+    </div>
+  {% endfor %}
+</div>
+
+{% set previous_letter = '' %}
+<div class="azbuka_container">
+  {% for row in rows %}
+  {# Получаем заголовок текущего ряда #}
+  {% set current_title = row.content['#view'].style_plugin.getField(loop.index0, 'title')|striptags|trim %}
+  {# Получаем первую букву из заголовка #}
+  {% set current_letter = current_title|first|upper %}
+
+  {# Выводим новую букву, если она изменилась #}
+  {% if current_letter != previous_letter %}
+  {# Закрываем предыдущую группу, если она была #}
+  {% if '' != previous_letter %}
+</div> {# закрываем .AC_content #}
+  </div> {# закрываем .AC_line #}
+      {% endif %}
+
+      {# Начинаем новую группу для буквы #}
+  <div class="AC_line">
+  <div class="AC_letter">{{ current_letter }}</div>
+  <div class="AC_content">
+  {% endif %}
+
+    {# Выводим содержимое ряда КОНТРОЛИРУЕМО #}
+  <h2>{{ row.content['#view'].style_plugin.getField(loop.index0, 'title')|striptags|trim }}</h2>
+  <p>
+    {{ row.content['#view'].style_plugin.getField(loop.index0, 'field_az_desc') }}
+  </p>
+
+{% set previous_letter = current_letter %}
+
+    {# Закрываем последнюю группу после цикла #}
+    {% if loop.last %}
+      </div> {# закрываем .AC_content #}
+      </div> {# закрываем .AC_line #}
+    {% endif %}
+  {% endfor %}
+</div>

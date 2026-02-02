@@ -1,0 +1,17 @@
+<?php
+// modules/custom/norm_docs/norm_docs.module
+
+/**
+ * Implements hook_theme().
+ */
+function norm_docs_theme($existing, $type, $theme, $path) {
+  return [
+    'normative_documents_page' => [
+      'variables' => [
+        'documents_by_category' => [],
+      ],
+      'template' => 'normative-documents-page',
+      'path' => $path . '/templates',
+    ],
+  ];
+}

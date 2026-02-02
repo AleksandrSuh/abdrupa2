@@ -1,0 +1,38 @@
+{# templates/normative-documents-page.html.twig #}
+<div class="documents_container">
+  {% for category_data in documents_by_category %}
+    {% set is_first_item = true %}
+    {% for document in category_data.documents %}
+      <div class="DC_item {% if not loop.last %}DC_item_no_line{% endif %}">
+        <div class="DC_cell image"></div>
+        <div class="DC_cell description">
+          {% if is_first_item and category_data.term.label() != 'not' %}
+            <h3 class="DC_cell title">{{ category_data.term.label() }}</h3>
+            {% set is_first_item = false %}
+          {% endif %}
+          {{ document.title.value }}
+        </div>
+        <div class="DC_cell download">
+          {% set file = document.field_file.entity %}
+          {% if file %}
+            <a href="{{ file_url(file.uri.value) }}">
+              <span>Скачать</span>
+              <div>
+                {% set size = file.filesize.value %}
+                {% if size < 1024 %}
+                  {{ size }} Б
+                {% elseif size < 1048576 %}
+                  {{ (size / 1024)|number_format(2, ',', ' ') }} КБ
+                {% elseif size < 1073741824 %}
+                  {{ (size / 1048576)|number_format(2, ',', ' ') }} МБ
+                {% else %}
+                  {{ (size / 1073741824)|number_format(2, ',', ' ') }} ГБ
+                {% endif %}
+              </div>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% endfor %}
+</div>
