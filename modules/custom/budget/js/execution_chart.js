@@ -86,6 +86,7 @@
           ]
         }
       }]};
+
     getAjax(data);
     $('.date_select').change(function () {
       showLoading(true);

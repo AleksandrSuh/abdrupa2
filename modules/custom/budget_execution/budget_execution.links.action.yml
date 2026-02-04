@@ -1,0 +1,5 @@
+entity.budget_execution.add_form:
+  route_name: entity.budget_execution.add_form
+  title: 'Добавить запись'
+  appears_on:
+    - entity.budget_execution.collection

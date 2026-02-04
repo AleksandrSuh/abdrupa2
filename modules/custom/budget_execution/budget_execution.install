@@ -20,6 +20,12 @@ function budget_execution_schema() {
         'description' => 'Уникальный идентификатор записи',
         'unsigned' => TRUE,
       ],
+      'uuid' => [  // <-- ДОБАВЛЯЕМ ЭТО ПОЛЕ!
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'Уникальный идентификатор (UUID)',
+      ],
       'type' => [
         'type' => 'varchar',
         'length' => 20,
@@ -39,9 +45,11 @@ function budget_execution_schema() {
         'description' => 'Наименование категории/отрасли/программы',
       ],
       'date' => [
-        'type' => 'date',
+        'type' => 'varchar',
+        'length' => 25,
         'not null' => TRUE,
-        'description' => 'Дата отчёта (1-е число месяца или 31 декабря)',
+        'description' => 'Дата отчёта (timestamp)',
+        'default' => '',
       ],
       'plan_value' => [
         'type' => 'numeric',
@@ -95,6 +103,7 @@ function budget_execution_schema() {
     ],
     'primary key' => ['id'],
     'unique keys' => [
+      'budget_execution_uuid' => ['uuid'],  // <-- ДОБАВЛЯЕМ
       'type_category_date' => ['type', 'category_code', 'date'],
     ],
     'indexes' => [
@@ -119,6 +128,9 @@ function budget_execution_schema() {
  * Реализует hook_install().
  */
 function budget_execution_install() {
+  $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
+  $role = $role_storage->load('budget_editor');
+  if (!$role) {
   // Создаём роль для редакторов бюджета
   $role = \Drupal\user\Entity\Role::create([
     'id' => 'budget_editor',
@@ -140,8 +152,12 @@ function budget_execution_install() {
 
   // Сообщаем администратору
   \Drupal::messenger()->addStatus(t('Создана роль "Редактор бюджета" с необходимыми разрешениями.'));
+  }
+  else {
+    // Если роль уже существует, просто обновляем сообщение
+    \Drupal::messenger()->addStatus(t('Роль "Редактор бюджета" уже существует.'));
+  }
 }
-
 /**
  * Реализует hook_uninstall().
  */
@@ -155,17 +171,3 @@ function budget_execution_uninstall() {
   // Сообщение об удалении
   \Drupal::messenger()->addStatus(t('Роль "Редактор бюджета" удалена.'));*/
 }
-
-/**
- * Реализует hook_update_N() для будущих обновлений.
- *
- * Пример структуры обновления:
- *
- * function budget_execution_update_8001(&$sandbox) {
- *   // Добавляем новое поле или индекс
- *   $schema = budget_execution_schema();
- *   $table_name = 'budget_execution_base';
- *
- *   db_add_field($table_name, 'new_field', $schema['fields']['new_field']);
- * }
- */

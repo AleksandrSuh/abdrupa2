@@ -1,0 +1,12 @@
+budget_execution.admin:
+  title: 'Исполнение бюджета'
+  description: 'Управление данными исполнения бюджета'
+  parent: system.admin_config_system
+  route_name: entity.budget_execution.collection
+  weight: 100
+entity.budget_execution.collection:
+  title: 'Исполнение бюджета'
+  route_name: entity.budget_execution.collection
+  description: 'Управление данными исполнения бюджета'
+  parent: system.admin_content
+  weight: 100

@@ -1,46 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta name='csrf-token-name' content='csrftoken'/>
-  <meta name='csrf-token-value' content='188a8bb5daf32229331b0dcb2a86ea02a1917362a739e780bc29c20c760776a5b852993ec33cd2a8'/>
-  <meta name='hmac-token-name' content='Ajax-Token'/>
 
-  <meta content="IE=edge" http-equiv="X-UA-Compatible">
-  <link rel="icon" href="../favicon.ico?v=1" type="image/x-icon" />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<!--
-  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/reset.css" />
-  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/style.css" />
-  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/assets/4bc1a20d/listview/styles.css">
-  <link rel="stylesheet" type="text/css" href="/sites/default/files/budget/assets/18ca603e/jui/css/base/jquery-ui.css" />
-  -->
-  <!--script charset="utf-8" src="/sites/default/files/budget/689d8d9d0faa42eb2e57dc39.js%3F1755155593159"></script-->
-  <!--
-  <script type="text/javascript" src="/sites/default/files/budget/assets/18ca603e/jquery.min.js"></script>
-  -->
-  <!--script type="text/javascript" src="/sites/default/files/budget/js/highcharts/highcharts.js"></script-->
-  <!--
-  <script type="text/javascript" src="/sites/default/files/budget/js/k_custom.js"></script>
-  <script type="text/javascript" src="/sites/default/files/budget/js/scripts.js"></script>
-  <script type="text/javascript" src="/sites/default/files/budget/js/jquery.form.min.js"></script>
-  <script type="text/javascript" src="/sites/default/files/budget/js/jquery.cookie.min.js"></script>
-  <script type="text/javascript" src="/sites/default/files/budget/js/missed.js"></script>
-  <script type="text/javascript" src="/sites/default/files/budget/js/utils.js"></script>
-  <script type="text/javascript" src="/sites/default/files/budget/js/v_custom.js"></script>
-  <script type="text/javascript" src="/sites/default/files/budget/js/k_custom.js"></script>
-  <script type="text/javascript" src="/sites/default/files/budget/js/commonController.js"></script>
-  <script type="text/javascript" src="/sites/default/files/budget/js/main.js"></script>
-  -->
-  <title>{{ head_title }}</title>
-
-  <!--[if IE]>
-  <script type="text/javascript" src="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/js/jquery.placeholder.js"></script>
-<script type="text/javascript" src="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/js/html5.js"></script>    <![endif]-->
-  <!--[if IE 8]>
-  <link rel="stylesheet" type="text/css" href="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/css/style_ie8.css" />    <![endif]-->
-  <!--link rel="stylesheet" type="text/css" href="/sites/default/files/budget/css/main.css" /-->
-</head>
-<body>
 <div class="body">
   <div class="gradientTop"></div>
   <div class="gradientBot"></div>
@@ -72,7 +30,7 @@
         <!--span class="g-create-treatment">
             <span class="dotted" data-popup-open="treatment">Задать вопрос</span>
         </span>
-      <a href=""  class="dotted" >Обратная связь</a-->
+        <a href=""  class="dotted" >Обратная связь</a-->
         <div class="inputSearch_parent dml_15">
           <form method="get" action="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/search/search">
             <div class="g-header__right__search">
@@ -568,24 +526,3 @@
     initFeedbackSendButton();
   });
 </script>
-<!--script type="text/javascript" src="/sites/default/files/budget/assets/18ca603e/jui/js/jquery-ui.min.js"></script-->
-<!--script type="text/javascript">
-  jQuery(function($) {
-    //jQuery('#openDialog').dialog({'title':'','autoOpen':false,'modal':true,'width':250});
-    jQuery('#yw3').after("<a class='captchaRefresh' id='captchaRefresh-1' href='#'>Обнови</a>");
-    jQuery(document).on('click', '#captchaRefresh-1, #yw3', function(){
-      jQuery.ajax({
-        url: "\/feedback\/captcha\/refresh\/1",
-        dataType: 'json',
-        cache: false,
-        success: function(data) {
-          jQuery('#yw3').attr('src', data['url']);
-          jQuery('body').data('/feedback/captcha.hash', [data['hash1'], data['hash2']]);
-        }
-      });
-      return false;
-    });
-  });
-</script-->
-</body>
-</html>

@@ -1,0 +1,20 @@
+administer budget execution:
+  title: 'Администрировать исполнение бюджета'
+  description: 'Полный доступ ко всем операциям с данными исполнения бюджета'
+  restrict access: true
+
+view budget execution:
+  title: 'Просматривать исполнение бюджета'
+  description: 'Просмотр записей об исполнении бюджета'
+
+edit budget execution:
+  title: 'Редактировать исполнение бюджета'
+  description: 'Редактирование записей об исполнении бюджета'
+
+delete budget execution:
+  title: 'Удалять исполнение бюджета'
+  description: 'Удаление записей об исполнении бюджета'
+
+create budget execution:
+  title: 'Создавать записи об исполнении бюджета'
+  description: 'Создание новых записей об исполнении бюджета'

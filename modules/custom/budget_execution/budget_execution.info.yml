@@ -1,0 +1,9 @@
+name: 'Budget execution'
+type: module
+description: 'Исполнение бюджета (доходы, расходы по отраслям, расходы по программам)'
+core_version_requirement: ^11
+package: Custom
+dependencies:
+  - drupal:datetime
+  - drupal:node
+  - drupal:taxonomy

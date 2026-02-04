@@ -1,0 +1,15 @@
+entity.budget_execution.canonical:
+  route_name: entity.budget_execution.canonical
+  base_route: entity.budget_execution.canonical
+  title: 'Просмотр'
+
+entity.budget_execution.edit_form:
+  route_name: entity.budget_execution.edit_form
+  base_route: entity.budget_execution.canonical
+  title: 'Редактировать'
+
+entity.budget_execution.delete_form:
+  route_name: entity.budget_execution.delete_form
+  base_route: entity.budget_execution.canonical
+  title: 'Удалить'
+  weight: 10

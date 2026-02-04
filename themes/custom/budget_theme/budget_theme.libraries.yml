@@ -18,8 +18,9 @@ head-styles-scripts:
     js/utils.js: {}
     js/v_custom.js: {}
     js/commonController.js: {}
-    js/main.js: {}
+    #js/main.js: {}
     assets/18ca603e/jui/js/jquery-ui.min.js: {}
+    #assets/18ca603e/jui/js/jquery-ui-i18n.min.js: {}
     #https://new.ekburg.ru/js/portalheader.js: { type: external }
   dependencies:
     - core/jquery

@@ -1,0 +1,39 @@
+entity.budget_execution.collection:
+  path: '/admin/budget/execution'
+  defaults:
+    _entity_list: 'budget_execution'
+    _title: 'Исполнение бюджета'
+  requirements:
+    _permission: 'view budget execution'
+
+entity.budget_execution.add_form:
+  path: '/admin/budget/execution/add'
+  defaults:
+    _entity_form: 'budget_execution.add'
+    _title: 'Добавить запись об исполнении бюджета'
+  requirements:
+    _entity_create_access: 'budget_execution'
+
+entity.budget_execution.canonical:
+  path: '/admin/budget/execution/{budget_execution}'
+  defaults:
+    _entity_view: 'budget_execution'
+    _title: 'Просмотр записи'
+  requirements:
+    _entity_access: 'budget_execution.view'
+
+entity.budget_execution.edit_form:
+  path: '/admin/budget/execution/{budget_execution}/edit'
+  defaults:
+    _entity_form: 'budget_execution.edit'
+    _title: 'Редактировать запись'
+  requirements:
+    _entity_access: 'budget_execution.update'
+
+entity.budget_execution.delete_form:
+  path: '/admin/budget/execution/{budget_execution}/delete'
+  defaults:
+    _entity_form: 'budget_execution.delete'
+    _title: 'Удалить запись'
+  requirements:
+    _entity_access: 'budget_execution.delete'
