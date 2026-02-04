@@ -73,28 +73,41 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
     {
       $node = $this->routeMatch->getParameter('node');
       $node_url = $node->toUrl()->toString();
-      if($node_url == '/budget/incomes')
+      if(strpos($node_url, 'budgetproject') !== false)
+      {
+        $crumb = 'Проект бюджета';
+        $path = 'budgetproject';
+      }
+      elseif(strpos($node_url, 'execution') !== false)
+      {
+        $crumb = 'Исполнение бюджета';
+        $path = 'execution';
+      }
+      else
+      {
+        $crumb = 'Бюджет Екатеринбурга';
+        $path = 'budget';
+      }
+      // Контейнер для графика
+      $build['chart'] = [
+        '#markup' => '<div id="infographics-1">&nbsp;</div>',
+        '#weight' => 2,
+      ];
+      $build['loader'] = [
+        '#markup' => '<div id="ajaxLoader" class="ajaxLoader">&nbsp;</div>',
+        '#weight' => 2,
+      ];
+      if($node_url == '/budget/incomes' || $node_url == '/budgetproject/incomes')
       {
         $build['crumb'] = [
           '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
-                    <div>|</div><span>Бюджет Екатеринбурга</span>
+                    <div>|</div><span>'. $crumb .'</span>
                     <div>|</div><span>Доходы бюджета</span></div>',
           '#weight' => -1,
         ];
         $build['h1'] = [
           '#markup' => '<h1>Доходы бюджета</h1>',
           '#weight' => 0,
-        ];
-        // Контейнер для графика
-        $build['chart'] = [
-          '#markup' => '<div id="infographics-1">&nbsp;</div>',
-          '#weight' => 2,
-        ];
-
-        // Loader (если есть в вашем HTML)
-        $build['loader'] = [
-          '#markup' => '<div id="ajaxLoader" class="ajaxLoader">&nbsp;</div>',
-          '#weight' => 2,
         ];
 
         // Передаем URL для AJAX
@@ -112,30 +125,19 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           ]
         ];
       }
-      else //   /budget/expenses
+      elseif($node_url == '/budget/expenses' || $node_url == '/budgetproject/expenses')
       {
 
         $build['crumb'] = [
           '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
-                    <div>|</div><a href="/budget">Бюджет Екатеринбурга</a>
-                    <div>|</div><a href="/budget/expenses">Расходы бюджета</a>
+                    <div>|</div><a href="/'. $path .'">'. $crumb .'</a>
+                    <div>|</div><a href="/'. $path .'/expenses">Расходы бюджета</a>
                     <div>|</div><span>Расходы в разрезе отраслей</span></div>',
           '#weight' => -1,
         ];
         $build['h1'] = [
           '#markup' => '<h1>Расходы бюджета</h1>',
           '#weight' => 0,
-        ];
-        // Контейнер для графика
-        $build['chart'] = [
-          '#markup' => '<div id="infographics-1">&nbsp;</div>',
-          '#weight' => 2,
-        ];
-
-        // Loader (если есть в вашем HTML)
-        $build['loader'] = [
-          '#markup' => '<div id="ajaxLoader" class="ajaxLoader">&nbsp;</div>',
-          '#weight' => 2,
         ];
 
         // Передаем URL для AJAX
@@ -153,6 +155,72 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           ]
         ];
       }
+      elseif($node_url == '/budget/funding' || $node_url == '/budgetproject/funding')   // /budget/funding  /budgetproject/funding
+      {
+        $build['crumb'] = [
+          '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
+                    <div>|</div><a href="/'. $path .'">'. $crumb .'</a>
+                    <div>|</div><span>Источники финансирования дефицита бюджета</span></div>',
+          '#weight' => -1,
+        ];
+        $build['h1'] = [
+          '#markup' => '<h1>Источники финансирования дефицита бюджета</h1>',
+          '#weight' => 0,
+        ];
+
+        $build['#attached'] = [
+          'library' => ['budget/inc_deficit_chart'],
+          'drupalSettings' => [
+            'budget' => [
+              'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.api_json')
+                ->setOption('query', ['format' => 'json', 'type_data' => 'inc_deficit'])
+                ->toString(),
+              'fallbackData' => [
+                //'type' => 'incomes'
+              ]
+            ]
+          ]
+        ];
+      }
+      else // /execution/incomes
+      {
+        $build['crumb'] = [
+          '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
+                    <div>|</div><span>'. $crumb .'</span>
+                    <div>|</div><span>Доходы бюджета</span></div>',
+          '#weight' => -1,
+        ];
+        $build['h1'] = [
+          '#markup' => '<h1>Доходы бюджета Екатеринбурга, млн руб.</h1>',
+          '#weight' => 0,
+        ];
+        $build['inp_date'] = [
+          '#markup' => '<div class="table width-auto text-middle g-content__switcher__acts">
+    <div class="table-cell" style="width:200px;">
+        <label class="color-gray" style="font-size:15px;" for="">Данные представлены на:</label>
+    </div>
+    <div class="table-cell">
+        <input class="date_select" id="from_data" type="text" value="31.12.2025" name="from_data">
+    </div>
+</div>',
+          '#allowed_tags' => ['div', 'label', 'input', 'span', 'br', 'strong', 'em'],
+          '#weight' => 0,
+        ];
+
+        $build['#attached'] = [
+          'library' => ['budget/execution_chart'],
+          'drupalSettings' => [
+            'budget' => [
+              'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.api_json')
+                ->setOption('query', ['format' => 'json', 'type_data' => 'inc_deficit'])
+                ->toString(),
+              'fallbackData' => [
+                //'type' => 'incomes'
+              ]
+            ]
+          ]
+        ];
+      }
     }
 
     $build['#cache'] = [
@@ -163,21 +231,5 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
     return $build;
 
-
-    $data = [
-      ['name' => 'Пеньки', 'y' => 300],
-      ['name' => 'Мороз', 'y' => 3400],
-    ];
-
-    // Передаём данные в JS через drupalSettings
-    return [
-      '#markup' => Markup::create(' <div id="ajaxLoader">&nbsp;</div><div id="infographics-1">&nbsp;</div>'),
-      '#attached' => [
-        'library' => ['budget/incomes_chart2'],
-        'drupalSettings' => [
-          'budgetIncomesData' => $data,
-        ],
-      ],
-    ];
   }
 }

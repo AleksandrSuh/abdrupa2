@@ -129,6 +129,7 @@ class ImportXlsxForm extends FormBase {
         $imported_incomes = $this->importXlsxData($file_path, 'incomes');
         $imported_expenses = $this->importXlsxData($file_path, 'expenses');
         $imported_mundolg = $this->importXlsxData($file_path, 'mundolg');
+        $imported_inc_deficit = $this->importXlsxData($file_path, 'inc_deficit');
 
         $this->messenger()->addMessage(
           $this->t('Успешно записано строк: @count1 доходов, @count2 расходов.', ['@count1' => $imported_incomes, '@count2' => $imported_expenses])
@@ -172,6 +173,8 @@ class ImportXlsxForm extends FormBase {
     $connection = \Drupal::database();
     $connection->truncate('budget_incomes')->execute();
     $connection->truncate('budget_expenses')->execute();
+    $connection->truncate('budget_mundolg')->execute();
+    $connection->truncate('budget_inc_deficit')->execute();
     $this->messenger()->addMessage($this->t('Существующие данные очищены.'));
   }
 
@@ -191,8 +194,11 @@ class ImportXlsxForm extends FormBase {
       $worksheet = $spreadsheet->getSheet(1);  // Второй лист - расходы
       $table_name = 'budget_expenses';
     } elseif ($type === 'mundolg') {
-      $worksheet = $spreadsheet->getSheet(3);  // Второй лист - расходы
+      $worksheet = $spreadsheet->getSheet(3);  // Четвёртый лист - муниципальный долг
       $table_name = 'budget_mundolg';
+    } elseif ($type === 'inc_deficit') {
+      $worksheet = $spreadsheet->getSheet(4);  // Пятый лист - источники финансирования дефицита бюджета
+      $table_name = 'budget_inc_deficit';
     }
 
     \Drupal::logger('budget_import')->info(
@@ -204,7 +210,7 @@ class ImportXlsxForm extends FormBase {
     $highestRow = $worksheet->getHighestRow();
 
     $start_row = 3;          // Данные начинаются с строки 3
-    if($type === 'incomes')
+    if($type === 'incomes' || $type === 'inc_deficit')
     {
       $year_column = 'D';      // Колонка D = Год
       $value_column = 'E';     // Колонка E = Значение
@@ -250,7 +256,7 @@ class ImportXlsxForm extends FormBase {
 
       $year = trim($year_raw ?? '');
       $value = trim($value_raw ?? '');
-        $category = trim($category_raw ?? '');
+      $category = trim($category_raw ?? '');
 
 
       // Пропускаем пустые строки
@@ -262,6 +268,7 @@ class ImportXlsxForm extends FormBase {
       {
         // Пропускаем строки с "ВСЕГО", "Итого"
         if (stripos($category, 'ВСЕГО') !== false ||
+          stripos($category, 'Всего') !== false ||
           stripos($category, 'Итого') !== false) {
           continue;
         }

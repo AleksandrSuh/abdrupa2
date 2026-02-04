@@ -18,14 +18,7 @@ function budget_page_attachments(array &$attachments) {
 /**
  * Implements hook_theme().
  */
-/*function budget_theme($existing, $type, $theme, $path) {
-  return [
-    'budget_incomes_page' => [
-      'variables' => ['income_data' => NULL],
-      'template' => 'budget-incomes-page', // пробовали ставить html целиком
-    ],
-  ];
-}*/
+
 function budget_theme($existing, $type, $theme, $path) {
   return [
     'budget_bl' => [

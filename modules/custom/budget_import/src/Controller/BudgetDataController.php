@@ -353,7 +353,7 @@ class BudgetDataController extends ControllerBase {
     $data = [
       'id' => '4',
       'token' => md5(time()),
-      'appViewTitle' => '04. Доходы бюджета (бюджет)',
+      'appViewTitle' => 'Заголовок, которого нет',
       'appViewMetaData' => [
         'field' => []
       ],

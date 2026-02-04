@@ -24,3 +24,21 @@ incomes_expenses_chart_main:
     - core/jquery
     - core/drupal
     - core/drupalSettings
+inc_deficit_chart:
+  version: 1.x
+  header: true
+  js:
+    js/inc_deficit_chart.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+execution_chart:
+  version: 1.x
+  header: true
+  js:
+    js/execution_chart.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
