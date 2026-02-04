@@ -1,0 +1,171 @@
+<?php
+
+/**
+ * @file
+ * Функции установки, обновления и удаления модуля budget_execution.
+ */
+
+/**
+ * Реализует hook_schema().
+ */
+function budget_execution_schema() {
+  $schema = [];
+
+  $schema['budget_execution_base'] = [
+    'description' => 'Хранение данных исполнения бюджета: доходы, расходы по отраслям, расходы по программам.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Уникальный идентификатор записи',
+        'unsigned' => TRUE,
+      ],
+      'type' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'Тип данных: income (доходы), expense_sector (расходы по отраслям), expense_program (расходы по программам)',
+      ],
+      'category_code' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => 'Код категории/отрасли/программы',
+      ],
+      'category_name' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'Наименование категории/отрасли/программы',
+      ],
+      'date' => [
+        'type' => 'date',
+        'not null' => TRUE,
+        'description' => 'Дата отчёта (1-е число месяца или 31 декабря)',
+      ],
+      'plan_value' => [
+        'type' => 'numeric',
+        'precision' => 20,
+        'scale' => 2,
+        'not null' => TRUE,
+        'description' => 'Плановое значение',
+        'default' => 0.00,
+      ],
+      'actual_value' => [
+        'type' => 'numeric',
+        'precision' => 20,
+        'scale' => 2,
+        'not null' => TRUE,
+        'description' => 'Фактическое значение',
+        'default' => 0.00,
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Время создания записи (timestamp)',
+      ],
+      'changed' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Время последнего изменения записи (timestamp)',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'ID пользователя, создавшего/изменившего запись',
+        'unsigned' => TRUE,
+      ],
+      'year' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Год, извлечённый из даты (для индексации)',
+        'unsigned' => TRUE,
+      ],
+      'month' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Месяц, извлечённый из даты (для индексации)',
+        'unsigned' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'type_category_date' => ['type', 'category_code', 'date'],
+    ],
+    'indexes' => [
+      'type_date' => ['type', 'date'],
+      'type_category' => ['type', 'category_code'],
+      'date' => ['date'],
+      'year_month' => ['year', 'month'],
+      'uid' => ['uid'],
+    ],
+    'foreign keys' => [
+      'users' => [
+        'table' => 'users',
+        'columns' => ['uid' => 'uid'],
+      ],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Реализует hook_install().
+ */
+function budget_execution_install() {
+  // Создаём роль для редакторов бюджета
+  $role = \Drupal\user\Entity\Role::create([
+    'id' => 'budget_editor',
+    'label' => 'Редактор бюджета',
+  ]);
+  $role->save();
+
+  // Создаём разрешения для роли
+  $permissions = [
+    'administer budget execution',
+    'view budget execution',
+    'edit budget execution',
+    'delete budget execution',
+    'create budget execution',
+  ];
+
+  // Назначаем разрешения роли
+  user_role_grant_permissions('budget_editor', $permissions);
+
+  // Сообщаем администратору
+  \Drupal::messenger()->addStatus(t('Создана роль "Редактор бюджета" с необходимыми разрешениями.'));
+}
+
+/**
+ * Реализует hook_uninstall().
+ */
+function budget_execution_uninstall() {
+  // Удаляем роль при удалении модуля (опционально)
+  /*$role = \Drupal\user\Entity\Role::load('budget_editor');
+  if ($role) {
+    $role->delete();
+  }
+
+  // Сообщение об удалении
+  \Drupal::messenger()->addStatus(t('Роль "Редактор бюджета" удалена.'));*/
+}
+
+/**
+ * Реализует hook_update_N() для будущих обновлений.
+ *
+ * Пример структуры обновления:
+ *
+ * function budget_execution_update_8001(&$sandbox) {
+ *   // Добавляем новое поле или индекс
+ *   $schema = budget_execution_schema();
+ *   $table_name = 'budget_execution_base';
+ *
+ *   db_add_field($table_name, 'new_field', $schema['fields']['new_field']);
+ * }
+ */
