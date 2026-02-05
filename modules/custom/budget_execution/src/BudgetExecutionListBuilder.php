@@ -92,11 +92,18 @@ class BudgetExecutionListBuilder extends EntityListBuilder {
       ? $type_labels[$entity->get('type')->value]
       : $entity->get('type')->value;
 
+    // Форматируем дату из YYYY-MM-DD в DD.MM.YYYY
+    $date_value = $entity->get('date')->value;
+    $formatted_date = $date_value;
+    if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $date_value, $matches)) {
+      $formatted_date = $matches[3] . '.' . $matches[2] . '.' . $matches[1];
+    }
+
     $row = [
       'type' => $type,
       'category_code' => $entity->get('category_code')->value,
       'category_name' => $entity->get('category_name')->value,
-      'date' => $this->dateFormatter->format($entity->get('date')->value, 'custom', 'd.m.Y'),
+      'date' => $formatted_date,
       'plan_value' => number_format($entity->get('plan_value')->value, 0, ',', ' '),
       'actual_value' => number_format($entity->get('actual_value')->value, 0, ',', ' '),
       'created' => $this->dateFormatter->format($entity->get('created')->value, 'short'),

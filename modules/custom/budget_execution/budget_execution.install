@@ -17,14 +17,14 @@ function budget_execution_schema() {
       'id' => [
         'type' => 'serial',
         'not null' => TRUE,
-        'description' => 'Уникальный идентификатор записи',
+        'description' => 'ID записи',
         'unsigned' => TRUE,
       ],
-      'uuid' => [  // <-- ДОБАВЛЯЕМ ЭТО ПОЛЕ!
+      'uuid' => [
         'type' => 'varchar',
         'length' => 128,
         'not null' => TRUE,
-        'description' => 'Уникальный идентификатор (UUID)',
+        'description' => 'UUID',
       ],
       'type' => [
         'type' => 'varchar',
@@ -44,28 +44,28 @@ function budget_execution_schema() {
         'not null' => TRUE,
         'description' => 'Наименование категории/отрасли/программы',
       ],
-      'date' => [
+      'date' => [  // ← ПРОСТОЕ СТРОКОВОЕ ПОЛЕ!
         'type' => 'varchar',
-        'length' => 25,
+        'length' => 10,
         'not null' => TRUE,
-        'description' => 'Дата отчёта (timestamp)',
         'default' => '',
+        'description' => 'Дата в формате YYYY-MM-DD',
       ],
       'plan_value' => [
-        'type' => 'numeric',
-        'precision' => 20,
-        'scale' => 2,
+        'type' => 'int',
+        'size' => 'big',  // BIGINT для больших чисел
         'not null' => TRUE,
+        'default' => 0,
         'description' => 'Плановое значение',
-        'default' => 0.00,
+        'unsigned' => TRUE,  // Бюджет не может быть отрицательным
       ],
       'actual_value' => [
-        'type' => 'numeric',
-        'precision' => 20,
-        'scale' => 2,
+        'type' => 'int',
+        'size' => 'big',
         'not null' => TRUE,
+        'default' => 0,
         'description' => 'Фактическое значение',
-        'default' => 0.00,
+        'unsigned' => TRUE,
       ],
       'created' => [
         'type' => 'int',
@@ -103,7 +103,7 @@ function budget_execution_schema() {
     ],
     'primary key' => ['id'],
     'unique keys' => [
-      'budget_execution_uuid' => ['uuid'],  // <-- ДОБАВЛЯЕМ
+      'uuid' => ['uuid'],
       'type_category_date' => ['type', 'category_code', 'date'],
     ],
     'indexes' => [
@@ -111,7 +111,6 @@ function budget_execution_schema() {
       'type_category' => ['type', 'category_code'],
       'date' => ['date'],
       'year_month' => ['year', 'month'],
-      'uid' => ['uid'],
     ],
     'foreign keys' => [
       'users' => [
@@ -122,52 +121,4 @@ function budget_execution_schema() {
   ];
 
   return $schema;
-}
-
-/**
- * Реализует hook_install().
- */
-function budget_execution_install() {
-  $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
-  $role = $role_storage->load('budget_editor');
-  if (!$role) {
-  // Создаём роль для редакторов бюджета
-  $role = \Drupal\user\Entity\Role::create([
-    'id' => 'budget_editor',
-    'label' => 'Редактор бюджета',
-  ]);
-  $role->save();
-
-  // Создаём разрешения для роли
-  $permissions = [
-    'administer budget execution',
-    'view budget execution',
-    'edit budget execution',
-    'delete budget execution',
-    'create budget execution',
-  ];
-
-  // Назначаем разрешения роли
-  user_role_grant_permissions('budget_editor', $permissions);
-
-  // Сообщаем администратору
-  \Drupal::messenger()->addStatus(t('Создана роль "Редактор бюджета" с необходимыми разрешениями.'));
-  }
-  else {
-    // Если роль уже существует, просто обновляем сообщение
-    \Drupal::messenger()->addStatus(t('Роль "Редактор бюджета" уже существует.'));
-  }
-}
-/**
- * Реализует hook_uninstall().
- */
-function budget_execution_uninstall() {
-  // Удаляем роль при удалении модуля (опционально)
-  /*$role = \Drupal\user\Entity\Role::load('budget_editor');
-  if ($role) {
-    $role->delete();
-  }
-
-  // Сообщение об удалении
-  \Drupal::messenger()->addStatus(t('Роль "Редактор бюджета" удалена.'));*/
 }

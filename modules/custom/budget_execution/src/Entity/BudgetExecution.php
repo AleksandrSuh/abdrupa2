@@ -117,89 +117,49 @@ class BudgetExecution extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['date'] = BaseFieldDefinition::create('datetime')
+    $fields['date'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Дата отчёта'))
-      ->setDescription(t('Дата отчёта (1-е число месяца или 31 декабря)'))
+      ->setDescription(t('Дата отчёта в формате ГГГГ-ММ-ДД (31 декабря или 1-е числа месяцев кроме января)'))
       ->setRequired(TRUE)
-      ->setSettings([
-        'datetime_type' => 'date', // ТОЛЬКО ДАТА, без времени
-      ])
+      ->setSetting('max_length', 10)
       ->setDisplayOptions('form', [
-        'type' => 'datetime_default',
+        'type' => 'string_textfield',
         'weight' => -7,
         'settings' => [
-          'format_type' => 'html_date', // Только дата в форме
+          'size' => 10,
+          'placeholder' => 'ГГГГ-ММ-ДД',
         ],
       ])
       ->setDisplayOptions('view', [
         'label' => 'above',
-        'type' => 'datetime_default',
+        'type' => 'string',  // Простой строковый formatter
         'weight' => -7,
-        'settings' => [
-          'format_type' => 'medium',
-          'timezone_override' => '',
-        ],
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
     // Plan value
-    $fields['plan_value'] = BaseFieldDefinition::create('float')
+    $fields['plan_value'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Плановое значение'))
       ->setDescription(t('Плановое значение бюджета'))
       ->setRequired(TRUE)
-      ->setSettings([
-        'min' => 0,
-      ])
+      ->setSetting('size', 'big')
       ->setDisplayOptions('form', [
         'type' => 'number',
         'weight' => -6,
-        'settings' => [
-          'step' => '0.01',
-        ],
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    /*$fields['plan_value'] = BaseFieldDefinition::create('decimal')
-      ->setLabel(t('Плановое значение'))
-      ->setDescription(t('Плановое значение бюджета'))
-      ->setRequired(TRUE)
-      ->setSetting('precision', 20)
-      ->setSetting('scale', 2)
-      ->setDisplayOptions('form', [
-        'type' => 'number',
-        'weight' => -6,
-        'settings' => [
-          'thousand_separator' => ' ',
-        ],
-      ])
-      ->setDisplayOptions('view', [
-        'label' => 'above',
-        'type' => 'number_decimal',
-        'weight' => -6,
-        'settings' => [
-          'thousand_separator' => ' ',
-          'scale' => 0,
-        ],
-      ])
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE);*/
-
     // Actual value
-    $fields['actual_value'] = BaseFieldDefinition::create('float')
+    $fields['actual_value'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Фактическое значение'))
       ->setDescription(t('Фактическое значение бюджета'))
       ->setRequired(TRUE)
-      ->setSettings([
-        'min' => 0,
-      ])
+      ->setSetting('size', 'big')
       ->setDisplayOptions('form', [
         'type' => 'number',
         'weight' => -5,
-        'settings' => [
-          'step' => '1',
-        ],
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -249,7 +209,7 @@ class BudgetExecution extends ContentEntityBase {
   /**
    * {@inheritdoc}
    */
-  public static function postLoad(EntityStorageInterface $storage, array &$entities) {
+  /*public static function postLoad(EntityStorageInterface $storage, array &$entities) {
     parent::postLoad($storage, $entities);
 
     foreach ($entities as $entity) {
@@ -298,50 +258,22 @@ class BudgetExecution extends ContentEntityBase {
         }
       }
     }
-  }
-  public function preSave(EntityStorageInterface $storage)
-  {
+  }*/
+  public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
-    // ТРАССИРОВКА ДАТЫ
+    // Автоматически заполняем год и месяц из даты
     $date_value = $this->get('date')->value;
-    \Drupal::logger('budget_execution_Здб')->debug('preSave START - Date value: @value (type: @type)', [
-      '@value' => $date_value,
-      '@type' => gettype($date_value)
-    ]);
-
-    // Преобразование даты
-    $date_string = '';
-
-    if ($date_value instanceof \Drupal\Core\Datetime\DrupalDateTime) {
-      $date_string = $date_value->format('Y-m-d');
-      $this->get('date')->value = $date_string;
-      \Drupal::logger('budget_execution_Здб')->debug('preSave: DrupalDateTime -> @date', ['@date' => $date_string]);
-    } elseif (is_string($date_value)) {
-      $date_string = $date_value;
-      \Drupal::logger('budget_execution_Здб')->debug('preSave: Already string @date', ['@date' => $date_string]);
-    } elseif (is_numeric($date_value)) {
-      $date = \DateTime::createFromFormat('U', (int)$date_value, new \DateTimeZone('UTC'));
-      $date_string = $date->format('Y-m-d');
-      $this->get('date')->value = $date_string;
-      \Drupal::logger('budget_execution_Здб')->debug('preSave: Timestamp @ts -> @date', [
-        '@ts' => $date_value,
-        '@date' => $date_string
-      ]);
+    if (is_string($date_value) && preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $date_value, $matches)) {
+      $this->set('year', (int) $matches[1]);
+      $this->set('month', (int) $matches[2]);
     }
 
-    // Заполняем год и месяц
-    if ($date_string && preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $date_string, $matches)) {
-      $this->set('year', (int)$matches[1]);
-      $this->set('month', (int)$matches[2]);
-      \Drupal::logger('budget_execution_Здб')->debug('preSave: Set year=@year, month=@month', [
-        '@year' => $matches[1],
-        '@month' => $matches[2]
-      ]);
-    }
-
-    \Drupal::logger('budget_execution_Здб')->debug('preSave END - Date value: @value', [
-      '@value' => $this->get('date')->value
-    ]);
+    // Для отладки можно добавить логирование
+    // \Drupal::logger('budget_execution')->debug('preSave: date=@date, year=@year, month=@month', [
+    //   '@date' => $date_value,
+    //   '@year' => $this->get('year')->value,
+    //   '@month' => $this->get('month')->value,
+    // ]);
   }
 }
