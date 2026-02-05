@@ -5,9 +5,6 @@
  * Функции установки, обновления и удаления модуля budget_execution.
  */
 
-/**
- * Реализует hook_schema().
- */
 function budget_execution_schema() {
   $schema = [];
 

@@ -6,6 +6,14 @@ entity.budget_execution.collection:
   requirements:
     _permission: 'view budget execution'
 
+entity.budget_execution.import_form:
+  path: '/admin/budget/execution/import'
+  defaults:
+    _form: '\Drupal\budget_execution\Form\ImportXlsxFormE'
+    _title: 'Импорт данных об исполнении бюджета'
+  requirements:
+    _permission: 'administer site configuration'
+
 entity.budget_execution.add_form:
   path: '/admin/budget/execution/add'
   defaults:
