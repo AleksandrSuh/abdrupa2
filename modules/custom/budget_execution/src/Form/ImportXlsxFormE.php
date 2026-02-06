@@ -7,9 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 use Drupal\Core\Url;
 
-
 class ImportXlsxFormE extends FormBase {
-
 
   /**
    * {@inheritdoc}
@@ -20,6 +18,7 @@ class ImportXlsxFormE extends FormBase {
 
   private $cl_name = 'ImportXlsxFormE',
     $table_name = 'budget_execution_base';
+
   /**
    * {@inheritdoc}
    */
@@ -116,9 +115,13 @@ class ImportXlsxFormE extends FormBase {
         $imported_incomes = $this->importXlsxData($file_path);
         //$imported_expenses = $this->importXlsxData($file_path, 'expenses');
 
-        $this->messenger()->addMessage(
-          $this->t('Успешно записано строк: @count1 доходов.', ['@count1' => $imported_incomes])
-        );
+        if(intval($imported_incomes))
+        {
+          $this->messenger()->addMessage(
+            $this->t('Успешно записано строк: @count1 .', ['@count1' => $imported_incomes])
+          );
+        }
+
 
         // Перенаправляем на просмотр данных
         $form_state->setRedirect('entity.budget_execution.collection');
@@ -183,8 +186,6 @@ class ImportXlsxFormE extends FormBase {
       $check_doc = 'income';
     }
 
-
-
     \Drupal::logger('budget_execut_import')->info(
       'Используем лист: @sheet ',
       ['@sheet' => $sheet_name]
@@ -199,17 +200,17 @@ class ImportXlsxFormE extends FormBase {
 
         $start_row = 2;          // Данные начинаются с строки 2
 
-          $code_column = 'B';
-          $date_column = 'D';
-          $value_plan_column = 'E';
-          $value_actual_column = 'F';
-          $category_column = 'G';  // Колонка F = Название категории
+        $code_column = 'B';
+        $date_column = 'D';
+        $value_plan_column = 'E';
+        $value_actual_column = 'F';
+        $category_column = 'G';  // Колонка F = Название категории
       }
       else
       {
-        \Drupal::logger($this->cl_name)->warning(
-          'Не удалось распознать файл (проверьте имена листов: "@name" и их количество: @count)',
-          ['@count' => $sheetCount, '@name' => $sheet_name]
+        $this->messenger()->addMessage(
+          $this->t('Не удалось распознать файл (проверьте имена листов: "@name" и их количество: @count)',
+            ['@count' => $sheetCount, '@name' => $sheet_name])
         );
         return false;
       }
@@ -217,15 +218,12 @@ class ImportXlsxFormE extends FormBase {
     }
     else
     {
-      \Drupal::logger($this->cl_name)->warning(
-        'Не удалось распознать файл (проверьте имена листов: "@name" и их количество: @count)',
-        ['@count' => $sheetCount, '@name' => $sheet_name]
+      $this->messenger()->addMessage(
+        $this->t('Не удалось распознать файл (проверьте имена листов: "@name" и их количество: @count)',
+          ['@count' => $sheetCount, '@name' => $sheet_name])
       );
       return false;
     }
-
-
-
 
     $arSheets[0]->getCell($date_column . $start_row)->getCalculatedValue(); // Принудительно вычисляем базовую ячейку //
 
@@ -236,8 +234,6 @@ class ImportXlsxFormE extends FormBase {
       $value_plan_raw = $this->getCellValue($arSheets[0], $value_plan_column . $row);
       $value_actual_raw = $this->getCellValue($arSheets[0], $value_actual_column . $row);
       $category_raw = $this->getCellValue($arSheets[0], $category_column . $row);
-
-
 
       // ДЕБАГ первых 10 строк
       if ($row <= $start_row + 10) {
@@ -259,12 +255,10 @@ class ImportXlsxFormE extends FormBase {
       $value_act = trim($value_actual_raw ?? '');
       $category = trim($category_raw ?? '');
 
-
       // Пропускаем пустые строки
       if (($category_column && empty($category)) || empty($date)) {
         continue;
       }
-
 
       if (is_string($date) && strpos($date, '=') === 0) {
         \Drupal::logger($this->cl_name)->warning(
@@ -273,7 +267,6 @@ class ImportXlsxFormE extends FormBase {
         );
         continue;
       }
-
 
       // Парсим значение
       $parsed_value_plan = $this->parseRussianNumber($value_plan);
@@ -306,7 +299,6 @@ class ImportXlsxFormE extends FormBase {
     return $imported_count;
   }
 
-
   private function parseRussianNumber($value) {
     // Если это уже число
     if (is_numeric($value)) {
@@ -335,48 +327,100 @@ class ImportXlsxFormE extends FormBase {
     return null;
   }
 
+  /**
+   * Generate UUID for a record based on key fields.
+   */
+  private function generateUuid($type, $category_code, $date) {
+    // Создаём детерминированный UUID на основе ключевых полей
+    // Это гарантирует, что для одинаковых данных будет одинаковый UUID
+    $seed = implode('|', [
+      $type,
+      $category_code,
+      $date
+    ]);
+
+    // Используем Drupal UUID сервис
+    return \Drupal::service('uuid')->generate($seed);
+  }
 
   private function saveBudgetData($code, $date, $category, $amount_plan, $amount_act, $type) {
+
+    if (!preg_match('/^(\d{2})\.(\d{2})\.(\d{4})$/', $date, $matches)) {
+      \Drupal::logger('budget_import')->error(
+        'Неправильный формат даты в импорте: @date',
+        ['@date' => $date]
+      );
+      return false;
+    }
+
+    [$month, $year] = [$matches[2], $matches[3]];
+
+
     $connection = \Drupal::database();
     $time = \Drupal::time()->getRequestTime();
 
     try {
+      // Генерируем UUID на основе ключевых полей
+      $uuid = $this->generateUuid($type, $code, $date);
 
-      $arKeys = ['type' => $date, 'date' => $type, 'category_name' => $category];
+      // Подготавливаем данные
+      $arKeys = [
+        'type' => $type,
+        'category_code' => $code,
+        'date' => $date
+      ];
+
       $arFields = [
+        'uuid' => $uuid,
         'category_code' => $code,
         'category_name' => $category,
         'date' => $date,
-        'plan_value' => $amount_plan,
-        'actual_value' => $amount_act,
+        'plan_value' => (int) $amount_plan,
+        'actual_value' => (int) $amount_act,
+        'type' => $type,
         'created' => $time,
-        'type' => $type
+        'changed' => $time,
+        'uid' => \Drupal::currentUser()->id(),
+        'year' => (int) $year,
+        'month' => (int) $month
       ];
 
-
-
+      // Используем merge для UPSERT (обновить или вставить)
       $query = $connection->merge($this->table_name)
-        ->keys($arKeys)  // Уникальные ключи
-        ->fields($arFields);
+        ->keys($arKeys)  // Уникальные ключи для поиска существующей записи
+        ->fields($arFields); // Поля для обновления/вставки
 
-      $query->execute();
+      $result = $query->execute();
+
+      // Логируем результат
+      //$operation = ($result == \Drupal\Core\Database\Connection::MERGE_INSERT) ? 'INSERT' : 'UPDATE';
+      \Drupal::logger($this->cl_name)->debug(
+        'Сохранение: type=@type, code=@code, date=@date, uuid=@uuid',
+        [
+          //'@op' => $operation,
+          '@type' => $type,
+          '@code' => $code,
+          '@date' => $date,
+          '@uuid' => $uuid
+        ]
+      );
 
       return true;
     }
     catch (\Exception $e) {
       \Drupal::logger('budget_import')->error(
-        'Ошибка сохранения: год=@year, категория=@category, сумма=@amount, ошибка=@error',
+        'Ошибка сохранения: type=@type, code=@code, date=@date, категория=@category, ошибка=@error',
         [
-          '@year' => $date,
+          '@type' => $type,
+          '@code' => $code,
+          '@date' => $date,
           '@category' => $category,
-          '@amount' => $amount_act,
           '@error' => $e->getMessage()
         ]
       );
       return false;
     }
   }
-
 
   /**
    * Получает значение ячейки, включая вычисление формул.
@@ -412,7 +456,4 @@ class ImportXlsxFormE extends FormBase {
     // Если не формула - просто значение
     return $cell->getValue();
   }
-
-
-
 }

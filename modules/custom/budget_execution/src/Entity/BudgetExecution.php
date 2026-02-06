@@ -119,7 +119,7 @@ class BudgetExecution extends ContentEntityBase {
 
     $fields['date'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Дата отчёта'))
-      ->setDescription(t('Дата отчёта в формате ГГГГ-ММ-ДД (31 декабря или 1-е числа месяцев кроме января)'))
+      ->setDescription(t('Дата отчёта в формате ДД.ММ.ГГГГ (31 декабря или 1-е числа месяцев кроме января)'))
       ->setRequired(TRUE)
       ->setSetting('max_length', 10)
       ->setDisplayOptions('form', [
@@ -127,7 +127,7 @@ class BudgetExecution extends ContentEntityBase {
         'weight' => -7,
         'settings' => [
           'size' => 10,
-          'placeholder' => 'ГГГГ-ММ-ДД',
+          'placeholder' => 'ДД.ММ.ГГГГ',
         ],
       ])
       ->setDisplayOptions('view', [
@@ -264,8 +264,8 @@ class BudgetExecution extends ContentEntityBase {
 
     // Автоматически заполняем год и месяц из даты
     $date_value = $this->get('date')->value;
-    if (is_string($date_value) && preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $date_value, $matches)) {
-      $this->set('year', (int) $matches[1]);
+    if (is_string($date_value) && preg_match('/^(\d{2})\.(\d{2})\.(\d{4})$/', $date_value, $matches)) {
+      $this->set('year', (int) $matches[3]);
       $this->set('month', (int) $matches[2]);
     }
 

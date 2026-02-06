@@ -46,13 +46,13 @@ class BudgetExecutionForm extends ContentEntityForm {
       return;
     }
 
-    // Проверка формата ГГГГ-ММ-ДД
-    if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $date_value, $matches)) {
-      $form_state->setErrorByName('date', $this->t('Неверный формат даты. Используйте ГГГГ-ММ-ДД.'));
+    // Проверка формата
+    if (!preg_match('/^(\d{2})\.(\d{2})\.(\d{4})$/', $date_value, $matches)) {
+      $form_state->setErrorByName('date', $this->t('Неверный формат даты. Используйте ДД.ММ.ГГГГ'));
       return;
     }
 
-    [$year, $month, $day] = [$matches[1], $matches[2], $matches[3]];
+    [$day, $month, $year] = [$matches[1], $matches[2], $matches[3]];
 
     // Проверка что дата существует
     if (!checkdate((int)$month, (int)$day, (int)$year)) {
