@@ -33,6 +33,15 @@ inc_deficit_chart:
     - core/jquery
     - core/drupal
     - core/drupalSettings
+execution_index:
+  version: 1.x
+  header: true
+  js:
+    js/execution_index.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
 execution_chart:
   version: 1.x
   header: true

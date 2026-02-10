@@ -1,0 +1,9 @@
+budget.execution_ajax:
+  path: '/budget/execution/ajax'
+  defaults:
+    _controller: '\Drupal\budget\Controller\ExecutionAjaxController::getData'
+    _title: 'Execution AJAX'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE

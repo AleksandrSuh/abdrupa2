@@ -1,6 +1,6 @@
 name: 'Budget execution'
 type: module
-description: 'Исполнение бюджета (доходы, расходы по отраслям, расходы по программам)'
+description: 'Исполнение бюджета (доходы, расходы по отраслям, расходы по программам, источники, бюджетные инвестиции)'
 core_version_requirement: ^11
 package: Custom
 dependencies:

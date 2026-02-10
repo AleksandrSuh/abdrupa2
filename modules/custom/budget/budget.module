@@ -29,5 +29,13 @@ function budget_theme($existing, $type, $theme, $path) {
       'variables' => ['data' => []],
       'template' => 'budget-bl_main',
     ],
+    'budget_execut_bl' => [
+      'variables' => ['data' => []],
+      'template' => 'budget-execut-bl',
+    ],
+    'budget_execut_bl_main' => [
+      'variables' => ['data' => []],
+      'template' => 'budget-execut-bl_main',
+    ],
   ];
 }

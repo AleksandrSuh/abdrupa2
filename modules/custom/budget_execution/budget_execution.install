@@ -9,7 +9,7 @@ function budget_execution_schema() {
   $schema = [];
 
   $schema['budget_execution_base'] = [
-    'description' => 'Хранение данных исполнения бюджета: доходы, расходы по отраслям, расходы по программам.',
+    'description' => 'Хранение данных исполнения бюджета: доходы, расходы по отраслям, расходы по программам, бюджетные инвестиции, источники.',
     'fields' => [
       'id' => [
         'type' => 'serial',
@@ -27,7 +27,8 @@ function budget_execution_schema() {
         'type' => 'varchar',
         'length' => 20,
         'not null' => TRUE,
-        'description' => 'Тип данных: income (доходы), expense_sector (расходы по отраслям), expense_program (расходы по программам)',
+        'description' => 'Тип данных: income (доходы), expense_sector (расходы по отраслям), expense_program (расходы по программам), invest (бюджетные инвестиции),
+      source (источники)',
       ],
       'category_code' => [
         'type' => 'varchar',

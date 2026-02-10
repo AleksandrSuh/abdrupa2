@@ -1,3 +1,4 @@
+<td>
 <div class="whiteInfoBlock">
   <a href="/budget" class="title">Основные параметры бюджета, млн руб.</a>
   <table class="infoVertTableText">
@@ -84,3 +85,64 @@
     </tr>
   </table>
 </div>
+</td>
+<td></td>
+<td>
+  <div class="whiteInfoBlock">
+    <a href="/execution"  class="title">Исполнение бюджета, млн руб.</a>
+
+    <div class="date block_2">Исполнено на дату {{ data.date }}</div>
+    <table class="infoTable">
+      <colgroup>
+        <col width="55">
+        <col>
+        <col width="80">
+      </colgroup>
+      <tr>
+        <td></td>
+        <td>Факт</td>
+        <td>План</td>
+      </tr>
+      <tr class="blue_text">
+        <td>Доходы</td>
+        <td>
+          <div class="infoGraph">
+            <div class="ipg_text">
+              {{ data.dohod.actual }} <div class="mini_text">{{ data.dohod.percent }}%</div>
+            </div>
+            {% set percentValue = data.dohod.percent|number_format(0, '.', '') %}
+            <div class="ig_progress blue" style="width: {{ percentValue > 100 ? 100 : percentValue }}%;">
+              <div class="ipg_text">
+                {{ data.dohod.actual }} <div class="mini_text">{{ data.dohod.percent }}%</div>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="execution_text">{{ data.dohod.plan }}</div>
+          <p class="execution_price">млн руб.</p>
+        </td>
+      </tr>
+      <tr class="red_text">
+        <td>Расходы</td>
+        <td>
+          <div class="infoGraph">
+            <div class="ipg_text">
+              {{ data.rashod.actual }} <div class="mini_text">{{ data.rashod.percent }}%</div>
+            </div>
+            {% set percentValue = data.rashod.percent|number_format(0, '.', '') %}
+            <div class="ig_progress red" style="width: {{ percentValue > 100 ? 100 : percentValue }}%;">
+              <div class="ipg_text">
+                {{ data.rashod.actual }} <div class="mini_text">{{ data.rashod.percent }}%</div>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="execution_text">{{ data.rashod.plan }}</div>
+          <p class="execution_price">млн руб.</p>
+        </td>
+      </tr>
+    </table>
+  </div>
+</td>

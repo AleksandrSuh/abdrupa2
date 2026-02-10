@@ -1,0 +1,71 @@
+<div>
+  <div class="js-aj_content">
+    <div class="info">
+
+      <div class="table width-auto text-middle g-content__switcher__acts">
+        <div class="table-cell" style="width: 200px;">
+          <label for="" class="color-gray" style="font-size: 15px;">Данные представлены на:</label>
+        </div>
+        <div class="table-cell">
+          <input id="from_data" class="date_select" type="text" value="{{ data.date }}" name="from_data" />    </div>
+      </div>
+    </div>
+    <h3>
+      Исполнение основных показателей бюджета муниципального образования "город Екатеринбург", млн руб.
+    </h3>
+    <div class="diagram-vert">
+      <table class="infoTable">
+        <colgroup>
+          <col width="55">
+          <col>
+          <col width="120">
+        </colgroup>
+        <tbody>
+        <tr>
+          <td></td>
+          <td>Факт</td>
+          <td>План</td>
+        </tr>
+        <tr class="blue_text">
+          <td>Доходы</td>
+          <td>
+            <div class="infoGraph">
+              <div class="ipg_text">
+                {{ data.dohod.actual }}                                            <div class="mini_text">{{ data.dohod.percent }}%</div>
+              </div>
+              {% set percentValue = data.dohod.percent|number_format(0, '.', '') %}
+              <div class="ig_progress blue" style="width: {{ percentValue > 100 ? 100 : percentValue }}%;">
+                <div class="ipg_text">
+                  {{ data.dohod.actual }}                                                <div class="mini_text">{{ data.dohod.percent }}%</div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="big_text">  {{ data.dohod.plan }}</div>
+          </td>
+        </tr>
+        <tr class="red_text">
+          <td>Расходы</td>
+          <td>
+            <div class="infoGraph">
+              <div class="ipg_text">
+                {{ data.rashod.actual }}                                            <div class="mini_text">{{ data.rashod.percent }}%</div>
+              </div>
+              {% set percentValue = data.rashod.percent|number_format(0, '.', '') %}
+              <div class="ig_progress red" style="width: {{ percentValue > 100 ? 100 : percentValue }}%;">
+                <div class="ipg_text">
+                  {{ data.rashod.actual }}                                                <div class="mini_text">{{ data.rashod.percent }}%</div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="big_text"> {{ data.rashod.plan }} </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

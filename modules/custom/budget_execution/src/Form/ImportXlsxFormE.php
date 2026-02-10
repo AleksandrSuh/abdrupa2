@@ -172,9 +172,8 @@ class ImportXlsxFormE extends FormBase {
     }
 
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file_path);
-    $table_name = $this->table_name;
     $sheetCount = $spreadsheet->getSheetCount();
-    $arSheets = [];
+    $arSheets = $arSheetsData = [];
     $check_doc = false;
     for ($i=0; $i < $sheetCount; $i++)
     {
@@ -185,6 +184,10 @@ class ImportXlsxFormE extends FormBase {
     {
       $check_doc = 'income';
     }
+    if($sheetCount == 2 && $sheet_name === 'Источники')
+    {
+      $check_doc = 'source';
+    }
 
     \Drupal::logger('budget_execut_import')->info(
       'Используем лист: @sheet ',
@@ -194,25 +197,44 @@ class ImportXlsxFormE extends FormBase {
     if($check_doc)
     {
       $imported_count = 0;
-      if($check_doc == 'income')
+      $start_row = 2;          // Данные начинаются с строки 2
+      $arColumns = [
+        'code_column' => 'B',
+        'date_column' => 'D',
+        'value_plan_column' => 'E',
+        'value_actual_column' => 'F',
+        'category_column' => 'G'
+      ];
+      if($check_doc == 'income') // Доходы
       {
-        $highestRow = $arSheets[0]->getHighestRow();
-
-        $start_row = 2;          // Данные начинаются с строки 2
-
-        $code_column = 'B';
-        $date_column = 'D';
-        $value_plan_column = 'E';
-        $value_actual_column = 'F';
-        $category_column = 'G';  // Колонка F = Название категории
+        $arSheetsData[] = [
+          'data' => $arSheets[0],
+          'cols' => $arColumns,
+          'rows' => $arSheets[0]->getHighestRow(),
+          'type' => $check_doc
+        ];
       }
-      else
+      else // Источники (лист 1) и Расходы (лист 0)
       {
-        $this->messenger()->addMessage(
-          $this->t('Не удалось распознать файл (проверьте имена листов: "@name" и их количество: @count)',
-            ['@count' => $sheetCount, '@name' => $sheet_name])
-        );
-        return false;
+        $arSheetsData[] = [
+          'data' => $arSheets[1],
+          'cols' => $arColumns,
+          'rows' => $arSheets[1]->getHighestRow(),
+          'type' => $check_doc
+        ];
+        $arColumns = [
+          'code_column' => 'C',
+          'date_column' => 'F',
+          'value_plan_column' => 'I',
+          'value_actual_column' => 'J',
+          'category_column' => 'K'
+        ];
+        $arSheetsData[] = [
+          'data' => $arSheets[0],
+          'cols' => $arColumns,
+          'rows' => 50,
+          'type' => 'expense_sector' // первый лист начинается с расходов по отраслям экономики
+        ];
       }
 
     }
@@ -225,18 +247,34 @@ class ImportXlsxFormE extends FormBase {
       return false;
     }
 
-    $arSheets[0]->getCell($date_column . $start_row)->getCalculatedValue(); // Принудительно вычисляем базовую ячейку //
+    foreach ($arSheetsData as $arShData)
+    {
+    $arShData['data']->getCell($arShData['cols']['date_column'] . $start_row)->getCalculatedValue(); // Принудительно вычисляем базовую ячейку //
 
-    for ($row = $start_row; $row <= $highestRow; $row++) {
+    for ($row = $start_row; $row <= $arShData['rows']; $row++) {
 
-      $date_raw = $this->getCellValue($arSheets[0], $date_column . $row);
-      $code_raw = $this->getCellValue($arSheets[0], $code_column . $row);
-      $value_plan_raw = $this->getCellValue($arSheets[0], $value_plan_column . $row);
-      $value_actual_raw = $this->getCellValue($arSheets[0], $value_actual_column . $row);
-      $category_raw = $this->getCellValue($arSheets[0], $category_column . $row);
+      if ($row >= 14)
+      {
+        $arShData['type'] = 'expense_program'; // с 14й строки - смена колонок и расходы по программам
+        $arShData['cols']['code_column'] = 'D';
+        $arShData['cols']['value_plan_column'] = 'G';
+        $arShData['cols']['value_actual_column'] = 'H';
+        $arShData['cols']['category_column'] = 'I';
+      }
+      if ($row >= 37)
+      {
+        $arShData['type'] = 'invest'; // с 37й строки - смена На инвестиции
+        $arShData['cols']['code_column'] = 'C';
+      }
+
+      $date_raw = $this->getCellValue($arShData['data'], $arShData['cols']['date_column'] . $row);
+      $code_raw = $this->getCellValue($arShData['data'], $arShData['cols']['code_column'] . $row);
+      $value_plan_raw = $this->getCellValue($arShData['data'], $arShData['cols']['value_plan_column'] . $row);
+      $value_actual_raw = $this->getCellValue($arShData['data'], $arShData['cols']['value_actual_column'] . $row);
+      $category_raw = $this->getCellValue($arShData['data'], $arShData['cols']['category_column'] . $row);
 
       // ДЕБАГ первых 10 строк
-      if ($row <= $start_row + 10) {
+      /*if ($row <= $start_row + 10) {
         \Drupal::logger($this->cl_name)->debug(
           'Чтение строки @row: D="@year", E="@value", F="@category"',
           [
@@ -247,7 +285,7 @@ class ImportXlsxFormE extends FormBase {
             '@category' => $category_raw ?? 'NULL'
           ]
         );
-      }
+      }*/
 
       $code = trim($code_raw ?? '');
       $date = trim($date_raw ?? '');
@@ -256,7 +294,7 @@ class ImportXlsxFormE extends FormBase {
       $category = trim($category_raw ?? '');
 
       // Пропускаем пустые строки
-      if (($category_column && empty($category)) || empty($date)) {
+      if (($arShData['cols']['category_column'] && empty($category) && $row < 37) || empty($date)) {
         continue;
       }
 
@@ -281,20 +319,22 @@ class ImportXlsxFormE extends FormBase {
       }
 
       // Сохраняем
-      if ($this->saveBudgetData($code, $date, $category, $parsed_value_plan, $parsed_value_act, $check_doc)) {
+      if ($this->saveBudgetData($code, $date, $category, $parsed_value_plan, $parsed_value_act, $arShData['type'])) {
         $imported_count++;
 
         // ДЕБАГ первых 3 записей
-        if ($imported_count <= 3) {
+        /*if ($imported_count <= 3) {
           \Drupal::logger($this->cl_name)->info(
             'Успешно импортировано: @year - "@category" = @amount',
             ['@year' => $date, '@category' => $category, '@amount' => $parsed_value_act]
           );
-        }
+        }*/
       }
     }
 
     \Drupal::logger($this->cl_name)->info('Импорт завершен: @count записей', ['@count' => $imported_count]);
+
+    }
 
     return $imported_count;
   }

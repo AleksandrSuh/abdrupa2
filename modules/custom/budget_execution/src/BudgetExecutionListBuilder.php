@@ -86,6 +86,8 @@ class BudgetExecutionListBuilder extends EntityListBuilder {
       'income' => 'Доходы',
       'expense_sector' => 'Расходы по отраслям',
       'expense_program' => 'Расходы по программам',
+      'invest' => 'Бюджетные инвестиции',
+      'source' => 'Источники',
     ];
 
     $type = isset($type_labels[$entity->get('type')->value])

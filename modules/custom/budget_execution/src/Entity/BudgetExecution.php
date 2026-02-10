@@ -68,6 +68,8 @@ class BudgetExecution extends ContentEntityBase {
         'income' => t('Доходы'),
         'expense_sector' => t('Расходы по отраслям'),
         'expense_program' => t('Расходы по программам'),
+        'invest' => t('Бюджетные инвестиции'),
+        'source' => t('Источники'),
       ])
       ->setDisplayOptions('form', [
         'type' => 'options_select',
