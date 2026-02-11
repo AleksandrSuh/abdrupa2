@@ -29,7 +29,8 @@ class ExecutionAjaxController extends ControllerBase {
     // Получаем данные
     $data = $this->budgetDataService->getBudgetData();
 
-    // Обработка данных как в блоке
+    // для страницы /execution "Исполнение основных показателей бюджета МО "г.Екатеринбург" на указанную дату или последнюю загруженную
+    // суммируются доходы и расходы, плановые и фактические, по отраслям
     $arData = [];
     if (!empty($date)) {
       $arData['date'] = $date;

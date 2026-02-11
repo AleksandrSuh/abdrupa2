@@ -73,6 +73,7 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
 
     $data = $this->budgetDataService->getBudgetData();
 
+    //echo MyHelper::printPre($data);
     $arData = [];
     foreach ($data as $type => $arBudData)
     {
@@ -136,7 +137,6 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
       $arData['rashod']['percent'] = 0;
     }
 
-    //echo MyHelper::printPre($arData);
 
     $path_matcher = \Drupal::service('path.matcher');
     $is_front = $path_matcher->isFrontPage();

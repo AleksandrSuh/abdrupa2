@@ -25,6 +25,13 @@
   <div class="CG_sidebar_plate">
     {% for item in items %}
       <a href="{{ item.url }}"{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>{{ item.title }}</a>
+      {% if item.below %}
+        <div class="CG_sidebar_plate subitem">
+        {% for subitem in item.below %}
+          <a href="{{ subitem.url }}" class=" {{ subitem.in_active_trail ? 'active' }} {{ subitem.is_active ? 'active' }}">{{ subitem.title }}</a>
+        {% endfor %}
+        </div>
+      {% endif %}
     {% endfor %}
   </div>
 

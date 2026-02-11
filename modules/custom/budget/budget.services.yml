@@ -1,0 +1,5 @@
+services:
+  budget.redirect_subscriber:
+    class: Drupal\budget\EventSubscriber\BudgetRedirectSubscriber
+    tags:
+      - { name: event_subscriber }

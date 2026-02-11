@@ -7,3 +7,30 @@ budget.execution_ajax:
     _permission: 'access content'
   options:
     no_cache: TRUE
+budget.execution_incomes_ajax:
+  path: '/budget/execution_incomes/ajax'
+  defaults:
+    _controller: '\Drupal\budget\Controller\ExecIncomesAjaxCntr::getData'
+    _title: 'Execution AJAX'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE
+budget.execution_expens_ajax:
+  path: '/budget/execution_expens/ajax'
+  defaults:
+    _controller: '\Drupal\budget\Controller\ExecExpensAjaxCntr::getData'
+    _title: 'Execution AJAX'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE
+budget.execution_expens_munprog_ajax:
+  path: '/budget/execution_expens_munprog/ajax'
+  defaults:
+    _controller: '\Drupal\budget\Controller\ExecExpensMunprogAjaxCntr::getData'
+    _title: 'Execution AJAX'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE

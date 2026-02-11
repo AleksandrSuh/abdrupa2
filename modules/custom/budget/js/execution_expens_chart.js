@@ -67,68 +67,46 @@
   }
 
   var getAjax = function(data) {
-    if (typeof data !=  'undefined' && typeof data != 'undefined' ) {
+    if (typeof data !=  'undefined') {
       var table = [],
-        series = [],
-        categories = ['НАЛОГОВЫЕ и НЕНАЛОГОВЫЕ ДОХОДЫ', 'БЕЗВОЗМЕЗДНЫЕ ПОСТУПЛЕНИЯ'],
-        secondCat = [],
-        plan = 0, fact = 0, code = 0,
-        total_fact_1 = 0, total_plan_1 = 0,
-        total_prcntg = 0, total_fact_2 = 0, total_plan_2 = 0,
-        name = "";
+        series = [
+          {name: "Всего расходов", data: []},
+          {name: "Исполнение расходов", data: []}
+        ],
+        plan = 0, fact = 0, code = 0,  name = "",
+        categories = [],
+        secondCat = [];
 
       $.each(data, function( key, val ) {
         name = jsonfld(val, 0);
         plan = parseFloat(jsonfld(val, 1)) / 1e6;
         fact = parseFloat(jsonfld(val, 2)) / 1e6;
-
+        //code = jsonfld(val, 0);
         /*table.push([
-            name,
-            plan,
-            fact,
-            fact / plan * 100
-        ]);console.log(name, plan, fact);*/
-
-        if (key == 0)
-        {
-          total_plan_1 += plan;
-          total_fact_1 += fact;
-        }
-        else
-        {
-          total_plan_2 = plan;
-          total_fact_2 = fact;
+            code,name, plan,fact, (fact / plan * 100)
+        ]);*/
+        if (typeof name != "undefined" && name.toLowerCase() != 'итого') {
+          categories.push(name);
+          secondCat.push(formatNumber(plan));
+          series[0].data.push({y: 100, currency: plan});
+          series[1].data.push({y: (fact / plan * 100), currency: fact});
         }
       });
-      secondCat.push(formatNumber(total_plan_1));
-      secondCat.push(formatNumber(total_plan_2));
-      series = [
-        {name: "План", data: [
-            {y: 100, currency: total_plan_1},
-            {y: 100, currency: total_plan_2}
-          ]},
-        {name: "Факт", data: [
-            {y: (total_fact_1 / total_plan_1 * 100), currency: total_fact_1},
-            {y: (total_fact_2 / total_plan_2 * 100), currency: total_fact_2}
-          ]}
-      ];
 
-      //fillTable($('#infotable'), table, undefined, [0, 'last']);
+      //fillTable($('#infotable'), table, undefined, ['last']);
+      var tHeight = 800;
+      if(categories.length > 15)
+      {
+        tHeight = 3000;
+      }
       var opts = {
         chart: {
-          height: 300
+          height: tHeight
         },
         xAxis: [
           {categories: categories},
           {categories: secondCat}
         ],
-        yAxis: {
-          title: { text: ''},
-          max: 100,
-          labels: {
-            formatter: function(){ return this.value + '%'; }
-          }
-        },
         series: series
       }
 

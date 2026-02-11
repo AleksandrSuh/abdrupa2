@@ -172,7 +172,7 @@
         console.log('Элемент #infographics-1 не найден');
         return;
       }
-      console.log('loadHighchartsIfNeeded');
+      //console.log('loadHighchartsIfNeeded');
 
       // Загружаем данные
       loadBudgetData();
