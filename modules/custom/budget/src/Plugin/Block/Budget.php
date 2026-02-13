@@ -152,6 +152,23 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
     }
     else
     {
+      $query = \Drupal::database()->select('budget_execution_base', 'b');
+      $query->addField('b', 'date');
+      $query->distinct();
+      $query->condition('b.type', 'expense_sector');
+      $query->orderBy('b.date', 'DESC');
+      $db_dates = $query->execute()->fetchCol();
+      // Форматируем для JavaScript
+      $js_dates = [];
+      /*\Drupal::logger('BICBlock.php')->notice('Даты бюджета: %title.', [
+        '%title' => print_r($db_dates, TRUE),
+      ]);*/
+      foreach ($db_dates as $date_str) {
+        $date = new \DateTime($date_str);
+        // Формат: "Wed Dec 31 2025"
+        $js_dates[] = $date->format('D M d Y');
+      }
+
       $node = $this->routeMatch->getParameter('node');
       $node_url = $node->toUrl()->toString();
       if (strpos($node_url, 'execution') !== false)
@@ -178,14 +195,15 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
         $build['#attached'] = [
           'library' => ['budget/execution_index'],
           'drupalSettings' => [
-            /*'budget' => [
-              'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.api_json')
-                ->setOption('query', ['format' => 'json', 'type_data' => 'inc_deficit'])
+            'budget' => [
+              'budgetDates' => $js_dates,
+              'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget.execution_ajax')
+                ->setOption('query', ['format' => 'json'/*, 'type_data' => 'inc_deficit'*/])
                 ->toString(),
               'fallbackData' => [
                 //'type' => 'incomes'
               ]
-            ]*/
+            ]
           ]
         ];
       }

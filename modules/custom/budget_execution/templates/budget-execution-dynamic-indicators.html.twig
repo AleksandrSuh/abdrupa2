@@ -1,0 +1,36 @@
+<div class="budget-dynamic-indicators">
+  <h2>Динамика основных показателей бюджета</h2>
+
+  {% for year, types in data %}
+    <div class="year-block">
+      <h3>{{ year }} год</h3>
+
+      {% if types.income %}
+        <div class="income-section">
+          <h4>Доходы</h4>
+          <table>
+            <thead>
+            <tr>
+              <th>Категория</th>
+              <th>Значение</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in types.income %}
+              <tr>
+                <td>{{ item.category }}</td>
+                <td>{{ item.value|number_format(2, '.', ' ') }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+
+      {# аналогично для расходов #}
+
+    </div>
+  {% else %}
+    <p>Нет данных для отображения</p>
+  {% endfor %}
+</div>

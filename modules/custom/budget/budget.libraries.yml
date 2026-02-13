@@ -60,3 +60,21 @@ execution_expens_chart:
     - core/jquery
     - core/drupal
     - core/drupalSettings
+execution_funding_chart:
+  version: 1.x
+  header: true
+  js:
+    js/execution_funding_chart.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+execution_dynamic_chart:
+  version: 1.x
+  header: true
+  js:
+    js/execution_dynamic_chart.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

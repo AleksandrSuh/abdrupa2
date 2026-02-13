@@ -1,0 +1,26 @@
+<?php
+
+
+/**
+ * @file
+ * Global attachments for the Budget module.
+ */
+
+use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
+
+
+/**
+ * Implements hook_theme().
+ */
+function budget_execution_theme($existing, $type, $theme, $path) {
+
+  \Drupal::logger('budget_execution')->debug('hook_theme called');
+
+  return [
+    'budget_execution_dynamic_indicators' => [
+      'variables' => ['data' => []],
+      'template' => 'budget-execution-dynamic-indicators',
+      'render element' => 'elements',
+    ],
+  ];
+}

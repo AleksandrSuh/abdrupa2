@@ -45,3 +45,19 @@ entity.budget_execution.delete_form:
     _title: 'Удалить запись'
   requirements:
     _entity_access: 'budget_execution.delete'
+
+budget_execution.dynamic_indicators:
+  path: '/admin/budget/execution/dynamic-indicators'
+  defaults:
+    _controller: '\Drupal\budget_execution\Controller\BudgetExecutionController::dynamicIndicators'
+    _title: 'Динамика основных показателей'
+  requirements:
+    _permission: 'access budget execution'
+
+budget_execution.dynamic_indicators_add:
+  path: '/admin/budget/execution/dynamic-indicators/add'
+  defaults:
+    _form: '\Drupal\budget_execution\Form\DynamicIndicatorsForm'
+    _title: 'Добавить показатель'
+  requirements:
+    _permission: 'administer budget execution'

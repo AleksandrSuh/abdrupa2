@@ -59,12 +59,19 @@ class BudgetDataService {
       $data['mundolg'][$row->year] = intval($row->amount);
     }
 
-    $query = $this->database->select('budget_execution_base', 'bt');
+    $query = $this->database->select('budget_execution_base', 'bt')->orderBy('bt.date', 'DESC');
     $query->fields('bt', ['date', 'plan_value', 'actual_value', 'type', 'category_name']);
     $results = $query->execute()->fetchAll(); // income expense_sector
     foreach ($results as $row) {
       $data['execution'][$row->type][$row->date][$row->category_name] = ['plan' => intval($row->plan_value), 'actual' => intval($row->actual_value)];
     }
+
+    /*$query = $this->database->select('budget_execution_indicators', 'bt')->orderBy('bt.year');
+    $query->fields('bt', ['year', 'type', 'category', 'value']);
+    $results = $query->execute()->fetchAll(); // income expense_sector
+    foreach ($results as $row) {
+      $data['dynamic'][$row->type][$row->year][$row->category] = intval($row->value);
+    }*/
 
     return $data;
   }

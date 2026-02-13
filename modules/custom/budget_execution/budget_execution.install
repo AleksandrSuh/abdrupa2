@@ -118,5 +118,60 @@ function budget_execution_schema() {
     ],
   ];
 
+  $schema['budget_execution_indicators'] = [
+    'description' => 'Динамика основных показателей бюджета',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Идентификатор записи',
+      ],
+      'type' => [
+        'type' => 'varchar_ascii',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'Тип: income или expense',
+      ],
+      'category' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Категория показателя',
+      ],
+      'value' => [
+        'type' => 'numeric',
+        'precision' => 15,
+        'scale' => 2,
+        'not null' => TRUE,
+        'description' => 'Числовое значение',
+      ],
+      'year' => [
+        'type' => 'int',
+        'length' => 4,
+        'not null' => TRUE,
+        'description' => 'Год',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp создания',
+      ],
+      'changed' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp изменения',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'type_year' => ['type', 'year'],
+      'category' => ['category'],
+      'year' => ['year'],
+    ],
+  ];
+
+
   return $schema;
 }

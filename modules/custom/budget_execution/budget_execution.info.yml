@@ -7,3 +7,4 @@ dependencies:
   - drupal:datetime
   - drupal:node
   - drupal:taxonomy
+  - drupal:views

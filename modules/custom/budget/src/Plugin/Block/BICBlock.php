@@ -250,33 +250,119 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           $route = 'budget.execution_expens_munprog_ajax';
         }
 
-        $build['inp_date'] = [
-          '#markup' => '<div class="table width-auto text-middle g-content__switcher__acts">
-    <div class="table-cell" style="width:200px;">
-        <label class="color-gray" style="font-size:15px;" for="">Данные представлены на:</label>
-    </div>
-    <div class="table-cell">
-        <input class="date_select" id="from_data" type="text" value="" name="from_data">
-    </div>
-</div>',
-          '#allowed_tags' => ['div', 'label', 'input', 'span', 'br', 'strong', 'em'],
-          '#weight' => 0,
-        ];
+        if ($node_url == '/execution/funding')
+        {
+          $build['crumb'] = [
+            '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
+                    <div>|</div><a href="/'. $path .'">'. $crumb .'</a>
+                    <div>|</div><span>Источники финансирования дефицита бюджета</span></div>',
+            '#weight' => -1,
+          ];
+          $build['h1'] = [
+            '#markup' => '<h1>Источники финансирования дефицита бюджета муниципального образования «город Екатеринбург»</h1>',
+            '#weight' => 0,
+          ];
+          $build['h3'] = [
+            '#markup' => '<h3>Исполнение источников финансирования дефицита бюджета муниципального образования «город  Екатеринбург» на <span class="for-date js-header-date"></span> года (млн руб.)</h3>',
+            '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+            '#weight' => 0,
+          ];
+          $library = 'budget/execution_funding_chart';
+          $route = 'budget.execution_funding_ajax';
+        }
 
-        $build['#attached'] = [
-          'library' => [$library],
-          'drupalSettings' => [
-            'budget' => [
-              'budgetDates' => $js_dates,
-              'ajaxUrl' => \Drupal\Core\Url::fromRoute($route)
-                //->setOption('query', ['format' => 'json', 'type_data' => 'incomes'])
-                ->toString(),
-              'fallbackData' => [
-                //'type' => 'incomes'
+        if ($node_url == '/execution/dynamics')
+        {
+
+          $query = \Drupal::database()->select('budget_execution_indicators', 'b')->orderBy('b.year');
+
+          $query->fields('b', ['year', 'type', 'category', 'value']);
+          $results = $query->execute()->fetchAll(); // income expense_sector
+          $first_year = false;
+          foreach ($results as $row) {
+            if(!$first_year)
+            {
+              $first_year = $row->year;
+            }
+            $last_year = $row->year;
+            $data[$row->type][$row->year][$row->category] = intval($row->value);
+          }
+          foreach ($data as $type => $arRess)
+          {
+            foreach ($arRess as $year => $arLast)
+            {
+              $arr = [];
+              foreach ($arLast as $categ => $val)
+              {
+                $arr[] = $val;
+              }
+              $arData[$type][] = [$arr[0],  $arr[1], $year];
+            }
+
+          }
+          /*\Drupal::logger('dynamics BICBlock.php')->notice('Даты бюджета: %title.', [
+            '%title' => print_r($arData, TRUE),
+          ]);*/
+
+          // Контейнер для графика
+          $build = [
+            'crumb' => [
+              '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
+                    <div>|</div><a href="/'. $path .'">'. $crumb .'</a>
+                    <div>|</div><span>Источники финансирования дефицита бюджета</span></div>',
+              '#weight' => -1,
+            ],
+            'h1' => [
+              '#markup' => '<h1>Динамика основных показателей бюджета муниципального образования "город Екатеринбург" в '.$first_year.'-'.$last_year.' гг.</h1>',
+              '#weight' => 0,
+            ],
+            'chart' => [
+            '#markup' => '<h2 align="center">Доходы</h2><div class="js-incomes-chart"></div>
+                <h2 align="center">Расходы</h2><div class="js-expenses-chart"></div>',
+            '#allowed_tags' => ['div', 'h2', 'span', 'br', 'strong', 'em'],
+            '#weight' => 2,
+            ],
+            '#attached' => [
+              'library' => ['budget/execution_dynamic_chart'],
+              'drupalSettings' => [
+                'budgetDates' => $arData,
               ]
             ]
-          ]
-        ];
+          ];
+
+          //$library = 'budget/execution_dynamic_chart';
+          //$route = 'budget.execution_dynamic_ajax';
+        }
+        else
+        {
+          $build['inp_date'] = [
+            '#markup' => '<div class="table width-auto text-middle g-content__switcher__acts">
+              <div class="table-cell" style="width:200px;">
+                  <label class="color-gray" style="font-size:15px;" for="">Данные представлены на:</label>
+              </div>
+              <div class="table-cell">
+                  <input class="date_select" id="from_data" type="text" value="" name="from_data">
+              </div>
+          </div>',
+            '#allowed_tags' => ['div', 'label', 'input', 'span', 'br', 'strong', 'em'],
+            '#weight' => 0,
+          ];
+          $build['#attached'] = [
+            'library' => [$library],
+            'drupalSettings' => [
+              'budget' => [
+                'budgetDates' => $js_dates,
+                'ajaxUrl' => \Drupal\Core\Url::fromRoute($route)
+                  //->setOption('query', ['format' => 'json', 'type_data' => 'incomes'])
+                  ->toString(),
+                'fallbackData' => [
+                  //'type' => 'incomes'
+                ]
+              ]
+            ]
+          ];
+        }
+
       }
     }
 

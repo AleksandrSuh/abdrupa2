@@ -34,3 +34,21 @@ budget.execution_expens_munprog_ajax:
     _permission: 'access content'
   options:
     no_cache: TRUE
+budget.execution_funding_ajax:
+  path: '/budget/execution_funding/ajax'
+  defaults:
+    _controller: '\Drupal\budget\Controller\ExecFundingAjaxCntr::getData'
+    _title: 'Execution AJAX'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE
+#budget.execution_dynamic_ajax:
+#  path: '/budget/execution_dynamic_ajax/ajax'
+#  defaults:
+#    _controller: '\Drupal\budget\Controller\ExecDynamAjaxCntr::getData'
+#    _title: 'Execution AJAX'
+#  requirements:
+#    _permission: 'access content'
+#  options:
+#    no_cache: TRUE
