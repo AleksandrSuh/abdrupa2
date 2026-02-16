@@ -1,0 +1,5 @@
+budget-execution-list:
+  version: 1.x
+  css:
+    theme:
+      css/budget-execution-list.css: {}

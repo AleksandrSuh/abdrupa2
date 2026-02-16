@@ -343,7 +343,7 @@ class ImportXlsxForm extends FormBase {
       return (float) $clean;
     }
 
-    // Попробуем другой подход - извлечь только цифры
+
     preg_match_all('/[\d,\.]+/', $value, $matches);
     if (!empty($matches[0])) {
       $number = str_replace([' ', ','], ['', '.'], $matches[0][0]);
@@ -355,9 +355,8 @@ class ImportXlsxForm extends FormBase {
     return null;
   }
 
-  /**
-   * Обновленный saveBudgetData для лучшего логирования
-   */
+
+
   private function saveBudgetData($year, $category, $amount, $table_name) {
     $connection = \Drupal::database();
     $time = \Drupal::time()->getRequestTime();

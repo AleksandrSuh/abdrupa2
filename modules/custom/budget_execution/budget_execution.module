@@ -14,7 +14,7 @@ use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
  */
 function budget_execution_theme($existing, $type, $theme, $path) {
 
-  \Drupal::logger('budget_execution')->debug('hook_theme called');
+  //\Drupal::logger('budget_execution')->debug('hook_theme called');
 
   return [
     'budget_execution_dynamic_indicators' => [
@@ -22,5 +22,24 @@ function budget_execution_theme($existing, $type, $theme, $path) {
       'template' => 'budget-execution-dynamic-indicators',
       'render element' => 'elements',
     ],
+    'budget_execution_list' => [
+      'variables' => [
+        'items' => [],
+        'pager' => NULL,
+        'filter_form' => NULL,
+      ],
+      'template' => 'budget-execution-list',
+    ],
   ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for page templates.
+ */
+function budget_execution_preprocess_page(&$variables) {
+  // Добавляем библиотеку на страницу со списком сущностей
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === 'entity.budget_execution.collection') {
+    $variables['#attached']['library'][] = 'budget_execution/budget-execution-list';
+  }
 }

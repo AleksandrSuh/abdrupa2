@@ -1,0 +1,27 @@
+.budget-execution-filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.budget-execution-filter-form .form-item {
+  margin: 0;
+  flex: 1 1 200px;
+}
+
+.budget-execution-filter-form .form-actions {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.budget-execution-filter-form select {
+  width: 100%;
+}

@@ -208,59 +208,8 @@ class BudgetExecution extends ContentEntityBase {
     return [\Drupal::currentUser()->id()];
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  /*public static function postLoad(EntityStorageInterface $storage, array &$entities) {
-    parent::postLoad($storage, $entities);
 
-    foreach ($entities as $entity) {
-      // Исправляем поле date при загрузке
-      $date_value = $entity->get('date')->value;
 
-      \Drupal::logger('budget_execution')->debug('postLoad - Date: @value (type: @type)', [
-        '@value' => $date_value,
-        '@type' => gettype($date_value)
-      ]);
-
-      // Если это строка даты - создаём DrupalDateTime для отображения
-      if (is_string($date_value) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_value)) {
-        // Создаём DrupalDateTime из строки
-        try {
-          $drupal_date = \Drupal\Core\Datetime\DrupalDateTime::createFromFormat(
-            'Y-m-d',
-            $date_value,
-            new \DateTimeZone('UTC')
-          );
-
-          if ($drupal_date) {
-            $entity->set('date', $drupal_date);
-          }
-        } catch (\Exception $e) {
-          \Drupal::logger('budget_execution')->error('Error creating DrupalDateTime: @error', [
-            '@error' => $e->getMessage()
-          ]);
-        }
-      }
-      // Если timestamp - тоже создаём DrupalDateTime
-      elseif (is_numeric($date_value)) {
-        try {
-          $drupal_date = \Drupal\Core\Datetime\DrupalDateTime::createFromTimestamp(
-            (int) $date_value,
-            new \DateTimeZone('UTC')
-          );
-
-          if ($drupal_date) {
-            $entity->set('date', $drupal_date);
-          }
-        } catch (\Exception $e) {
-          \Drupal::logger('budget_execution')->error('Error creating DrupalDateTime from timestamp: @error', [
-            '@error' => $e->getMessage()
-          ]);
-        }
-      }
-    }
-  }*/
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 

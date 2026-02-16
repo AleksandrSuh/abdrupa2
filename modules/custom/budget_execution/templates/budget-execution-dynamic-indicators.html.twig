@@ -9,12 +9,6 @@
         <div class="income-section">
           <h4>Доходы</h4>
           <table>
-            <thead>
-            <tr>
-              <th>Категория</th>
-              <th>Значение</th>
-            </tr>
-            </thead>
             <tbody>
             {% for item in types.income %}
               <tr>
@@ -26,8 +20,21 @@
           </table>
         </div>
       {% endif %}
-
-      {# аналогично для расходов #}
+      {% if types.expense %}
+        <div class="income-section">
+          <h4>Расходы</h4>
+          <table>
+            <tbody>
+            {% for item in types.expense %}
+              <tr>
+                <td>{{ item.category }}</td>
+                <td>{{ item.value|number_format(2, '.', ' ') }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
 
     </div>
   {% else %}
