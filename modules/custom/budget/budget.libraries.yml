@@ -78,3 +78,12 @@ execution_dynamic_chart:
     - core/jquery
     - core/drupal
     - core/drupalSettings
+execution_invest_chart:
+  version: 1.x
+  header: true
+  js:
+    js/execution_invest_chart.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

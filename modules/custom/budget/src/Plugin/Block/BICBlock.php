@@ -271,6 +271,27 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           $route = 'budget.execution_funding_ajax';
         }
 
+        if ($node_url == '/execution/investment')
+        {
+          $build['crumb'] = [
+            '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
+                    <div>|</div><a href="/'. $path .'">'. $crumb .'</a>
+                    <div>|</div><span>Бюджетные инвестиции</span></div>',
+            '#weight' => -1,
+          ];
+          $build['h1'] = [
+            '#markup' => '<h1>Бюджетные инвестиции муниципального образования «город Екатеринбург»</h1>',
+            '#weight' => 0,
+          ];
+          $build['h3'] = [
+            '#markup' => '<h3>Анализ исполнения бюджетных инвестиций муниципального образования "город Екатеринбург" на <span class="for-date js-header-date"></span> года (млн руб.)</h3>',
+            '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+            '#weight' => 0,
+          ];
+          $library = 'budget/execution_invest_chart';
+          $route = 'budget.execution_invest_ajax';
+        }
+
         if ($node_url == '/execution/dynamics')
         {
 

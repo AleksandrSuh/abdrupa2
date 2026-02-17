@@ -247,6 +247,16 @@ class ImportXlsxFormE extends FormBase {
       return false;
     }
 
+    $arInvestCateg = [  // временный хардкор, пока разбираюсь с этой "цветастой жестью" в файле
+      '0100' => 'ОБЩЕГОСУДАРСТВЕННЫЕ ВОПРОСЫ',
+      '0300' => 'НАЦИОНАЛЬНАЯ БЕЗОПАСНОСТЬ И ПРАВООХРАНИТЕЛЬНАЯ ДЕЯТЕЛЬНОСТЬ',
+      '0400' => 'НАЦИОНАЛЬНАЯ ЭКОНОМИКА',
+      '0500' => 'ЖИЛИЩНО-КОММУНАЛЬНОЕ ХОЗЯЙСТВО',
+      '0700' => 'ОБРАЗОВАНИЕ',
+      '0800' => 'КУЛЬТУРА, КИНЕМАТОГРАФИЯ',
+      '1100' => 'ФИЗИЧЕСКАЯ КУЛЬТУРА И СПОРТ',
+    ];
+
     foreach ($arSheetsData as $arShData)
     {
     $arShData['data']->getCell($arShData['cols']['date_column'] . $start_row)->getCalculatedValue(); // Принудительно вычисляем базовую ячейку //
@@ -293,9 +303,47 @@ class ImportXlsxFormE extends FormBase {
       $value_act = trim($value_actual_raw ?? '');
       $category = trim($category_raw ?? '');
 
+
       // Пропускаем пустые строки
-      if (($arShData['cols']['category_column'] && empty($category) && $row < 37) || empty($date)) {
+      if (($arShData['cols']['category_column'] && empty($category)) || empty($date)) {
         continue;
+      }
+
+      if ($row >= 37)
+      {
+          $code = substr($code,0,2).'00'; // "вычисляем" код основной категории
+          $category = $arInvestCateg[$code]; // берём имя основной категории
+          switch ($code)
+          { // выскребаем данные из нужных полей
+            case '0300':
+              $value_plan = $this->getCellValue($arShData['data'], 'J39');
+              $value_act = intval($this->getCellValue($arShData['data'], 'H38')) + intval($this->getCellValue($arShData['data'], 'H39'));
+              break;
+            case '0500':
+              $value_plan = $this->getCellValue($arShData['data'], 'J41');
+              $value_act = $this->getCellValue($arShData['data'], 'J42');
+              break;
+            case '0700':
+              $value_plan = $this->getCellValue($arShData['data'], 'J45');
+              $value_act = $this->getCellValue($arShData['data'], 'J46');
+              break;
+            case '1100':
+              $value_plan = $this->getCellValue($arShData['data'], 'J49');
+              $value_act = $this->getCellValue($arShData['data'], 'J50');
+              break;
+          }
+
+          \Drupal::logger($this->cl_name)->debug(
+            'Чтение строки @row: D="@year", E="@value", F="@category"',
+            [
+              '@row' => $row,
+              '@date' => $date_raw ?? 'NULL',
+              '@value_plan' => $value_plan ?? 'NULL',
+              '@value_act' => $value_act ?? 'NULL',
+              '@category' => $category_raw ?? 'NULL'
+            ]
+          );
+
       }
 
       if (is_string($date) && strpos($date, '=') === 0) {

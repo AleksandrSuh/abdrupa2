@@ -43,3 +43,15 @@ function budget_execution_preprocess_page(&$variables) {
     $variables['#attached']['library'][] = 'budget_execution/budget-execution-list';
   }
 }
+
+function budget_execution_help($route_name, \Drupal\Core\Routing\RouteMatchInterface $route_match) {
+  if ($route_name == 'entity.budget_execution.collection') {
+    return [
+      '#type' => 'link',
+      '#title' => 'Импорт данных из XLSX-файла',
+      '#url' => \Drupal\Core\Url::fromRoute('entity.budget_execution.import_form'),
+      '#attributes' => ['class' => ['button', 'button--primary']],
+    ];
+  }
+}
+

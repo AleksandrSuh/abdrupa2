@@ -60,10 +60,10 @@ class BudgetDataService {
     }
 
     $query = $this->database->select('budget_execution_base', 'bt')->orderBy('bt.date', 'DESC');
-    $query->fields('bt', ['date', 'plan_value', 'actual_value', 'type', 'category_name']);
+    $query->fields('bt', ['date', 'plan_value', 'actual_value', 'type', 'category_name', 'category_code']);
     $results = $query->execute()->fetchAll(); // income expense_sector
     foreach ($results as $row) {
-      $data['execution'][$row->type][$row->date][$row->category_name] = ['plan' => intval($row->plan_value), 'actual' => intval($row->actual_value)];
+      $data['execution'][$row->type][$row->date][$row->category_name] = ['plan' => intval($row->plan_value), 'actual' => intval($row->actual_value), 'code' => $row->category_code];
     }
 
     /*$query = $this->database->select('budget_execution_indicators', 'bt')->orderBy('bt.year');
