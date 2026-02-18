@@ -1,7 +1,19 @@
+# Страница нормативной базы
 norm_docs.normative_documents:
   path: '/about/acts'
   defaults:
     _title: 'Нормативная правовая база'
     _controller: '\Drupal\norm_docs\Controller\NormativeDocumentsController::page'
+    _route_type: 'normative'  # Добавляем параметр маршрута
+  requirements:
+    _permission: 'access content'
+
+# Страница бюджетных актов
+norm_docs.budget_documents:
+  path: '/budget/acts'
+  defaults:
+    _title: 'Бюджетные документы'
+    _controller: '\Drupal\norm_docs\Controller\NormativeDocumentsController::page'
+    _route_type: 'budget'  # Другой параметр маршрута
   requirements:
     _permission: 'access content'

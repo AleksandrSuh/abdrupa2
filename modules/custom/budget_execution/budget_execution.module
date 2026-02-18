@@ -55,3 +55,91 @@ function budget_execution_help($route_name, \Drupal\Core\Routing\RouteMatchInter
   }
 }
 
+function budget_execution_library_info_alter(&$libraries, $extension) {
+  if ($extension == 'views_bulk_operations') {
+    // Удаляем JS-файл frontUi.js на странице нашего представления
+    $route_name = \Drupal::routeMatch()->getRouteName();
+    if ($route_name == 'view.budget_execution_admin.page_1') {
+      unset($libraries['frontUi']['js']);
+    }
+  }
+}
+
+function budget_execution_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+{
+  // Определяем, что это форма exposed фильтров нашего представления.
+  if ($form_id == 'views_exposed_form') {
+    // Проверяем, что это нужное представление (по ID формы).
+    if (isset($form['#id']) && $form['#id'] == 'views-exposed-form-budget-execution-admin-page-1') {
+      // Заменяем поле type на выпадающий список.
+      if (isset($form['type'])) {
+        $form['type']['#type'] = 'select';
+        $form['type']['#options'] = [
+          '' => t('- Любой -'),
+          'income' => t('Доходы'),
+          'expense_sector' => t('Расходы по отраслям'),
+          'expense_program' => t('Расходы по программам'),
+          'invest' => t('Бюджетные инвестиции'),
+          'source' => t('Источники'),
+        ];
+        // Убираем ненужные атрибуты текстового поля.
+        unset($form['type']['#size']);
+        unset($form['type']['#maxlength']);
+      }
+    }
+
+    if (isset($form['year'])) {
+      $form['year']['#type'] = 'select';
+      $form['year']['#options'] = ['' => t('- Любой -')];
+
+      // Получаем уникальные годы из базы.
+      $years = \Drupal::database()->select('budget_execution_base', 'b')
+        ->fields('b', ['year'])
+        ->condition('year', 0, '>')
+        ->groupBy('year')
+        ->orderBy('year', 'DESC')
+        ->execute()
+        ->fetchCol();
+
+      foreach ($years as $year) {
+        $form['year']['#options'][$year] = $year;
+      }
+
+      unset($form['year']['#size'], $form['year']['#maxlength']);
+    }
+
+// Преобразование поля "Месяц" (month)
+    if (isset($form['month'])) {
+      $form['month']['#type'] = 'select';
+      $form['month']['#options'] = [
+        '' => t('- Любой -'),
+        '1' => t('Январь'),
+        '2' => t('Февраль'),
+        '3' => t('Март'),
+        '4' => t('Апрель'),
+        '5' => t('Май'),
+        '6' => t('Июнь'),
+        '7' => t('Июль'),
+        '8' => t('Август'),
+        '9' => t('Сентябрь'),
+        '10' => t('Октябрь'),
+        '11' => t('Ноябрь'),
+        '12' => t('Декабрь'),
+      ];
+
+      unset($form['month']['#size'], $form['month']['#maxlength']);
+    }
+  }
+
+  if ($form_id == 'views_form_budget_execution_admin_page_1') {
+    if (isset($form['header']['views_bulk_operations_bulk_form']['select_all']))
+    {
+      //$form['header']['views_bulk_operations_bulk_form']['select_all']['#title'] = t('Тест: выбрать все на этой странице');
+    }
+    if (isset($form['header']['views_bulk_operations_bulk_form'])) {
+      $form['header']['views_bulk_operations_bulk_form']['#attached']['library'][] = 'budget_execution/vbo_fix';
+    }
+  }
+
+}
+?>

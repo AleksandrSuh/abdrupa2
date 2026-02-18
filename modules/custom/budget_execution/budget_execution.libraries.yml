@@ -3,3 +3,11 @@ budget-execution-list:
   css:
     theme:
       css/budget-execution-list.css: {}
+
+vbo_fix:
+  js:
+    js/vbo_fix.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once

@@ -3,29 +3,50 @@
 namespace Drupal\norm_docs\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\taxonomy\Entity\Term;
 use Drupal\node\Entity\Node;
 
 class NormativeDocumentsController extends ControllerBase {
 
-  public function page() {
+  /**
+   * Отображает страницу с документами.
+   *
+   * @param string $_route_type
+   *   Тип маршрута: 'normative' или 'budget'
+   */
+  public function page($_route_type = 'normative') {
 
+    // Определяем настройки в зависимости от типа страницы
+    $settings = $this->getPageSettings($_route_type);
+
+    // Получаем термины таксономии
     $terms = \Drupal::entityTypeManager()
       ->getStorage('taxonomy_term')
-      ->loadTree('document_categories', 0, NULL, TRUE);
+      ->loadTree($settings['vocabulary'], 0, NULL, TRUE);
 
+    // Строим вывод
     $build = [
-      '#theme' => 'normative_documents_page',
+      '#theme' => $settings['theme'],
       '#documents_by_category' => [],
+      '#page_title' => $settings['title'],
     ];
 
     foreach ($terms as $term) {
+      // Проверяем, нужно ли показывать этот термин
+      if (!$this->shouldShowTerm($term, $settings)) {
+        continue;
+      }
+
       // Получаем документы этой категории
       $query = \Drupal::entityQuery('node')
         ->condition('type', 'docs')
-        ->condition('field_categ', $term->id())
+        ->condition($settings['field_name'], $term->id())
         ->sort('created', 'ASC')
         ->accessCheck(TRUE);
+
+      // Добавляем дополнительные фильтры для бюджетных документов
+      if ($settings['filter']) {
+        $query = $this->applyFilters($query, $settings['filter']);
+      }
 
       $nids = $query->execute();
 
@@ -33,37 +54,83 @@ class NormativeDocumentsController extends ControllerBase {
         $build['#documents_by_category'][$term->id()] = [
           'term' => $term,
           'documents' => Node::loadMultiple($nids),
+          'settings' => $settings,
         ];
       }
     }
 
-    $build['#attached']['library'][] = 'norm_docs/normative-documents';
+    // Добавляем библиотеки
+    $build['#attached']['library'][] = $settings['library'];
+
+    // Кеширование
+    $build['#cache']['tags'] = [
+      'node_list:docs',
+      'taxonomy_term_list:' . $settings['vocabulary'],
+    ];
 
     return $build;
-
   }
 
   /**
-   * Ищет поле типа file или entity_reference:file в ноде.
+   * Получает настройки для конкретной страницы.
    */
-  /*private function findFileField(Node $node) {
-    $field_definitions = $node->getFieldDefinitions();
+  private function getPageSettings($route_type) {
+    $settings = [
+      'normative' => [
+        'title' => 'Нормативная правовая база',
+        'theme' => 'normative_documents_page',
+        'vocabulary' => 'document_categories',
+        'field_name' => 'field_categ',
+        'library' => 'norm_docs/normative-documents',
+        'filter' => [], // Без дополнительных фильтров
+        'show_empty_categories' => FALSE,
+      ],
+      'budget' => [
+        'title' => 'Бюджетные документы',
+        'theme' => 'budget_documents_page', // Другой шаблон
+        'vocabulary' => 'budget_categories', // Другой словарь (можно создать)
+        'field_name' => 'field_categ',
+        'library' => 'norm_docs/budget-documents', // Другая библиотека
+        'filter' => [
+          'year_from' => 2020, // Только документы с 2020 года
+        ],
+        'show_empty_categories' => TRUE, // Показывать даже пустые категории
+      ],
+    ];
 
-    foreach ($field_definitions as $field_name => $definition) {
-      // Проверяем поле типа file
-      if ($definition->getType() === 'file') {
-        return $field_name;
-      }
+    return $settings[$route_type] ?? $settings['normative'];
+  }
 
-      // Или entity_reference на file
-      if ($definition->getType() === 'entity_reference') {
-        $settings = $definition->getSettings();
-        if (isset($settings['target_type']) && $settings['target_type'] === 'file') {
-          return $field_name;
-        }
-      }
+  /**
+   * Проверяет, нужно ли показывать термин.
+   */
+  private function shouldShowTerm($term, $settings) {
+    if ($settings['show_empty_categories']) {
+      return TRUE;
     }
 
-    return null;
-  }*/
+    // Проверяем, есть ли документы в этой категории
+    $query = \Drupal::entityQuery('node')
+      ->condition('type', 'docs')
+      ->condition($settings['field_name'], $term->id())
+      ->count()
+      ->accessCheck(TRUE);
+
+    return $query->execute() > 0;
+  }
+
+  /**
+   * Применяет дополнительные фильтры.
+   */
+  private function applyFilters($query, $filters) {
+    if (isset($filters['year_from'])) {
+      // Фильтр по дате создания
+      $date = new \DateTime($filters['year_from'] . '-01-01');
+      $query->condition('created', $date->getTimestamp(), '>=');
+    }
+
+    // Можно добавить другие фильтры по необходимости
+
+    return $query;
+  }
 }

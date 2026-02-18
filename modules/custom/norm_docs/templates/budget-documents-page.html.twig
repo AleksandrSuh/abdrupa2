@@ -1,0 +1,60 @@
+{# templates/budget-documents-page.html.twig #}
+<div class="budget-documents-container">
+  <h1 class="page-title">{{ page_title }}</h1>
+
+  {% if documents_by_category is not empty %}
+    {% for category_id, category_data in documents_by_category %}
+      {% set category = category_data.term %}
+      {% set documents = category_data.documents %}
+
+      <div class="budget-section">
+        <h2 class="section-title">{{ category.label() }}</h2>
+
+        <div class="documents-list">
+          {% for document in documents %}
+            <div class="budget-document-item">
+              <div class="document-info">
+                <div class="document-date">
+                  {{ document.created.value|date('d.m.Y') }}
+                </div>
+                <div class="document-title">
+                  {{ document.label() }}
+                </div>
+              </div>
+
+              <div class="document-download">
+                {% set file_field_name = 'field_document_file' %}
+                {% if document.hasField(file_field_name) and not document.get(file_field_name).isEmpty() %}
+                  {% set file = document.get(file_field_name).entity %}
+                  {% if file %}
+                    <a href="{{ file_url(file.uri.value) }}"
+                       class="download-button"
+                       target="_blank"
+                       download>
+                      <span class="download-icon">📥</span>
+                      <span class="download-text">Скачать</span>
+                      <span class="file-size">( {% set size = file.filesize.value %}
+                        {% if size < 1024 %}
+                        {{ size }} Б
+                {% elseif size < 1048576 %}
+                  {{ (size / 1024)|number_format(2, ',', ' ') }} КБ
+                {% elseif size < 1073741824 %}
+                  {{ (size / 1048576)|number_format(2, ',', ' ') }} МБ
+                {% else %}
+                  {{ (size / 1073741824)|number_format(2, ',', ' ') }} ГБ
+                        {% endif %})</span>
+                    </a>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="no-documents">
+      <p>Документы не найдены.</p>
+    </div>
+  {% endif %}
+</div>

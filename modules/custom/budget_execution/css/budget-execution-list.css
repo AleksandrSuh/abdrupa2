@@ -25,3 +25,6 @@
 .budget-execution-filter-form select {
   width: 100%;
 }
+details.vbo-multipage-selector summary.claro-details__summary {
+  display: none;
+}

@@ -39,6 +39,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },
  *     "access" = "Drupal\budget_execution\BudgetExecutionAccessControlHandler",
+ *     "views_data" = "Drupal\budget_execution\EntityViewsData\BudgetExecutionViewsData",
  *   },
  *   admin_permission = "administer budget execution",
  *   links = {
