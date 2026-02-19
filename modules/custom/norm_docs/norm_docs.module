@@ -1,25 +1,53 @@
 <?php
-
 /**
  * Implements hook_theme().
  */
 function norm_docs_theme($existing, $type, $theme, $path) {
   return [
-    'normative_documents_page' => [
+    'documents_normative_page' => [
       'variables' => [
         'documents_by_category' => [],
-        'page_title' => '',
+        'page_term' => NULL,
       ],
       'template' => 'normative-documents-page',
       'path' => $path . '/templates',
     ],
-    'budget_documents_page' => [
+    'documents_budget_page' => [
       'variables' => [
-        'documents_by_category' => [],
-        'page_title' => '',
+        'documents' => [],
+        'grouped_documents' => [],
+        'page_term' => NULL,
       ],
       'template' => 'budget-documents-page',
       'path' => $path . '/templates',
     ],
+    'documents_projects_page' => [
+      'variables' => [
+        'documents' => [],
+        'grouped_documents' => [],
+        'page_term' => NULL,
+      ],
+      'template' => 'budget-documents-page',
+      'path' => $path . '/templates',
+    ],
+    'documents_reports_page' => [
+      'variables' => [
+        'documents_by_category' => [],
+        'page_term' => NULL,
+      ],
+      'template' => 'normative-documents-page',
+      'path' => $path . '/templates',
+    ],
   ];
+
+}
+
+function norm_docs_theme_suggestions_node_alter(array &$suggestions, array $variables) {
+  $node = $variables['elements']['#node'];
+
+  // Выводим в лог все предлагаемые имена шаблонов
+  \Drupal::logger('norm_docs')->debug('Щаблон подрублен для узла @nid: <pre>@suggestions</pre>', [
+    '@nid' => $node->id(),
+    '@suggestions' => print_r($suggestions, TRUE),
+  ]);
 }

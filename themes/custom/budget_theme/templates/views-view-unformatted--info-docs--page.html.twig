@@ -1,0 +1,53 @@
+{#
+/**
+ * @file
+ * Шаблон для отображения представления info_docs (через поля Views).
+ */
+#}
+<div class="payment">
+  <div class="payment__list">
+    <div class="list-view">
+      <div class="items">
+        {% for row in rows %}
+          {% set node = row.content['#row']._entity %}
+          {% set index = loop.index0 %}
+
+          {# Получаем значения полей через Views #}
+          {% set title = row.content['#view'].style_plugin.getField(index, 'title') %}
+          {% set link_uri = row.content['#view'].style_plugin.getField(index, 'field_link_uri') %}
+          {% set link_title = row.content['#view'].style_plugin.getField(index, 'field_link_title') %}
+          {% set date = row.content['#view'].style_plugin.getField(index, 'created') %}
+
+          <div class="payment__list__item">
+            <div class="payment__list__item__title">
+              <span class="payment__list__item__title__icon"></span>
+
+              <div class="payment__list__item__title__text">
+                {# Определяем тип ссылки #}
+                {% if node.field_link.value %}
+                  {# Внешняя ссылка #}
+                  <a href="{{ node.field_link.uri }}"
+                     target="_blank"
+                     rel="noopener noreferrer">
+                    {{ node.field_link.title ?: node.label }}
+                  </a>
+                {% elseif node.field_file.entity %}
+                  {# Внутренняя ссылка на страницу документа #}
+                  <a href="{{ path('entity.node.canonical', {'node': node.id}) }}">
+                    {{ node.label }}
+                  </a>
+                {% else %}
+                  {{ node.label }}
+                {% endif %}
+              </div>
+
+              <span class="payment__list__item__title__date">
+                                {{ node.created.value|date('d.m.Y') }}
+                            </span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

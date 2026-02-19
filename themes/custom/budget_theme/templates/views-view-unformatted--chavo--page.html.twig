@@ -1,0 +1,23 @@
+
+<div class="question">
+  <div class="question__list">
+    <div id="yw2" class="list-view">
+      <div class="items">
+        {% for row in rows %}
+        <div class="question__list__item">
+          <div class="question__list__item__title accordion">
+            <span class="question__list__item__title__text">{{ row.content['#row']._entity.getTitle() }}</span>
+            <span class="question__list__item__title__icon"></span>
+          </div>
+          <div class="question__list__item__body">
+            <div class="question__list__item__body__wrapper">
+              <p><strong>Ответ:</strong> </p>
+              <p>{{ row.content['#view'].style_plugin.getField(loop.index0, 'field_az_desc') }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

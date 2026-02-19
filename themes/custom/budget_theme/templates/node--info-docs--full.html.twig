@@ -1,0 +1,77 @@
+{#
+/**
+ * @file
+ * Шаблон для полного отображения документа типа docs.
+ */
+#}
+<article{{ attributes.addClass('document-full') }}>
+  <div class="document-header">
+    <h1>{{ label }}</h1>
+    <div class="document-meta">
+            <span class="document-date">
+                Опубликовано: {{ node.created.value|date('d.m.Y') }}
+            </span>
+      {% if node.field_document_date.value %}
+        <span class="document-date-doc">
+                    Дата документа: {{ node.field_document_date.value|date('d.m.Y') }}
+                </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="document-content">
+    {# Описание документа #}
+    {% if node.field_az_desc.value %}
+      <div class="document-description">
+        <h2>Описание</h2>
+        {{ node.field_az_desc.value }}
+      </div>
+    {% endif %}
+
+    {# Файл документа #}
+    {% if node.field_file.entity %}
+      {% set file = node.field_file.entity %}
+      <div class="document-file">
+        <h2>Файл документа</h2>
+        <div class="file-info">
+          <span class="file-name">{{ file.getFilename() }}</span>
+          <span class="file-size">( {% set size = file.filesize.value %}
+            {% if size < 1024 %}
+            {{ size }} Б
+                {% elseif size < 1048576 %}
+                  {{ (size / 1024)|number_format(2, ',', ' ') }} КБ
+                {% elseif size < 1073741824 %}
+                  {{ (size / 1048576)|number_format(2, ',', ' ') }} МБ
+                {% else %}
+                  {{ (size / 1073741824)|number_format(2, ',', ' ') }} ГБ
+            {% endif %})</span>
+          <a href="{{ file_url(file.uri.value) }}" class="download-button" download>
+            Скачать файл
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+    {# Внешняя ссылка #}
+    {% if node.field_link.value %}
+      <div class="document-link">
+        <h2>Внешний ресурс</h2>
+        <a href="{{ node.field_link.uri }}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="external-link">
+          {{ node.field_link.title ?: node.label }}
+          <span class="external-icon">↗</span>
+        </a>
+      </div>
+    {% endif %}
+
+    {# Тело документа (если есть) #}
+    {{ content.body }}
+  </div>
+
+  {# Кнопка "Назад к списку" #}
+  <div class="back-link">
+    <a href="{{ path('view.info_docs.page_1') }}">← Вернуться к списку</a>
+  </div>
+</article>

@@ -3,17 +3,37 @@ norm_docs.normative_documents:
   path: '/about/acts'
   defaults:
     _title: 'Нормативная правовая база'
-    _controller: '\Drupal\norm_docs\Controller\NormativeDocumentsController::page'
-    _route_type: 'normative'  # Добавляем параметр маршрута
+    _controller: '\Drupal\norm_docs\Controller\DocumentsByPageController::page'
+    _page_term: 'normative'  # Машиночитаемое имя термина
   requirements:
     _permission: 'access content'
 
-# Страница бюджетных актов
+# Страница решений о бюджете
 norm_docs.budget_documents:
   path: '/budget/acts'
   defaults:
-    _title: 'Бюджетные документы'
-    _controller: '\Drupal\norm_docs\Controller\NormativeDocumentsController::page'
-    _route_type: 'budget'  # Другой параметр маршрута
+    _title: 'Решения о бюджете'
+    _controller: '\Drupal\norm_docs\Controller\DocumentsByPageController::page'
+    _page_term: 'budget_decision'
+  requirements:
+    _permission: 'access content'
+
+# Страница проектов
+norm_docs.project_documents:
+  path: '/budgetproject/acts'
+  defaults:
+    _title: 'Проекты решений'
+    _controller: '\Drupal\norm_docs\Controller\DocumentsByPageController::page'
+    _page_term: 'project'
+  requirements:
+    _permission: 'access content'
+
+# Страница отчетов
+norm_docs.report_documents:
+  path: '/execution/report'
+  defaults:
+    _title: 'Отчеты об исполнении бюджета'
+    _controller: '\Drupal\norm_docs\Controller\DocumentsByPageController::page'
+    _page_term: 'report'
   requirements:
     _permission: 'access content'
