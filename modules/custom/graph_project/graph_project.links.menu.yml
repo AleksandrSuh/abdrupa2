@@ -1,0 +1,6 @@
+graph_project.import:
+  title: 'Импорт графика бюджета'
+  description: 'Загрузка графика подготовки проекта бюджета из DOC'
+  parent: system.admin_config_system
+  route_name: graph_project.import
+  weight: 100

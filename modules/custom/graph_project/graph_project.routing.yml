@@ -1,0 +1,7 @@
+graph_project.import:
+  path: '/admin/content/graph-project/import'
+  defaults:
+    _form: '\Drupal\graph_project\Form\GraphProjectImport'
+    _title: 'Импорт графика подготовки бюджета'
+  requirements:
+    _permission: 'administer content'

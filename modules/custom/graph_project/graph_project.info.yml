@@ -1,0 +1,9 @@
+name: 'График подготовки проекта бюджета'
+type: module
+description: 'Импорт данных из файла word'
+package: Custom
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:node
+  - drupal:file
+  - drupal:user

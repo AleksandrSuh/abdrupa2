@@ -4,74 +4,35 @@
  * Шаблон для полного отображения документа типа docs.
  */
 #}
-<article{{ attributes.addClass('document-full') }}>
-  <div class="document-header">
-    <h1>{{ label }}</h1>
-    <div class="document-meta">
-            <span class="document-date">
-                Опубликовано: {{ node.created.value|date('d.m.Y') }}
-            </span>
-      {% if node.field_document_date.value %}
-        <span class="document-date-doc">
-                    Дата документа: {{ node.field_document_date.value|date('d.m.Y') }}
-                </span>
+<div class="breadcrumbs">
+  <a href="/">Главная</a>
+  <div>|</div>
+  <a href="/payments/allpayments">Информация о платежных документах</a>
+  <div>|</div>
+  <span>{{ label }}</span>
+</div>
+         <h1>{{ label }}</h1>
+<div class="parking">
+  <div class="parking__list">
+    <div class="parking__list__item">
+      {% if node.field_file.entity %}
+      {% set file = node.field_file.entity %}
+      <div class="parking__list__item__title">{{ node.created.value|date('d.m.Y') }}</div>
+      <div class="parking__list__item__text">{{ node.field_az_desc.value }}</div>
+      <div class="parking__list__item__receipt">
+        <div class="parking__list__item__receipt__img"><img src="/{{ active_theme_path() }}/img/icons/pdf.svg" alt="pdf"></div>
+        <div class="parking__list__item__receipt__right">
+          <div class="parking__list__item__receipt__right__look"><img src="/{{ active_theme_path() }}/img/icons/eye.svg" alt="look" width="34px" height="19px"><a href="{{ file_url(file.uri.value) }}" target="_blank">Посмотреть реквизиты для оплаты</a></div>
+          <div class="parking__list__item__receipt__right__print"><img src="/{{ active_theme_path() }}/img/icons/print.svg" alt="print" width="35px" height="20px"><a href="#" onClick="printPdf('{{ file_url(file.uri.value) }}')">Распечатать реквизиты для оплаты</a></div>
+        </div>
+      </div>
       {% endif %}
     </div>
   </div>
+</div>
 
-  <div class="document-content">
-    {# Описание документа #}
-    {% if node.field_az_desc.value %}
-      <div class="document-description">
-        <h2>Описание</h2>
-        {{ node.field_az_desc.value }}
-      </div>
-    {% endif %}
 
-    {# Файл документа #}
-    {% if node.field_file.entity %}
-      {% set file = node.field_file.entity %}
-      <div class="document-file">
-        <h2>Файл документа</h2>
-        <div class="file-info">
-          <span class="file-name">{{ file.getFilename() }}</span>
-          <span class="file-size">( {% set size = file.filesize.value %}
-            {% if size < 1024 %}
-            {{ size }} Б
-                {% elseif size < 1048576 %}
-                  {{ (size / 1024)|number_format(2, ',', ' ') }} КБ
-                {% elseif size < 1073741824 %}
-                  {{ (size / 1048576)|number_format(2, ',', ' ') }} МБ
-                {% else %}
-                  {{ (size / 1073741824)|number_format(2, ',', ' ') }} ГБ
-            {% endif %})</span>
-          <a href="{{ file_url(file.uri.value) }}" class="download-button" download>
-            Скачать файл
-          </a>
-        </div>
-      </div>
-    {% endif %}
 
-    {# Внешняя ссылка #}
-    {% if node.field_link.value %}
-      <div class="document-link">
-        <h2>Внешний ресурс</h2>
-        <a href="{{ node.field_link.uri }}"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="external-link">
-          {{ node.field_link.title ?: node.label }}
-          <span class="external-icon">↗</span>
-        </a>
-      </div>
-    {% endif %}
-
-    {# Тело документа (если есть) #}
-    {{ content.body }}
-  </div>
-
-  {# Кнопка "Назад к списку" #}
-  <div class="back-link">
-    <a href="{{ path('view.info_docs.page_1') }}">← Вернуться к списку</a>
-  </div>
-</article>
+  <!--div class="back-link">
+    <a href="{{ path('view.info_docs.page_1') }}">Вернуться к списку</a>
+  </div-->

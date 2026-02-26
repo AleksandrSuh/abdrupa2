@@ -46,8 +46,10 @@ function norm_docs_theme_suggestions_node_alter(array &$suggestions, array $vari
   $node = $variables['elements']['#node'];
 
   // Выводим в лог все предлагаемые имена шаблонов
+  /*
   \Drupal::logger('norm_docs')->debug('Щаблон подрублен для узла @nid: <pre>@suggestions</pre>', [
     '@nid' => $node->id(),
     '@suggestions' => print_r($suggestions, TRUE),
   ]);
+  */
 }
