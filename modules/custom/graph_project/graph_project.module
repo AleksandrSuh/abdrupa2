@@ -4,5 +4,17 @@
  * @file
  * Основной файл модуля Graph Project.
  */
-
-// Пока пусто, но файл должен существовать
+function graph_project_theme($existing, $type, $theme, $path) {
+  return [
+    'graph_project_page' => [
+      'variables' => [
+        'items' => [],
+        'year' => '',
+        'plan_years' => '',
+        'file_url' => '',
+        'file_name' => '',
+      ],
+      'template' => 'graph-project-page', // имя файла без .html.twig
+    ],
+  ];
+}

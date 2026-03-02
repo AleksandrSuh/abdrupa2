@@ -1,0 +1,20 @@
+{#
+/**
+ * @file
+ * Шаблон для одного элемента в списке новостей.
+ */
+#}
+<h1>Новости</h1>
+<div id="yw2" class="list-view">
+  <div class="items">
+    <div class="newsBlock">
+      <table>
+        {% for row in rows %}
+        <tr>
+          {{ row.content }}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>

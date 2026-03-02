@@ -104,6 +104,7 @@ class GraphProjectImport extends FormBase {
           'plan_years' => $plan_years,
           'count' => $imported_count,
           'filename' => $file->getFilename(),
+          'fid' => $file->id(), // сохраняем ID файла
           'uid' => \Drupal::currentUser()->id(),
         ])
         ->save();
@@ -211,75 +212,59 @@ class GraphProjectImport extends FormBase {
     $items = [];
     $rows = $table->getRows();
 
-    // Пропускаем заголовки (обычно первые 2 строки)
-    // В вашей таблице: "Наименование мероприятия | Срок | Ответственный" и "1 | 2 | 3"
-    $start_row = 2;
-    \Drupal::logger('graph_project')->debug('Всего строк в таблице: @count', ['@count' => count($rows)]);
+    //\Drupal::logger('graph_project')->debug('Всего строк в таблице: @count', ['@count' => count($rows)]);
+
+    // Массив для отслеживания текущих номеров на каждом уровне
+    $counters = [0]; // уровень 0 (корень)
+
+    // Пропускаем заголовки (первые строки)
+    $start_row = 1;
 
     foreach ($rows as $row_index => $row) {
-      \Drupal::logger('graph_project')->debug('Обрабатываем строку @index', ['@index' => $row_index]);
-
       if ($row_index < $start_row) continue;
 
-      // FIX FOR V1.4: Используем getCells() вместо getElements()
       $cells = $row->getCells();
       if (count($cells) < 3) continue;
+
+      if (method_exists($cells[0], 'getStyle')) {
+        $cellStyle = $cells[0]->getStyle();
+        /*if ($cellStyle) {
+          \Drupal::logger('graph_project')->debug('Cell style class: @class', [
+            '@class' => get_class($cellStyle)
+          ]);
+        }*/
+      }
 
       // Получаем текст из ячеек
       $title_cell = $this->getCellTextV14($cells[0]);
       $deadline_cell = $this->getCellTextV14($cells[1]);
       $responsible_cell = $this->getCellTextV14($cells[2]);
 
-
-      if ($row_index < 5) {
-        $elements = $cells[0]->getElements();
-        $part_count = count($elements);
-        \Drupal::logger('graph_project')->debug('Ячейка строки @index содержит @count элементов', [
-          '@index' => $row_index,
-          '@count' => $part_count,
-        ]);
-
-        foreach ($elements as $idx => $element) {
-          $element_text = '';
-          if ($element instanceof \PhpOffice\PhpWord\Element\Text) {
-            $element_text = $element->getText();
-          } elseif ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
-            foreach ($element->getElements() as $te) {
-              if ($te instanceof \PhpOffice\PhpWord\Element\Text) {
-                $element_text .= $te->getText();
-              }
-            }
-          }
-          \Drupal::logger('graph_project')->debug('  Элемент @idx: "@text"', [
-            '@idx' => $idx,
-            '@text' => $element_text,
-          ]);
-        }
-      }
-
-
-      // Пропускаем пустые строки
       if (empty(trim($title_cell))) continue;
 
-      // Извлекаем номер пункта из начала строки
-      $item_number = $this->extractItemNumber($title_cell);
-      $item_text = $this->extractItemText($title_cell);
-      $short_title = mb_substr($title_cell, 0, 100) . (mb_strlen($title_cell) > 100 ? '…' : '');
+      // ОПРЕДЕЛЯЕМ УРОВЕНЬ ПО СТИЛЮ ИЛИ ОТСТУПУ
+      // В PHPWord можно получить стиль абзаца
+      $level = $this->detectLevel($row, $cells[0]);
 
-      // Определяем уровень по количеству точек в номере
-      $level = substr_count($item_number, '.');
+      // Обновляем счётчики для этого уровня
+      $counters = $this->updateCounters($counters, $level);
 
-      // Определяем родительский номер (обрезаем последний сегмент)
+      // Генерируем номер
+      $item_number = $this->generateNumber($counters, $level);
+
+      // Создаём краткий заголовок
+      $short_title = mb_substr($title_cell, 0, 100);
+      if (mb_strlen($title_cell) > 100) {
+        $short_title .= '…';
+      }
+
+      // Определяем родительский номер
       $parent_number = $this->getParentNumber($item_number);
-
-      // Получаем классы строки (если есть в HTML, но в PHPWord их может не быть)
-      // Это для future reference - в DOCX классах может не быть
-      $row_classes = '';
 
       $items[] = [
         'number' => $item_number,
+        'full_title' => $title_cell,
         'title' => $short_title,
-        'full_title' => $title_cell, // сохраняем оригинал
         'deadline_raw' => $deadline_cell,
         'deadline' => $this->parseDate($deadline_cell),
         'responsible' => $responsible_cell,
@@ -287,12 +272,98 @@ class GraphProjectImport extends FormBase {
         'parent_number' => $parent_number,
         'budget_year' => $budget_year,
         'plan_years' => $plan_years,
-        'classes' => $row_classes,
+        'classes' => '',
         'row_index' => $row_index,
       ];
+
+      /*\Drupal::logger('graph_project')->debug('Строка @idx: номер="@num", уровень=@level, текст="@text"', [
+        '@idx' => $row_index,
+        '@num' => $item_number,
+        '@level' => $level,
+        '@text' => $short_title,
+      ]);*/
     }
 
     return $items;
+  }
+
+  /**
+   * Определяет уровень вложенности строки
+   */
+  private function detectLevel($row, $cell) {
+    try {
+      $cellElements = $cell->getElements();
+
+      foreach ($cellElements as $cellElement) {
+        if ($cellElement instanceof \PhpOffice\PhpWord\Element\TextRun) {
+          $paragraphStyle = $cellElement->getParagraphStyle();
+
+          if ($paragraphStyle instanceof \PhpOffice\PhpWord\Style\Paragraph) {
+            $indentation = $paragraphStyle->getIndentation();
+
+            if ($indentation) {
+              $leftIndent = $indentation->getLeft();
+
+              //\Drupal::logger('graph_project')->debug('detectLevel: left=@left', ['@left' => $leftIndent]);
+
+              // Основные пункты: отрицательный отступ (-57)
+              if ($leftIndent < 0) {
+                return 0;
+              }
+              // Подпункты первого уровня: положительный отступ (227)
+              elseif ($leftIndent > 0 && $leftIndent < 500) {
+                return 1;
+              }
+              // Более глубокие подпункты (если будут)
+              elseif ($leftIndent >= 500) {
+                return 2;
+              }
+            }
+          }
+        }
+      }
+    } catch (\Exception $e) {
+      \Drupal::logger('graph_project')->error('detectLevel error: @error', ['@error' => $e->getMessage()]);
+    }
+
+    return 0;
+  }
+
+  /**
+   * Обновляет счётчики для генерации номеров
+   */
+  private function updateCounters($counters, $level) {
+    // Увеличиваем счётчик на текущем уровне
+    if (isset($counters[$level])) {
+      $counters[$level]++;
+    } else {
+      $counters[$level] = 1;
+    }
+
+    // Сбрасываем все счётчики на более глубоких уровнях
+    // Например: перешли с 0 на 1 - сбрасываем 1 и выше
+    // Перешли с 1 на 0 - сбрасываем 1 и выше (все глубже текущего)
+    for ($i = $level + 1; $i < count($counters); $i++) {
+      unset($counters[$i]);
+    }
+
+    // Убеждаемся, что нет "дырок" в индексах
+    $counters = array_values($counters);
+
+    return $counters;
+  }
+
+  /**
+   * Генерирует номер из счётчиков
+   */
+  private function generateNumber($counters, $level) {
+    $parts = [];
+    for ($i = 0; $i <= $level; $i++) {
+      if (isset($counters[$i])) {
+        $parts[] = $counters[$i];
+      }
+    }
+    return implode('.', $parts);
   }
 
   /**
@@ -308,27 +379,27 @@ class GraphProjectImport extends FormBase {
     $text = preg_replace('/\x{00A0}/u', ' ', $text);
     $text = trim($text);
 
-    \Drupal::logger('graph_project')->debug('extractItemNumber raw text: "@text"', ['@text' => $text]);
+    //\Drupal::logger('graph_project')->debug('extractItemNumber raw text: "@text"', ['@text' => $text]);
 
     // Паттерн 1: номер с точкой в начале строки (1. или 3.1.)
     if (preg_match('/^(\d+(?:\.\d+)*)\./u', $text, $matches)) {
-      \Drupal::logger('graph_project')->debug('Pattern 1 matched: "@match"', ['@match' => $matches[1]]);
+      //\Drupal::logger('graph_project')->debug('Pattern 1 matched: "@match"', ['@match' => $matches[1]]);
       return $matches[1];
     }
 
     // Паттерн 2: номер с пробелом в начале строки (1 Текст)
     if (preg_match('/^(\d+(?:\.\d+)*)\s/u', $text, $matches)) {
-      \Drupal::logger('graph_project')->debug('Pattern 2 matched: "@match"', ['@match' => $matches[1]]);
+      //\Drupal::logger('graph_project')->debug('Pattern 2 matched: "@match"', ['@match' => $matches[1]]);
       return $matches[1];
     }
 
     // Паттерн 3: проверяем, не начинается ли текст с цифры, даже без точки
     if (preg_match('/^(\d+)/u', $text, $matches)) {
-      \Drupal::logger('graph_project')->debug('Pattern 3 (digit start) matched: "@match"', ['@match' => $matches[1]]);
+      //\Drupal::logger('graph_project')->debug('Pattern 3 (digit start) matched: "@match"', ['@match' => $matches[1]]);
       return $matches[1];
     }
 
-    \Drupal::logger('graph_project')->debug('No number found at beginning of text');
+    //\Drupal::logger('graph_project')->debug('No number found at beginning of text');
     return '';
   }
 
@@ -485,13 +556,29 @@ class GraphProjectImport extends FormBase {
 
     // Второй проход: устанавливаем родительские связи
     foreach ($items as $item) {
+      // Проверяем, есть ли родительский номер и существует ли текущий узел
       if (!empty($item['parent_number']) && isset($node_map[$item['number']])) {
         $parent_id = $node_map[$item['parent_number']] ?? NULL;
 
         if ($parent_id) {
+          // Загружаем узел заново (чтобы избежать проблем с ссылками)
           $node = $node_storage->load($node_map[$item['number']]);
-          $node->set('field_parent_item', ['target_id' => $parent_id]);
-          $node->save();
+
+          /*if ($node) {
+            // Правильный формат для entity reference поля [citation:3]
+            $node->set('field_parent_item', ['target_id' => $parent_id]);
+            $node->save();
+
+            \Drupal::logger('graph_project')->debug('Set parent @parent for node @child', [
+              '@parent' => $parent_id,
+              '@child' => $node->id(),
+            ]);
+          }*/
+        } else {
+          \Drupal::logger('graph_project')->debug('Parent not found for @num (parent @parent)', [
+            '@num' => $item['number'],
+            '@parent' => $item['parent_number'],
+          ]);
         }
       }
     }
@@ -515,11 +602,11 @@ class GraphProjectImport extends FormBase {
     // Пробуем разные способы получить содержимое
     if (method_exists($cell, 'getContent')) {
       $content = $cell->getContent();
-      \Drupal::logger('graph_project')->debug('getContent() type: @type', ['@type' => gettype($content)]);
+      //\Drupal::logger('graph_project')->debug('getContent() type: @type', ['@type' => gettype($content)]);
       if (is_array($content)) {
-        \Drupal::logger('graph_project')->debug('getContent() count: @count', ['@count' => count($content)]);
+        //\Drupal::logger('graph_project')->debug('getContent() count: @count', ['@count' => count($content)]);
       } elseif (is_object($content)) {
-        \Drupal::logger('graph_project')->debug('getContent() class: @class', ['@class' => get_class($content)]);
+        //\Drupal::logger('graph_project')->debug('getContent() class: @class', ['@class' => get_class($content)]);
       }
     }
 

@@ -21,7 +21,7 @@
   {% endmacro %}
 
 {% elseif attributes['data-block-id'] == 'left_menu' %}
-<aside class="CG_sidebar">
+
   <div class="CG_sidebar_plate">
     {% for item in items %}
       <a href="{{ item.url }}"{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>{{ item.title }}</a>
@@ -34,7 +34,7 @@
       {% endif %}
     {% endfor %}
   </div>
-</aside>
+
 {% elseif attributes['data-block-id'] == 'foot_menu' %}
 
   {% for item in items %}
@@ -47,50 +47,6 @@
       {% endif %}
     </div>
   {% endfor %}
-
-{% elseif attributes['data-block-id'] == 'mapsite' %}
-
-<h1>Карта сайта</h1>
-<div class="sitemap_grid">
-    <div class="SG_cell">
-      <div class="sitemap_section">
-        <a href="/">Главная</a>
-        <div class="SG_sub">
-          <a href="/news/allnews">Новости</a>
-        </div>
-      </div>
-      {% for item in items|slice(0, 2) %}
-        <div class="sitemap_section">
-          <a href="{{ item.url }}"{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>{{ item.title }}</a>
-          {% if item.below %}
-            <div class="SG_sub">
-              {% for subitem in item.below %}
-                <a href="{{ subitem.url }}">{{ subitem.title }}</a>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-
-  {# Остальные элементы разбиваем по 3, начиная с 3-го элемента (индекс 2) #}
-  {% for cell_items in items|slice(2)|batch(3) %}
-    <div class="SG_cell">
-      {% for item in cell_items %}
-        <div class="sitemap_section">
-          <a href="{{ item.url }}"{{ item.in_active_trail ? ' class="active"' }} {{ item.is_active ? ' class="active"' }}>{{ item.title }}</a>
-          {% if item.below %}
-            <div class="SG_sub">
-              {% for subitem in item.below %}
-                <a href="{{ subitem.url }}">{{ subitem.title }}</a>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-  {% endfor %}
-</div>
 
 {% else %}
   <!-- Default -->

@@ -1,0 +1,170 @@
+<h1>График подготовки проекта бюджета на {{ year }} год и плановый период {{ plan_years }} годов</h1>
+<div class="budget_shedule">
+  <table class="BS_grid">
+    <thead>
+    <tr>
+      <th style="width: 80px;"></th>
+      <th>Июль</th>
+      <th>Август</th>
+      <th>Сентябрь</th>
+      <th>Октябрь</th>
+      <th>Ноябрь</th>
+      <th>Декабрь</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+      {# Определяем, является ли элемент верхнего уровня (level 0) #}
+      {% if item.level == 0 %}
+        {# Строка верхнего уровня - видимая #}
+        <tr class="js-group" data-group-id="{{ item.number|replace({'.': '-'}) }}">
+          <th>
+            <div class="moz_fix">
+              <div class="BS_step {{ item.classes }}">
+                {{ item.number }} этап
+              </div>
+            </div>
+          </th>
+          <td colspan="12">
+            <div class="moz_fix">
+              {# Полоса #}
+              <div
+                style="left:{{ item.left }}%; right:{{ item.right }}%;"
+                class="BS_item blue {{ item.classes }}"
+              ></div>
+
+              {# Подсказка #}
+              <div class="BSI_hint" style="left:{{ item.left }}%; right:{{ item.right }}%;">
+                <div class="BSI_hint_cross"></div>
+                <h1>{{ item.number }} этап</h1>
+                <p>{{ item.full_text ?: item.title }}</p>
+                {% if item.responsible %}
+                  <p><strong>Ответственный:</strong> {{ item.responsible }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        {# Строка подуровня - скрытая по умолчанию #}
+        <tr style="display: none;" data-group-id="{{ item.parent_number|replace({'.': '-'}) }}">
+          <th>
+            <div class="moz_fix">
+              <div class="BS_step green">
+                {{ item.number }} этап
+              </div>
+            </div>
+          </th>
+          <td colspan="12">
+            <div class="moz_fix">
+              {# Полоса #}
+              <div
+                style="left:{{ item.left }}%; right:{{ item.right }}%;"
+                class="BS_item blue"
+              ></div>
+
+              {# Подсказка #}
+              <div class="BSI_hint" style="left:{{ item.left }}%; right:{{ item.right }}%;">
+                <div class="BSI_hint_cross"></div>
+                <h1>{{ item.number }} этап</h1>
+                <p>{{ item.full_text ?: item.title }}</p>
+                {% if item.responsible %}
+                  <p><strong>Ответственный:</strong> {{ item.responsible }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+
+    {# Пустая строка в конце #}
+    <tr>
+      <th></th>
+      <td colspan="12"></td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="BS_shadow left">
+    <img src="/{{ active_theme_path() }}/img/budget_shedule_shadow_left.png" alt="">
+  </div>
+  <div class="BS_shadow right">
+    <img src="/{{ active_theme_path() }}/img/budget_shedule_shadow_right.png" alt="">
+  </div>
+</div>
+{% if file_url %}
+  <div class="date block_3 drafting_budget">
+    <span class="download_icon"></span>
+    <a href="{{ file_url }}" target="_blank" download>
+      График мероприятий по составлению проекта бюджета
+    </a>
+  </div>
+{% endif %}
+<div class="budget_table">
+  <h2>ПЛАН</h2>
+  <h3>мероприятий по составлению проекта бюджета муниципального образования «город Екатеринбург» на {{ year }} год и плановый период {{ plan_years }}</h3>
+
+  <div class="g-data">
+    <table>
+      <colgroup>
+        <col/>
+        <col style="width: 125px;"/>
+        <col style="width: 250px;"/>
+      </colgroup>
+      <thead>
+      <tr>
+        <th>Наименование мероприятия</th>
+        <th>Срок выполнения</th>
+        <th>Ответственный за выполнение, соисполнители</th>
+      </tr>
+      <tr class="sub_header">
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for item in items %}
+        <tr class="{% if item.level != 0 %} subitem {% endif %}{{ item.classes }}">
+          <td>{{ item.number }}. {{ item.full_text ?: item.title }}</td>
+          <td>{{ item.deadline_raw }}</td>
+          <td>{{ item.responsible }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof jQuery === 'undefined') {
+      console.error('jQuery not found');
+      return;
+    }
+
+    var $ = jQuery;
+
+
+    $(function() {
+      $('.BS_item').on('click', function() {
+        var $row = $(this).closest('tr');
+        $('.BS_grid tr').removeClass('open');
+        $row.addClass('open');
+        if ($row.hasClass('js-group')) {
+          $('[data-group-id="' + $row.data('group-id') + '"]').not('.js-group').toggle();
+        }
+        return false;
+      });
+      $('.BSI_hint_cross').on('click', function() {
+        $(this).closest('tr').toggleClass('open');
+        return false;
+      });
+      $('.js-group').on('click', function() {
+      });
+    });
+
+
+  });
+
+</script>

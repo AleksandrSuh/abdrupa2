@@ -21,10 +21,10 @@
       <div class="e-cell align-right align-top">
         <ul class="topMenu">
           <li>
-            <a href="../site/map.html">Карта сайта</a>
+            <a href="/site/map">Карта сайта</a>
           </li>
           <li>
-            <a href="../feedback.html">Обратная связь</a>
+            <a href="/feedback">Обратная связь</a>
           </li>
         </ul>
         <!--span class="g-create-treatment">
@@ -63,7 +63,6 @@
       <div class="g_inner">
         <!--Двухколоночный-->
         <div class="content_grid">
-          <aside class="CG_sidebar">
             {{ page.sidebar_first }}
             <!--div class="CG_sidebar_plate">
 
@@ -76,7 +75,6 @@
                 <a href="funding.html">Источники финансирования дефицита бюджета</a><a href="acts.html">Решение о бюджете города Екатеринбурга</a>
 
             </div-->
-          </aside>
           <div class="CG_right">
             {{ page.content }}
           </div>
@@ -157,30 +155,27 @@
       </div>
       <div>
         <div class="g_inner">
-          <!--div class="title_with_button">
-              <h1 class="main_title"><a href="http://xn--90agdd5d8c.xn--80acgfbsl1azdqr.xn--p1ai/news/allnews">Новости</a></h1>
-          </div-->
           <div id="yw1" class="list-view">
             <div class="items">
               <div class="title_with_button">
-                <table>
+                {{ page.content }}
+                <!--table>
                   <tr>
                     <td>
-                      <h1 class="main_title"><a href="news/allnews.html">Новости</a></h1>
+                      <h1 class="main_title"><a href="/news/allnews">Новости</a></h1>
                     </td>
                     <td>
                       17.07.2020			</td>
                     <td>
                       <a href="news/publ/id/142.html">Запуск портала инициативного бюджетирования "Екатеринбург, предлагай!"</a>
-                      <!--p></p-->
                     </td>
                   </tr>
-                </table>
+                </table-->
               </div>
-            </div><div class="keys" style="display:none" title="/"><span>142</span></div>
-          </div>        <!--a class="all_news_link" href="">Все новости</a-->
+            </div>
+          </div>
         </div>
-      </div><style type="text/css">
+      </div><style>
       #ekb-news {position: relative; z-index: 999;}
       #ekb-news .nws {width: 20%; margin-right: 5%; float: left;}
       #ekb-news .nws .dt {font-size: 11px; color: #888888; margin-bottom: 5px;}

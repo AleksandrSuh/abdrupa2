@@ -5,3 +5,10 @@ graph_project.import:
     _title: 'Импорт графика подготовки бюджета'
   requirements:
     _permission: 'administer content'
+graph_project.graphics:
+  path: '/about/graphics'
+  defaults:
+    _controller: '\Drupal\graph_project\Controller\GraphicsController::page'
+    _title: 'График подготовки проекта бюджета'
+  requirements:
+    _permission: 'access content'
