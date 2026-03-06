@@ -1,0 +1,12 @@
+{#
+/**
+ * @file
+ * Шаблон для одной новости в блоке на главной.
+ */
+#}
+<td>
+  {{ fields.created.content }}
+</td>
+<td>
+  <a href="{{ fields.view_node.content|raw }}">{{ fields.title.content }}</a>
+</td>

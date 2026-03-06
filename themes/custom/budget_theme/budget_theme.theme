@@ -1,6 +1,5 @@
 <?php
 
-
 function budget_theme_preprocess_block(&$variables) {
   // Проверяем, что это блок меню
   if ($variables['plugin_id'] == 'system_menu_block:main') {
@@ -18,4 +17,31 @@ function budget_theme_preprocess_block(&$variables) {
       $variables['content']['#attributes']['data-block-id'] = $block_id;
     }
   }
+
+  $block = $variables['elements']['#block'] ?? NULL;
+
+  if (!$block) {
+    return;
+  }
+
+  // Получаем объект содержимого блока
+  $plugin = $block->getPlugin();
+  if (!$plugin instanceof \Drupal\block_content\Plugin\Block\BlockContentBlock) {
+    return;
+  }
+
+  $block_content = $plugin->getEntity();
+  if (!$block_content) {
+    return;
+  }
+
+  // Получаем тип блока
+  $bundle = $block_content->bundle();
+
+  // ЕСЛИ ЭТО НАШ ТИП "Полезные ссылки" (замените на своё машинное имя)
+  if ($bundle == 'main_links') {
+    // НАЗНАЧАЕМ ИМЯ ШАБЛОНА - теперь вы его контролируете
+    $variables['theme_hook_suggestions'][] = 'block__home_links';
+  }
+
 }

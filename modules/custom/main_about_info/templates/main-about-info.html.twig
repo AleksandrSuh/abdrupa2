@@ -1,0 +1,16 @@
+<div class="WIB_cell">
+  <h1 class="main_title"><a href="{{ link_url }}">{{ title }}</a></h1>
+  {% if image_url %}
+    <img src="{{ image_url }}" alt="" class="WIB_image">
+  {% endif %}
+  <div class="WIB_text">
+    {{ text|raw }}
+    <a href="{{ link_url }}"><span class="btn">{{ link_text }}</span></a>
+  </div>
+</div>
+<div class="WIB_cell">
+  <div class="plate">
+    <h3>Принципы</h3>
+    {{ princ_txt|raw }}
+  </div>
+</div>

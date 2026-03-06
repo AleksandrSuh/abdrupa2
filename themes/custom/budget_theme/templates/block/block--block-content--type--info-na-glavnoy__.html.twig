@@ -1,0 +1,22 @@
+<div class="WIB_cell">
+  <h1 class="main_title"><a href="/about">{{ content.field_title[0] }}</a></h1>
+
+  {% if content.field_image %}1111
+    {% set image_uri = content.field_image['#media'].field_media_image.entity.uri.value %}
+    <img src="{{ file_url(image_uri) }}" alt="" class="WIB_image">
+  {% endif %}
+
+  <div class="WIB_text">
+    {{ content.field_text[0] }}
+    <a href="/about"><span class="btn">Подробнее</span></a>
+  </div>
+</div>
+
+<div class="WIB_cell">
+  <div class="plate">
+    <h3>Принципы</h3>
+    {{ content.field_princ[0] }}
+  </div>
+</div>
+
+{{ dump(content) }}

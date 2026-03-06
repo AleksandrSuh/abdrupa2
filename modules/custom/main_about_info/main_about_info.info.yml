@@ -1,0 +1,5 @@
+name: 'О бюджете'
+type: module
+description: 'Информац. блок на главной странице'
+core_version_requirement: ^11
+package: Custom

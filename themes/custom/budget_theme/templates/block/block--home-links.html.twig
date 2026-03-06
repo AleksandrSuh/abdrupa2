@@ -1,0 +1,10 @@
+<h1 class="main_title">Полезные ссылки</h1>
+<div class="IL_grid">
+  {% for key, item in content.field_link if key|first != '#' %}
+    {% set image = content.field_image[key]['#media'].field_media_image.entity.uri.value %}
+    <a href="{{ item['#url'] }}" class="IL_cell" target="_blank">
+      <img src="{{ file_url(image) }}" alt=""/>
+      <span>{{ item['#title'] }}</span>
+    </a>
+  {% endfor %}
+</div>

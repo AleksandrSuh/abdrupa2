@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ * Contains main_about_info.module.
+ */
+
+use Drupal\Core\Block\BlockPluginInterface;
+
+/**
+ * Implements hook_block_plugins_alter().
+ */
+function main_about_info_block_plugins_alter(array &$definitions) {
+
+
+}
+
+/**
+ * Implements hook_block_plugin_info_alter().
+ */
+function main_about_info_block_plugin_info_alter(array &$definitions) {
+
+
+}
+
+/**
+ * Implements hook_theme().
+ */
+function main_about_info_theme() {
+  return [
+    'main_about_info' => [
+      'variables' => [
+        'title' => '',
+        'image_url' => '',
+        'text' => '',
+        'princ_txt' => '',
+        'link_url' => '/about', // Значение по умолчанию
+        'link_text' => 'Подробнее', // Значение по умолчанию
+      ],
+      'template' => 'main-about-info',
+    ],
+  ];
+}
