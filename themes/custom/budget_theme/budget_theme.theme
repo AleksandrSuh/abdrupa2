@@ -18,30 +18,18 @@ function budget_theme_preprocess_block(&$variables) {
     }
   }
 
-  $block = $variables['elements']['#block'] ?? NULL;
+  if (isset($variables['content']['#block_content'])) {
+    $block_content = $variables['content']['#block_content'];
 
-  if (!$block) {
-    return;
-  }
-
-  // Получаем объект содержимого блока
-  $plugin = $block->getPlugin();
-  if (!$plugin instanceof \Drupal\block_content\Plugin\Block\BlockContentBlock) {
-    return;
-  }
-
-  $block_content = $plugin->getEntity();
-  if (!$block_content) {
-    return;
-  }
-
-  // Получаем тип блока
-  $bundle = $block_content->bundle();
-
-  // ЕСЛИ ЭТО НАШ ТИП "Полезные ссылки" (замените на своё машинное имя)
-  if ($bundle == 'main_links') {
-    // НАЗНАЧАЕМ ИМЯ ШАБЛОНА - теперь вы его контролируете
-    $variables['theme_hook_suggestions'][] = 'block__home_links';
+    // Только для вашего типа блока
+    if ($block_content->bundle() == 'main_links') { // замените на ваше машинное имя
+      // Добавляем контекстуальные ссылки
+      $variables['elements']['#contextual_links'] = [
+        'block' => [
+          'route_parameters' => ['block' => $block_content->id()],
+        ],
+      ];
+    }
   }
 
 }

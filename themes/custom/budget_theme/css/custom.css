@@ -1,0 +1,10 @@
+.cs-need_suff .contextual .trigger {
+  position: relative !important;
+  opacity: 1 !important;
+  /*clip: auto !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  border: 0 !important;
+  overflow: visible !important;*/
+}
