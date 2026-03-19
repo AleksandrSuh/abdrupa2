@@ -88,6 +88,8 @@ class GraphicsController extends ControllerBase {
         'level' => (int) $node->get('field_level')->value,
         'parent_number' => $this->getParentNumber($node->get('field_item_number')->value),
         'classes' => $node->get('field_klassy_stili')->value,
+        'start_date' => $node->get('field_date_start')->value,
+        'end_date' => $node->get('field_date_end')->value,
       ];
     }
 
@@ -102,7 +104,7 @@ class GraphicsController extends ControllerBase {
   /**
    * Calculate left and right percentages based on deadlines.
    */
-  private function calculatePositions($items, $year) {
+  private function calculatePositions__($items, $year) {
     $months = [
       '07' => 'Июль',
       '08' => 'Август',
@@ -167,6 +169,63 @@ class GraphicsController extends ControllerBase {
         $item['left'] = 40;
         $item['right'] = 30;
       }
+    }
+
+    return $items;
+  }
+
+  private function calculatePositions($items, $year) {
+    // Начало и конец временной шкалы
+    $start_date = strtotime($year . '-07-01'); // 1 июля
+    $end_date = strtotime($year . '-12-31');   // 31 декабря
+    $total_days = ($end_date - $start_date) / (60 * 60 * 24);
+
+    foreach ($items as &$item) {
+      $end_date_str = $item['end_date'] ?? '';
+      $start_date_str = $item['start_date'] ?? '';
+
+      if (!empty($end_date_str) && preg_match('/^(\d{2})\.(\d{2})$/', $end_date_str, $matches)) {
+        $day = $matches[1];
+        $month = $matches[2];
+
+        // Формируем полную дату
+        $date_str = $year . '-' . $month . '-' . $day;
+        $timestamp = strtotime($date_str);
+
+        if ($timestamp) {
+          // Позиция в процентах
+          $days_from_start = ($timestamp - $start_date) / (60 * 60 * 24);
+          $left = ($days_from_start / $total_days) * 100;
+
+          // Ширина полосы (по умолчанию до конца)
+          $right = 0;
+
+          // Если есть дата начала
+          if (!empty($start_date_str) && preg_match('/^(\d{2})\.(\d{2})$/', $start_date_str, $start_matches)) {
+            $start_day = $start_matches[1];
+            $start_month = $start_matches[2];
+            $start_date_str_full = $year . '-' . $start_month . '-' . $start_day;
+            $start_timestamp = strtotime($start_date_str_full);
+
+            if ($start_timestamp && $start_timestamp < $timestamp) {
+              $start_days = ($start_timestamp - $start_date) / (60 * 60 * 24);
+              $left = ($start_days / $total_days) * 100;
+              $width_days = ($timestamp - $start_timestamp) / (60 * 60 * 24);
+              $right = 100 - ($left + ($width_days / $total_days * 100));
+            } else {
+              $right = 100 - ($left + (30 / $total_days * 100)); // примерно месяц
+            }
+          } else {
+            $right = 100 - ($left + (30 / $total_days * 100)); // примерно месяц
+          }
+        }
+      } else {
+        // Старая логика
+        // ... (как в предыдущем варианте)
+      }
+
+      $item['left'] = max(0, min(100, $left ?? 0));
+      $item['right'] = max(0, min(100, $right ?? 0));
     }
 
     return $items;

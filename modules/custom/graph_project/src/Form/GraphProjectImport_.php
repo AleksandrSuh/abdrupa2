@@ -28,7 +28,7 @@ class GraphProjectImport extends FormBase {
 
     $form['help'] = [
       '#type' => 'markup',
-      '#markup' => $this->t('<p>Загрузите файл в формате DOCX с графиком подготовки проекта бюджета. Файл должен содержать таблицу с колонками: Наименование мероприятия, Срок выполнения, Ответственный.</p>'),
+      '#markup' => $this->t('<p>Загрузите файл в формате DOC с графиком подготовки проекта бюджета. Файл должен содержать таблицу с колонками: Наименование мероприятия, Срок выполнения, Ответственный.</p>'),
     ];
 
     $form['file'] = [
@@ -65,13 +65,14 @@ class GraphProjectImport extends FormBase {
       '#value' => $this->t('Импортировать график'),
     ];
 
-    // ВСЕГДА добавляем таблицу с данными (если они есть)
     $this->addDataTable($form, $form_state);
+
 
     return $form;
   }
 
   private function addDataTable(array &$form, FormStateInterface $form_state) {
+    // Получаем последний импортированный год из конфигурации
     $config = $this->config('graph_project.settings');
     $last_import = $config->get('last_import');
 
@@ -80,6 +81,8 @@ class GraphProjectImport extends FormBase {
     }
 
     $year = $last_import['year'];
+
+    // Загружаем все материалы за этот год
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');
     $nodes = $node_storage->loadByProperties([
       'type' => 'graph_item',
@@ -90,24 +93,16 @@ class GraphProjectImport extends FormBase {
       return;
     }
 
-    // Сортируем
+    // Сортируем по номеру пункта
     $items = [];
     foreach ($nodes as $node) {
       $deadline = $node->get('field_deadline_raw')->value;
-      $start_date = $node->get('field_date_start')->value;
-      $end_date = $node->get('field_date_end')->value;
-
-      if (empty($end_date)) {
-        $end_date = $this->formatDateToDM($deadline);
-      }
-
       $items[] = [
         'nid' => $node->id(),
         'number' => $node->get('field_item_number')->value,
         'title' => $node->getTitle(),
         'deadline' => $deadline,
-        'start_date' => $start_date,
-        'end_date' => $end_date,
+        'deadline_dm' => $this->formatDateToDM($deadline), // ДД.ММ для автозаполнения
         'responsible' => $node->get('field_responsible')->value,
       ];
     }
@@ -116,19 +111,13 @@ class GraphProjectImport extends FormBase {
       return version_compare($a['number'], $b['number']);
     });
 
-    // Контейнер с #tree
+    // Заголовок таблицы
     $form['data_table'] = [
-      '#type' => 'container',
-      '#tree' => TRUE,
-      '#weight' => 100,
-    ];
-
-    // Заголовок
-    $form['data_table']['title'] = [
+      '#type' => 'markup',
       '#markup' => '<h3>Импортированные данные за ' . $year . ' год</h3>',
     ];
 
-    // Заголовки таблицы
+    // Строим таблицу
     $header = [
       'number' => $this->t('№ п/п'),
       'title' => $this->t('Мероприятие'),
@@ -138,64 +127,71 @@ class GraphProjectImport extends FormBase {
       'end_date' => $this->t('Дата окончания'),
     ];
 
-    // Таблица
+    $rows = [];
+    foreach ($items as $item) {
+      // Уникальные имена для полей
+      $start_field_name = 'start_date_' . $item['nid'];
+      $end_field_name = 'end_date_' . $item['nid'];
+
+      $rows[] = [
+        'number' => $item['number'],
+        'title' => [
+          'data' => [
+            '#markup' => '<div style="max-width:300px">' . $item['title'] . '</div>',
+          ],
+        ],
+        'deadline' => $item['deadline'],
+        'responsible' => [
+          'data' => [
+            '#markup' => '<div style="max-width:200px">' . $item['responsible'] . '</div>',
+          ],
+        ],
+        'start_date' => [
+          'data' => [
+            '#type' => 'textfield',
+            '#name' => $start_field_name,
+            '#size' => 10,
+            '#attributes' => ['placeholder' => 'ДД.ММ'],
+            '#default_value' => '', // всегда пустое для начала
+          ],
+        ],
+        'end_date' => [
+          'data' => [
+            '#type' => 'textfield',
+            '#name' => $end_field_name,
+            '#size' => 10,
+            '#attributes' => ['placeholder' => 'ДД.ММ'],
+            '#default_value' => $item['deadline_dm'], // автозаполняем из дедлайна!
+          ],
+        ],
+      ];
+    }
+
     $form['data_table']['table'] = [
       '#type' => 'table',
       '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => $this->t('Нет данных для отображения.'),
       '#attributes' => [
         'class' => ['graph-project-data-table'],
         'style' => 'width:100%; border-collapse: collapse;',
       ],
     ];
 
-    // Строки таблицы
-    foreach ($items as $item) {
-      $form['data_table']['table'][$item['nid']] = [
-        'number' => [
-          '#markup' => $item['number'],
-        ],
-        'title' => [
-          '#markup' => '<div style="max-width:300px">' . $item['title'] . '</div>',
-        ],
-        'deadline' => [
-          '#markup' => $item['deadline'],
-        ],
-        'responsible' => [
-          '#markup' => '<div style="max-width:200px">' . $item['responsible'] . '</div>',
-        ],
-        'start_date' => [
-          '#type' => 'textfield',
-          '#title' => '', // без заголовка внутри ячейки
-          '#title_display' => 'invisible',
-          '#default_value' => $item['start_date'],
-          '#size' => 10,
-          '#attributes' => ['placeholder' => 'ДД.ММ'],
-          '#prefix' => '<div class="container-inline">',
-          '#suffix' => '</div>',
-        ],
-        'end_date' => [
-          '#type' => 'textfield',
-          '#title' => '',
-          '#title_display' => 'invisible',
-          '#default_value' => $item['end_date'],
-          '#size' => 10,
-          '#attributes' => ['placeholder' => 'ДД.ММ'],
-        ],
-      ];
-    }
-
-    // Кнопка сохранения
+    // Добавляем кнопку сохранения
     $form['data_table']['actions'] = [
       '#type' => 'actions',
       'save_dates' => [
         '#type' => 'submit',
         '#value' => $this->t('Сохранить даты'),
         '#submit' => ['::saveDatesSubmit'],
-        '#name' => 'save_dates',
-        '#limit_validation_errors' => [],
+        '#attributes' => [
+          'class' => ['button--primary'],
+        ],
       ],
     ];
 
+    // Добавляем CSS для админки
     $form['#attached']['library'][] = 'graph_project/graph_project.admin';
   }
 
@@ -607,33 +603,47 @@ class GraphProjectImport extends FormBase {
   }
 
   public function saveDatesSubmit(array &$form, FormStateInterface $form_state) {
-    // Получаем данные из правильной структуры
-    $user_input = $form_state->getUserInput();
-
-    if (empty($user_input['data_table']['table']) || !is_array($user_input['data_table']['table'])) {
-      $this->messenger()->addWarning($this->t('Нет данных для сохранения.'));
-      return;
-    }
-
-    $data_table = $user_input['data_table']['table'];
+    $values = $form_state->getValues();
     $saved_count = 0;
 
-    foreach ($data_table as $nid => $row) {
-      if (!is_numeric($nid)) continue;
+    foreach ($values as $key => $value) {
+      // Ищем поля start_date_* и end_date_*
+      if (strpos($key, 'start_date_') === 0) {
+        $nid = str_replace('start_date_', '', $key);
+        $start_date = trim($value);
 
-      $start_date = isset($row['start_date']) ? trim($row['start_date']) : '';
-      $end_date = isset($row['end_date']) ? trim($row['end_date']) : '';
+        // Сохраняем дату начала в поле field_date_start
+        if (!empty($nid) && is_numeric($nid)) {
+          $node = Node::load($nid);
+          if ($node && $node->getType() == 'graph_item') {
+            $node->set('field_date_start', $start_date);
+            $node->save();
+            $saved_count++;
+          }
+        }
+      }
 
-      $node = Node::load($nid);
-      if ($node && $node->getType() == 'graph_item') {
-        $node->set('field_date_start', $start_date);
-        $node->set('field_date_end', $end_date);
-        $node->save();
-        $saved_count++;
+      if (strpos($key, 'end_date_') === 0) {
+        $nid = str_replace('end_date_', '', $key);
+        $end_date = trim($value);
+
+        // Сохраняем дату окончания в поле field_date_end
+        if (!empty($nid) && is_numeric($nid)) {
+          $node = Node::load($nid);
+          if ($node && $node->getType() == 'graph_item') {
+            $node->set('field_date_end', $end_date);
+            $node->save();
+            $saved_count++;
+          }
+        }
       }
     }
 
-    $this->messenger()->addMessage($this->t('Сохранено @count записей.', ['@count' => $saved_count]));
+    if ($saved_count > 0) {
+      $this->messenger()->addMessage($this->t('Сохранено @count дат.', ['@count' => $saved_count]));
+    } else {
+      $this->messenger()->addWarning($this->t('Нет данных для сохранения.'));
+    }
   }
 
   /**
@@ -752,8 +762,9 @@ class GraphProjectImport extends FormBase {
     }
   }
 
-
-
+  /**
+   * Форматирует дату из ДД.ММ.ГГГГ в ДД.ММ
+   */
   private function formatDateToDM($date_string) {
     if (preg_match('/^(\d{2})\.(\d{2})\.\d{4}$/', $date_string, $matches)) {
       return $matches[1] . '.' . $matches[2]; // ДД.ММ
