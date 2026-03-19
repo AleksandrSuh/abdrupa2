@@ -20,7 +20,7 @@ head-styles-scripts:
     js/commonController.js: {}
     js/main.js: {}
     assets/18ca603e/jui/js/jquery-ui.min.js: {}
-    #assets/18ca603e/jui/js/jquery-ui-i18n.min.js: {}
+    assets/18ca603e/jui/js/jquery-ui-i18n.min.js: {}
     #https://new.ekburg.ru/js/portalheader.js: { type: external }
   dependencies:
     - core/jquery

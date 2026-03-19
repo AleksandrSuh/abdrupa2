@@ -65,7 +65,118 @@ class GraphProjectImport extends FormBase {
       '#value' => $this->t('Импортировать график'),
     ];
 
+    $this->addDataTable($form, $form_state);
+
+
     return $form;
+  }
+
+  private function addDataTable(array &$form, FormStateInterface $form_state) {
+    // Получаем последний импортированный год из конфигурации
+    $config = $this->config('graph_project.settings');
+    $last_import = $config->get('last_import');
+
+    if (empty($last_import['year'])) {
+      return;
+    }
+
+    $year = $last_import['year'];
+    $plan_years = $last_import['plan_years'] ?? '';
+
+    // Загружаем все материалы за этот год
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadByProperties([
+      'type' => 'graph_item',
+      'field_year' => $year,
+    ]);
+
+    if (empty($nodes)) {
+      return;
+    }
+
+    // Сортируем по номеру пункта
+    $items = [];
+    foreach ($nodes as $node) {
+      $items[] = [
+        'nid' => $node->id(),
+        'number' => $node->get('field_item_number')->value,
+        'title' => $node->getTitle(),
+        'deadline' => $node->get('field_deadline_raw')->value,
+        'responsible' => $node->get('field_responsible')->value,
+      ];
+    }
+
+    usort($items, function($a, $b) {
+      return version_compare($a['number'], $b['number']);
+    });
+
+    // Заголовок таблицы
+    $form['data_table'] = [
+      '#type' => 'markup',
+      '#markup' => '<h3>Импортированные данные за ' . $year . ' год</h3>',
+    ];
+
+    // Строим таблицу
+    $header = [
+      'number' => $this->t('№ п/п'),
+      'title' => $this->t('Мероприятие'),
+      'deadline' => $this->t('Срок'),
+      'responsible' => $this->t('Ответственный'),
+      'start_date' => $this->t('Начало'),
+      'end_date' => $this->t('Окончание'),
+    ];
+
+    $rows = [];
+    foreach ($items as $item) {
+      // Создаём уникальные имена для полей
+      $start_field_name = 'start_date_' . $item['nid'];
+      $end_field_name = 'end_date_' . $item['nid'];
+
+      $rows[] = [
+        'number' => $item['number'],
+        'title' => [
+          'data' => [
+            '#markup' => '<div style="max-width:300px">' . $item['title'] . '</div>',
+          ],
+        ],
+        'deadline' => $item['deadline'],
+        'responsible' => [
+          'data' => [
+            '#markup' => '<div style="max-width:200px">' . $item['responsible'] . '</div>',
+          ],
+        ],
+        'start_date' => [
+          'data' => [
+            '#type' => 'textfield',
+            '#name' => $start_field_name,
+            '#size' => 10,
+            '#attributes' => ['placeholder' => 'ДД.ММ'],
+          ],
+        ],
+        'end_date' => [
+          'data' => [
+            '#type' => 'textfield',
+            '#name' => $end_field_name,
+            '#size' => 10,
+            '#attributes' => ['placeholder' => 'ДД.ММ'],
+          ],
+        ],
+      ];
+    }
+
+    $form['data_table']['table'] = [
+      '#type' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => $this->t('Нет данных для отображения.'),
+      '#attributes' => [
+        'class' => ['graph-project-data-table'],
+        'style' => 'width:100%; border-collapse: collapse;',
+      ],
+    ];
+
+    // Добавляем CSS для таблицы
+    $form['#attached']['library'][] = 'graph_project/graph_project.admin';
   }
 
   /**
@@ -619,6 +730,16 @@ class GraphProjectImport extends FormBase {
       $text = $cell->getText();
       //\Drupal::logger('graph_project')->debug('getText(): @text', ['@text' => $text]);
     }
+  }
+
+  /**
+   * Форматирует дату из ДД.ММ.ГГГГ в ДД.ММ
+   */
+  private function formatDateToDM($date_string) {
+    if (preg_match('/^(\d{2})\.(\d{2})\.\d{4}$/', $date_string, $matches)) {
+      return $matches[1] . '.' . $matches[2]; // ДД.ММ
+    }
+    return '';
   }
 
 }

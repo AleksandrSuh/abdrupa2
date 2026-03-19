@@ -21,8 +21,7 @@ function budget_theme_preprocess_block(&$variables) {
   if (isset($variables['content']['#block_content'])) {
     $block_content = $variables['content']['#block_content'];
 
-    // Только для вашего типа блока
-    if ($block_content->bundle() == 'main_links') { // замените на ваше машинное имя
+    if ($block_content->bundle() == 'main_links') { // машинное имя типа блока "полезные ссылки"
       // Добавляем контекстуальные ссылки
       $variables['elements']['#contextual_links'] = [
         'block' => [
@@ -32,4 +31,9 @@ function budget_theme_preprocess_block(&$variables) {
     }
   }
 
+}
+
+function budget_theme_preprocess_page(&$variables) {
+  // Добавляем переменную 'donor_news' для использования в page.html.twig
+  $variables['donor_news'] = mynews_display_news_block();
 }

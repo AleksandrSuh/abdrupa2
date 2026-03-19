@@ -25,7 +25,7 @@
       showLoading(true);
       var dateText = $(this).val();
       $('.js-header-date').html(dateText);
-      console.log('AJAX запрос с датой:', dateText);
+      //console.log('AJAX запрос с датой:', dateText);
       $.ajax({
         url: jsonUrl, //"/budget/execution/ajax"
         type: 'post',
@@ -36,7 +36,7 @@
         dataType: 'json'
       }).done(function(response) {
         showLoading(false);
-        console.log(response);
+        //console.log(response);
         if (response.success && response.content) {
           $('.js-aj_content').html($(response.content).find('.js-aj_content').html());
           $('.js-aj_content #from_data').datepicker($.extend({showMonthAfterYear:false},$.datepicker.regional['ru'],{'dateFormat':'dd.mm.yy','beforeShowDay':function(d) {

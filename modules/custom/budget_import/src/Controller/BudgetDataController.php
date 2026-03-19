@@ -73,7 +73,7 @@ class BudgetDataController extends ControllerBase {
       '#tag' => 'h2',
       '#value' => $this->t('Расходы бюджета'),
       '#attributes' => ['class' => ['section-title']],
-      '#weight' => 10,
+      //'#weight' => 10,
     ];
 
     $expenses_data = $this->getTableData('budget_expenses');
@@ -181,17 +181,22 @@ class BudgetDataController extends ControllerBase {
 
     // Итоговая строка "ВСЕГО"
     if (!empty($rows)) {
-      $total_row = [['data' => '<strong>ВСЕГО</strong>', 'class' => ['total-row']]];
+      $total_row = [['data' => [
+        '#markup' => '<strong>ВСЕГО</strong>'], 'class' => ['total-row']]];
 
       foreach ($all_years as $year) {
         $total_row[] = [
-          'data' => '<strong>' . number_format($year_totals[$year], 2, '.', ' ') . '</strong>',
+          'data' => [
+            '#markup' => '<strong>' . number_format($year_totals[$year], 2, '.', ' ') . '</strong>'
+          ],
           'class' => ['number-cell', 'total-row'],
         ];
       }
 
       $total_row[] = [
-        'data' => '<strong>' . number_format($grand_total, 2, '.', ' ') . '</strong>',
+        'data' => [
+          '#markup' => '<strong>' . number_format($grand_total, 2, '.', ' ') . '</strong>'
+          ],
         'class' => ['number-cell', 'total-row', 'grand-total'],
       ];
 
@@ -285,17 +290,28 @@ class BudgetDataController extends ControllerBase {
     $total_balance_class = $total_balance >= 0 ? 'positive-balance' : 'negative-balance';
 
     $balance_rows[] = [
-      ['data' => '<strong>ИТОГО</strong>', 'class' => ['total-row']],
       [
-        'data' => '<strong>' . number_format($total_income, 2, '.', ' ') . '</strong>',
+        'data' => [
+          '#markup' => '<b>ИТОГО</b>',
+        ],
+        'class' => ['total-row']
+      ],
+      [
+        'data' => [
+          '#markup' => '<strong>' . number_format($total_income, 2, '.', ' ') . '</strong>'
+        ],
         'class' => ['number-cell', 'total-row'],
       ],
       [
-        'data' => '<strong>' . number_format($total_expense, 2, '.', ' ') . '</strong>',
+        'data' => [
+          '#markup' => '<strong>' . number_format($total_expense, 2, '.', ' ') . '</strong>'
+        ],
         'class' => ['number-cell', 'total-row'],
       ],
       [
-        'data' => '<strong>' . number_format($total_balance, 2, '.', ' ') . '</strong>',
+        'data' => [
+          '#markup' => '<strong>' . number_format($total_balance, 2, '.', ' ') . '</strong>'
+        ],
         'class' => ['number-cell', 'total-row', 'balance-cell', $total_balance_class],
       ],
     ];

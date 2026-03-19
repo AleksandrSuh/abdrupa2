@@ -1,0 +1,5 @@
+graph_project.admin:
+  version: 1.x
+  css:
+    theme:
+      css/graph-project-admin.css: {}
