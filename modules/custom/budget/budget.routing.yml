@@ -52,3 +52,13 @@ budget.execution_invest_ajax:
     _permission: 'access content'
   options:
     no_cache: TRUE
+budget.feedback_ajax:
+  path: '/budget/feedback/ajax'
+  defaults:
+    _controller: '\Drupal\budget\Controller\FeedbackAjax::setData'
+    _title: 'Execution AJAX'
+  requirements:
+    _permission: 'access content'
+    _method: 'POST'
+  options:
+    no_cache: TRUE

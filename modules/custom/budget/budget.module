@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
+use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Core\Render\Markup;
 
 /**
  * Implements hook_page_attachments().
@@ -38,4 +40,34 @@ function budget_theme($existing, $type, $theme, $path) {
       'template' => 'budget-execut-bl_main',
     ],
   ];
+}
+
+function budget_mail($key, &$message, $params) {
+  $options = [
+    'langcode' => $message['langcode'],
+  ];
+
+  switch ($key) {
+    case 'feedback_message':
+      // Формируем тему письма
+      $message['subject'] = t('Новое сообщение из формы обратной связи', [], $options);
+
+      // Формируем тело письма (массив строк)
+      $message['body'][] = t('Здравствуйте!', [], $options);
+      $message['body'][] = '';
+      $message['body'][] = t('На сайте было отправлено новое сообщение:', [], $options);
+      $message['body'][] = '';
+
+      // Добавляем данные из формы
+      foreach ($params['form_data'] as $field_name => $field_value) {
+        $message['body'][] = t('@field: @value', [
+          '@field' => $field_name,
+          '@value' => $field_value,
+        ], $options);
+      }
+
+      $message['body'][] = '';
+      $message['body'][] = t('С уважением, автоматическая система сайта', [], $options);
+      break;
+  }
 }

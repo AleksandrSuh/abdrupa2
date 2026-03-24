@@ -24,7 +24,7 @@
             <a href="/site/map">Карта сайта</a>
           </li>
           <li>
-            <a href="/feedback">Обратная связь</a>
+            <a href="#" data-popup-open="treatment">Обратная связь</a>
           </li>
         </ul>
         <!--span class="g-create-treatment">
@@ -229,51 +229,6 @@
     <div class="g_inner">
       <div class="FL_grid">
         {{ page.secondary_menu }}
-        <!--div class="FL_cell">
-          <h2><a href="../about/index.html">О бюджете</a></h2>
-          <a href="../about/index.html">Справочная информация о бюджете</a>
-          <a href="../about/glossary.html">Азбука бюджета</a>
-          <a href="../about/graphics.html">График подготовки проекта бюджета</a>
-          <a href="../about/acts.html">Нормативная база</a>
-        </div>
-        <div class="FL_cell">
-          <h2><a href="../budgetproject/index.html">Проект бюджета</a></h2>
-          <a href="../budgetproject/index.html">Основные показатели проекта бюджета</a>
-          <a href="../budgetproject/courses.html">Основные направления бюджетной и налоговой политики</a>
-          <a href="../budgetproject/incomes.html">Доходы бюджета</a>
-          <a href="../budgetproject/expenses.html">Расходы бюджета</a>
-          <a href="../budgetproject/funding.html">Источники финансирования дефицита бюджета</a>
-          <a href="../budgetproject/acts.html">Проект Решения о бюджете города Екатеринбурга</a>
-        </div>
-        <div class="FL_cell">
-          <h2><a href="index.html">Бюджет Екатеринбурга</a></h2>
-          <a href="index.html">Основные показатели бюджета</a>
-          <a href="incomes.html">Доходы бюджета</a>
-          <a href="expenses.html">Расходы бюджета</a>
-          <a href="funding.html">Источники финансирования дефицита бюджета</a>
-          <a href="acts.html">Решение о бюджете города Екатеринбурга</a>
-          <a href="http://финансы.екатеринбург.рф/proekt-byudjeta-goroda-ekaterinburga-v-dostupnoy-dlya-grajdan-forme/" target="_blank">Бюджет для граждан</a>
-        </div>
-        <div class="FL_cell">
-          <h2><a href="../execution/index.html">Исполнение бюджета</a></h2>
-          <a href="../execution/index.html">Основные показатели бюджета</a>
-          <a href="../execution/incomes.html">Доходы бюджета</a>
-          <a href="../execution/expenses.html">Расходы бюджета</a>
-          <a href="../execution/funding.html">Источники финансирования дефицита бюджета</a>
-          <a href="../execution/dynamics.html">Динамика основных показателей бюджета Екатеринбурга</a>
-          <a href="../execution/investment.html">Бюджетные инвестиции</a>
-          <a href="../execution/report.html">Отчет об исполнении бюджета</a>
-        </div>
-        <div class="FL_cell">
-          <h2><a href="../monitoring/cities_comparison.html">Мониторинг и анализ</a></h2>
-          <a href="../monitoring/cities_comparison.html">Сравнение с другими городами</a>
-        </div>
-        <div class="FL_cell">
-          <h2><a href="../questions/allquestions.html">Часто задаваемые вопросы</a></h2>
-        </div>
-        <div class="FL_cell">
-          <h2><a href="../payments/allpayments.html">Информация о платежных документах</a></h2>
-        </div-->
       </div>
     </div>
   </div>
@@ -316,6 +271,18 @@
         <div class="PFG_cell"></div>
         <div class="PFG_cell error-block"></div>
       </div>
+      <div class="PFG_line cs-invbl">
+        <div class="PFG_cell">
+          <label>E-mail:</label>
+        </div>
+        <div class="PFG_cell">
+          <input id="feedback-form-email" name="e-mail" type="email"/>
+        </div>
+      </div>
+      <div class="PFG_line error-line error-email-1 cs-invbl">
+        <div class="PFG_cell"></div>
+        <div class="PFG_cell error-block"></div>
+      </div>
       <div class="PFG_line">
         <div class="PFG_cell">
           <label>Эл. почта:</label>
@@ -340,9 +307,9 @@
         <div class="PFG_cell"></div>
         <div class="PFG_cell error-block"></div>
       </div>
-      <div class="PFG_line">
+      <!--div class="PFG_line">
         <div class="PFG_cell">
-          <!--img id="yw3" src="../feedback/captcha/v/69675210b4f2f" alt="" /-->                </div>
+          <img id="yw3" src="../feedback/captcha/v/69675210b4f2f" alt="" />                </div>
         <div class="PFG_cell">
           <p>Введите текст с изображения</p>
           <input id="feedback-form-verifyCode-1" type="text"/>
@@ -351,7 +318,7 @@
       <div class="PFG_line error-line error-verifyCode-1">
         <div class="PFG_cell"></div>
         <div class="PFG_cell error-block"></div>
-      </div>
+      </div-->
       <div class="PFG_line">
         <div class="PFG_cell">
 
@@ -372,8 +339,13 @@
     $('.popup_form_grid').on('keyup', function(){
       var valid = true;
       $(this).find('input, textarea').each(function(){
+        if($(this).attr('name') === 'e-mail')
+        {
+          return true;
+        }
         valid = !!$(this).val() && valid;
       });
+      //console.log($(this).find('input, textarea').length);
       if(!valid){
         $('#feedback-send-btn-1').addClass('inactive');
       }
@@ -388,13 +360,14 @@
       }
       e.preventDefault();
       var sendBtn = this;
-      $.ajax({type: "POST", url: "/ajax_feedback/addfeed",
+      $.ajax({type: "POST", url: "/budget/feedback/ajax",
         data: {
           name: $('#feedback-form-name-1').val(),
           email: $('#feedback-form-email-1').val(),
           message: $('#feedback-form-message-1').val(),
           verifyCode: $('#feedback-form-verifyCode-1').val()
-        }
+        },
+        dataType:'json'
       }).done(function( msg ) {
         var str = '';
         if (msg.added == undefined && msg.errors == undefined) {
