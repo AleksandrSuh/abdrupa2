@@ -49,8 +49,8 @@ class ExecInvestAjaxCntr extends ControllerBase {
           ['id'=>'78', 'value' => $arCats['code']],
           ['id'=>'73', 'value' => $arCats['code']],
           ['id'=>'74', 'value' => $categ],
-          ['id'=>'75', 'value' => $arCats['plan']],
-          ['id'=>'76', 'value' => $arCats['actual']],
+          ['id'=>'75', 'value' => intval($arCats['plan'] / 1000000)],
+          ['id'=>'76', 'value' => intval($arCats['actual'] / 1000000)],
           ['id'=>'77', 'value' => $percent],
           ['id'=>'79', 'value' => $date]
         ]]];

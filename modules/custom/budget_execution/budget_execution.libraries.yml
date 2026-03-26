@@ -5,6 +5,9 @@ budget-execution-list:
       css/budget-execution-list.css: {}
 
 vbo_fix:
+  css:
+    theme:
+      css/budget-execution-list.css: {}
   js:
     js/vbo_fix.js: {}
   dependencies:

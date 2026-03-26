@@ -28,3 +28,7 @@
 details.vbo-multipage-selector summary.claro-details__summary {
   display: none;
 }
+
+#edit-multipage .claro-details__summary {
+  display: none;
+}

@@ -42,10 +42,14 @@ class ExecExpensMunprogAjaxCntr extends ControllerBase {
     }
 
 
+    $arSumm = [0,0];
     foreach ($arIncomes as $categ => $arCats)
     {
         $arData[] = ['row' => ['field' => [['id'=>'82', 'value' => $categ], ['id'=>'83', 'value' => $arCats['plan']], ['id'=>'84', 'value' => $arCats['actual']], ['id'=>'85', 'value' => $date]]]];
+      $arSumm[0] += $arCats['plan'];
+      $arSumm[1] += $arCats['actual'];
     }
+    $arData[] = ['row' => ['field' => [['id'=>'82', 'value' => 'Суммарно'], ['id'=>'83', 'value' => $arSumm[0]], ['id'=>'84', 'value' => $arSumm[1]], ['id'=>'85', 'value' => $date]]]];
 
 
     return new JsonResponse([

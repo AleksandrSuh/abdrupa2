@@ -11,3 +11,6 @@
 .cs-invbl {
   display: none;
 }
+#edit-multipage .claro-details__summary {
+  display: none;
+}

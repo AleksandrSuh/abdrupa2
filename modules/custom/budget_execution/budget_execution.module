@@ -132,10 +132,6 @@ function budget_execution_form_alter(&$form, \Drupal\Core\Form\FormStateInterfac
   }
 
   if ($form_id == 'views_form_budget_execution_admin_page_1') {
-    if (isset($form['header']['views_bulk_operations_bulk_form']['select_all']))
-    {
-      //$form['header']['views_bulk_operations_bulk_form']['select_all']['#title'] = t('Тест: выбрать все на этой странице');
-    }
     if (isset($form['header']['views_bulk_operations_bulk_form'])) {
       $form['header']['views_bulk_operations_bulk_form']['#attached']['library'][] = 'budget_execution/vbo_fix';
     }
