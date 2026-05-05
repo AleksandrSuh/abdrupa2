@@ -1,0 +1,34 @@
+{
+    "fetched_at": "2026-04-05 19:20:03",
+    "count": 4,
+    "news": [
+        {
+            "title": "Эстафета «Мои финансы» приглашает ознакомиться с основами инвестирования",
+            "link": "https:\/\/xn--80acgfbsl1azdqr.xn--p1ai\/news\/100571-estafeta-moi-finansy-priglashaet-oznakomitsya-s-osnovami-investirovaniya",
+            "date": "Сегодня, 15:02",
+            "description": "Мероприятие проводится в онлайн-формате.",
+            "timestamp": 1775398803
+        },
+        {
+            "title": "В Екатеринбурге стартовал фестиваль камерной музыки",
+            "link": "https:\/\/xn--80acgfbsl1azdqr.xn--p1ai\/news\/100570-v-ekaterinburge-startoval-festival-kamernoy-muzyki",
+            "date": "Сегодня, 12:01",
+            "description": "До 29 апреля пройдет 10 концертов.",
+            "timestamp": 1775398803
+        },
+        {
+            "title": "Православные христиане отмечают Вербное воскресенье",
+            "link": "https:\/\/xn--80acgfbsl1azdqr.xn--p1ai\/news\/100569-pravoslavnye-khristiane-otmechayut-verbnoe-voskresene",
+            "date": "Сегодня, 09:48",
+            "description": "Праздник установлен в память о торжественном въезде Иисуса Христа в Иерусалим.",
+            "timestamp": 1775398803
+        },
+        {
+            "title": "Стартовал конкурсный отбор среди НКО региона",
+            "link": "https:\/\/xn--80acgfbsl1azdqr.xn--p1ai\/news\/100568-startoval-konkursnyy-otbor-sredi-nko-regiona",
+            "date": "Вчера, 14:20",
+            "description": "Заявки принимаются до 30 апреля.",
+            "timestamp": 1775398803
+        }
+    ]
+}

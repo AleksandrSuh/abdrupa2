@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Primary hook implementations for the Maillog module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function maillog_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.maillog':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Maillog module provides an opportunity to save the mail log for debugging purposes.') . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Saves the mail log') . '</dt>';
+      $output .= '<dt>' . t('View integration') . '</dt>';
+      $output .= '<dt>' . t('Displays verbose output of the mail for users with permission "view maillog"') . '</dt>';
+      $output .= '<dt>' . t('Suppress email delivery') . '</dt>';
+      $output .= '</dl>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function maillog_cron() {
+  $config = \Drupal::config('maillog.settings');
+  $logger = \Drupal::logger('maillog');
+
+  if ($config->get('cron_enabled')) {
+    $type = $config->get('keep_limit_type') ?? '';
+    $limit = $config->get($type) ?? 0;
+
+    $deleted_logs = 0;
+
+    try {
+      $deleted_logs = \Drupal::service('maillog.cleaner')
+        ->clearMaillogs($type, (int) $limit);
+    }
+    catch (\Exception $e) {
+      $logger->error(t('Exception when tried to delete the mail logs, reason: @reason', [
+        '@reason' => $e->getMessage(),
+      ]));
+    }
+
+    if (empty($deleted_logs)) {
+      $logger->info(t('Any log deleted because any log meet the conditions'));
+    }
+    else {
+      $logger->info(t('Deleted @count mail logs from database', [
+        '@count' => $deleted_logs,
+      ]));
+    }
+  }
+}

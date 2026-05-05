@@ -1,0 +1,4 @@
+services:
+  maillog.cleaner:
+    class: Drupal\maillog\MailLogCleaner
+    arguments: [ '@database' ]

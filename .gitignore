@@ -1,4 +1,11 @@
 comm.txt
 robots.txt
-/core
-/sites/default/files/php
+/core/
+/sites/*/files/
+/sites/*/private/
+/sites/*/settings.local.php
+/vendor/
+.DS_Store
+Thumbs.db
+*.sql
+*.sql.gz

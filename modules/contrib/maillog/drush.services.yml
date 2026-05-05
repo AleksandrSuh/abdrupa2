@@ -1,0 +1,7 @@
+services:
+  maillog.commands:
+    class: Drupal\maillog\Commands\MaillogCommands
+    arguments:
+      - '@database'
+    tags:
+      - { name: drush.command }

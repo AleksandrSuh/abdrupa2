@@ -1,0 +1,11 @@
+send: true
+nosend_notify: false
+log: true
+log_notify: false
+verbose: true
+body_trimmed: false
+base64_remove: false
+cron_enabled: false
+keep_limit_type: time_to_keep
+time_to_keep: null
+number_to_keep: null
