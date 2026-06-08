@@ -1,0 +1,10 @@
+
+на странице http://ldstyle.ru/ustanovka-zhaljuzi-na-zakaz 
+в коде должны быть прописаны следующие теги и атрибуты:
+
+
+<html prefix="ya: http://webmaster.yandex.ru/vocabularies/">
+
+<meta property="ya:interaction" content="XML_FORM" />
+
+<meta property="ya:interaction:url" content="http://ldstyle.ru/island.xml" />

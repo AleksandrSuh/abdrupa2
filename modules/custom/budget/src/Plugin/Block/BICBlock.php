@@ -110,6 +110,12 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           '#weight' => 0,
         ];
 
+        $build['h3'] = [
+          '#markup' => '<h3>Доходы бюджета муниципального образования «город  Екатеринбург» на 2026 и плановый период 2027 и 2028 годов, млн руб.</h3>',
+          '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+          '#weight' => 0,
+        ];
+
         // Передаем URL для AJAX
         $build['#attached'] = [
           'library' => ['budget/incomes_chart2'],

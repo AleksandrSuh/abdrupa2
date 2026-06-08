@@ -1,5 +1,5 @@
 entity.budget_execution.collection:
-  path: '/admin/budget/execution-old'
+  path: '/admin/budget/execution'
   defaults:
     _entity_list: 'budget_execution'
     _title: 'Исполнение бюджета'

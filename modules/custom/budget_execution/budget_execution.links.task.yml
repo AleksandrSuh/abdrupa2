@@ -14,14 +14,14 @@ entity.budget_execution.delete_form:
   title: 'Удалить'
   weight: 10
 
-budget_execution.view:
-  route_name: view.budget_execution_admin.page_1
-  title: 'Список (новый)'
-  base_route: entity.budget_execution.collection
-  weight: -10
+#budget_execution.view:
+#  route_name: view.budget_execution_admin.page_1
+#  title: 'Список (новый)'
+#  base_route: entity.budget_execution.collection
+#  weight: -10
 
 budget_execution.list:
   route_name: entity.budget_execution.collection
-  title: 'Список (старый)'
+  title: 'Список'
   base_route: entity.budget_execution.collection
   weight: 0

@@ -1,7 +1,6 @@
 comm.txt
 robots.txt
 /core/
-/sites/*/files/
 /sites/*/private/
 /sites/*/settings.local.php
 /vendor/
@@ -9,3 +8,4 @@ robots.txt
 Thumbs.db
 *.sql
 *.sql.gz
+/news_cache/
