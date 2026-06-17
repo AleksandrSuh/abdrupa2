@@ -111,7 +111,7 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
         ];
 
         $build['h3'] = [
-          '#markup' => '<h3>Доходы бюджета муниципального образования «город  Екатеринбург» на 2026 и плановый период 2027 и 2028 годов, млн руб.</h3>',
+          '#markup' => '<h3>Доходы бюджета муниципального образования «город  Екатеринбург» на 2026 и плановый период 2027 и 2028 годов, млн руб. здесь</h3>',
           '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
           '#weight' => 0,
         ];
@@ -298,6 +298,97 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           $route = 'budget.execution_invest_ajax';
         }
 
+        if ($node_url == '/monitoring/cities_comparison')
+        {
+          $db = \Drupal::database();
+
+          // Уникальные года
+          $query = $db->select('city_finances', 'c')
+            ->fields('c', ['year'])
+            ->distinct()
+            ->orderBy('year', 'DESC');
+          $years = $query->execute()->fetchCol();
+
+          // Уникальные города
+          $query = $db->select('city_finances', 'c')
+            ->fields('c', ['city'])
+            ->distinct()
+            ->orderBy('city');
+          $cities = $query->execute()->fetchCol();
+
+
+          // Формируем опции для выбора года
+          $year_options = '';
+          foreach ($years as $year) {
+            $selected = ($year == date('Y')) ? 'selected=""' : '';
+            $year_options .= '<option ' . $selected . ' value="' . $year . '">' . $year . '</option>';
+          }
+
+          // Формируем список городов
+          $city_items = '';
+          foreach ($cities as $city) {
+            $image = $this->getCityImage($city);
+            $city_items .= '
+            <li data-list-item-id="' . md5($city) . '">
+              <div class="budget__look__towns-item">
+                <img class="city_image" src="/img/' . $image . '" alt="' . $city . '">
+                <a class="city_toggle" href="#" city="' . $city . '" toggle="1" onclick="return false">' . $city . '</a>
+              </div>
+            </li>';
+          }
+
+          $build['crumb'] = [
+            '#markup' => '<div class="breadcrumbs"><a href="/">Главная</a>
+                    <div>|</div><span>Мониторинг и анализ</span>
+                    <div>|</div><span>Сравнение с другими городами</span></div>',
+            '#weight' => -1,
+          ];
+          $build['h1'] = [
+            '#markup' => '<h1>Сравнение с городами аналогами</h1>',
+            '#weight' => 0,
+          ];
+          $build['chart'] = [
+            '#markup' => '<div class="budget">
+    <form class="budget__show" name="add-estimation">
+        <p>
+            <select id="category" name="category">
+                <option selected="" value="Доходы">Доходы</option>
+                <option value="Расходы">Расходы</option>
+            </select>
+            <select id="year" name="year">
+                    ' . $year_options . '
+            </select>
+            <input value="Показать" type="submit">
+        </p>
+    </form>
+    <div class="budget__look">
+        <div class="budget__look__diagram" id="container">
+            &nbsp;
+        </div>
+        <div class="budget__look__towns">
+            <ul>
+                ' . $city_items . '
+            </ul>
+        </div>
+    </div>
+</div>',
+            '#allowed_tags' => ['div', 'form', 'select', 'option', 'ul', 'li', 'input', 'img', 'a', 'h2', 'span', 'br', 'strong', 'em'],
+            '#weight' => 1
+          ];
+          $build['#attached'] = [
+            'library' => ['budget/monitor_compars_chart'],
+            'drupalSettings' => [
+              'budget' => [
+                'budgetDates' => $js_dates,
+                'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget.comparison_ajax')
+                  ->toString(),
+                'fallbackData' => [
+                ]
+              ]
+            ]
+          ];
+        }
+
         if ($node_url == '/execution/dynamics')
         {
 
@@ -362,8 +453,10 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
         }
         else
         {
-          $build['inp_date'] = [
-            '#markup' => '<div class="table width-auto text-middle g-content__switcher__acts">
+          if($node_url != '/monitoring/cities_comparison')
+          {
+            $build['inp_date'] = [
+              '#markup' => '<div class="table width-auto text-middle g-content__switcher__acts">
               <div class="table-cell" style="width:200px;">
                   <label class="color-gray" style="font-size:15px;" for="">Данные представлены на:</label>
               </div>
@@ -371,23 +464,24 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
                   <input class="date_select" id="from_data" type="text" value="" name="from_data">
               </div>
           </div>',
-            '#allowed_tags' => ['div', 'label', 'input', 'span', 'br', 'strong', 'em'],
-            '#weight' => 0,
-          ];
-          $build['#attached'] = [
-            'library' => [$library],
-            'drupalSettings' => [
-              'budget' => [
-                'budgetDates' => $js_dates,
-                'ajaxUrl' => \Drupal\Core\Url::fromRoute($route)
-                  //->setOption('query', ['format' => 'json', 'type_data' => 'incomes'])
-                  ->toString(),
-                'fallbackData' => [
-                  //'type' => 'incomes'
+              '#allowed_tags' => ['div', 'label', 'input', 'span', 'br', 'strong', 'em'],
+              '#weight' => 0,
+            ];
+            $build['#attached'] = [
+              'library' => [$library],
+              'drupalSettings' => [
+                'budget' => [
+                  'budgetDates' => $js_dates,
+                  'ajaxUrl' => \Drupal\Core\Url::fromRoute($route)
+                    //->setOption('query', ['format' => 'json', 'type_data' => 'incomes'])
+                    ->toString(),
+                  'fallbackData' => [
+                    //'type' => 'incomes'
+                  ]
                 ]
               ]
-            ]
-          ];
+            ];
+          }
         }
 
       }
@@ -402,4 +496,19 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
     return $build;
 
   }
+
+  private function getCityImage($city) {
+    $map = [
+      'Екатеринбург' => 'ekaterinburg.jpg',
+      'Ростов-на-Дону' => 'rostov-na-donu.jpg',
+      'Пермь' => 'perm.png',
+      'Казань' => 'kazan.gif',
+      'Нижний Новгород' => 'nizhny-novgorod.png',
+      'Челябинск' => 'chelyabinsk.png',
+      'Новосибирск' => 'novosibirsk.png',
+    ];
+
+    return $map[$city] ?? str_replace([' ', '-'], '_', $city);
+  }
+
 }

@@ -62,3 +62,29 @@ budget.feedback_ajax:
     _method: 'POST'
   options:
     no_cache: TRUE
+budget.finance_add:
+  path: '/admin/finances/add'
+  defaults:
+    _form: '\Drupal\budget\Form\CityFinanceForm'
+    _title: 'Бюджеты городов-аналогов'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    no_cache: TRUE
+budget.finance_delete:
+  path: '/admin/finances/delete/{year}'
+  defaults:
+    _form: '\Drupal\budget\Form\CityFinanceDeleteForm'
+    _title: 'Delete year data'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    no_cache: TRUE
+budget.comparison_ajax:
+  path: '/monitoring/ComparisonFilter'
+  defaults:
+    _controller: '\Drupal\budget\Controller\CityFinanceAjaxController::getComparisonData'
+    _title: 'Comparison AJAX'
+  requirements:
+    _permission: 'access content'
+  methods: [POST]

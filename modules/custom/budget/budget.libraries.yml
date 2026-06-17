@@ -87,3 +87,12 @@ execution_invest_chart:
     - core/jquery
     - core/drupal
     - core/drupalSettings
+monitor_compars_chart:
+  version: 1.x
+  header: true
+  js:
+    js/monitor_compars_chart.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

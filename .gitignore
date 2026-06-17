@@ -3,6 +3,7 @@ robots.txt
 /core/
 /sites/*/private/
 /sites/*/settings.local.php
+/sites/default/settings.php
 /vendor/
 .DS_Store
 Thumbs.db
