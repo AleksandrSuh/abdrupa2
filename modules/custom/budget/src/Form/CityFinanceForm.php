@@ -16,7 +16,7 @@ class CityFinanceForm extends FormBase {
     $year = $form_state->getValue('year') ?: date('Y');
 
     $curr_y = date('Y');
-    $years = range($curr_y - 3, $curr_y);
+    $years = range(2023, $curr_y);
 
     $form['year'] = [
       '#type' => 'select',

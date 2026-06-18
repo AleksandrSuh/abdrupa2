@@ -55,7 +55,7 @@ class CityFinanceAjaxController extends ControllerBase {
     // Определяем единицу измерения (берём из первого элемента)
     // В JS ожидается, что последний элемент первого массива — это measure
     // Добавляем "тыс. руб." как единицу измерения
-    $measure = 'тыс. руб.';
+    $measure = 'млн. руб.';
 
     // Добавляем measure в первый элемент
     if (!empty($result)) {

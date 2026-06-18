@@ -404,6 +404,16 @@
             $('#captchaRefresh-1').trigger('click');
           });
         }
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        var errorMessage = 'Не удалось отправить сообщение. Попробуйте позже.';
+
+        if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+          errorMessage = jqXHR.responseJSON.message;
+        }
+        var $errorContainer = $('.error-message-1');
+        $errorContainer.find('.error-block').html(errorMessage);
+        $errorContainer.css('display', 'table-row');
+        console.error('Ошибка AJAX:', jqXHR.status, textStatus, errorThrown);
       });
     });
   }
