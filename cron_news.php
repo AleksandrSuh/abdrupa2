@@ -43,6 +43,7 @@ try {
   file_put_contents($log_dir . '/cron_news.log', $log_message);//, FILE_APPEND);
 
   if ($result) {
+    \Drupal::service('cache.render')->deleteAll();
     echo "[$timestamp] Новости обновлены успешно\n";
   } else {
     echo "[$timestamp] Ошибка обновления новостей\n";

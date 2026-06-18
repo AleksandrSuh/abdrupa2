@@ -88,6 +88,12 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
         $crumb = 'Бюджет Екатеринбурга';
         $path = 'budget';
       }
+        $body_content = '';
+        if ($node->hasField('body') && !$node->get('body')->isEmpty()) {
+            $body_content = $node->get('body')->value;
+            // Опционально: фильтруем через CKEditor/текстовый формат
+            //$body_content = \Drupal\Core\Render\Markup::create($body_content);
+        }
       // Контейнер для графика
       $build['chart'] = [
         '#markup' => '<div id="infographics-1">&nbsp;</div>',
@@ -109,12 +115,19 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           '#markup' => '<h1>Доходы бюджета</h1>',
           '#weight' => 0,
         ];
+          if ($body_content) {
+              $build['node_content'] = [
+                  '#markup' => $body_content,
+                  '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+                  '#weight' => 0,
+              ];
+          }
 
-        $build['h3'] = [
+        /*$build['h3'] = [
           '#markup' => '<h3>Доходы бюджета муниципального образования «город  Екатеринбург» на 2026 и плановый период 2027 и 2028 годов, млн руб.</h3>',
           '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
           '#weight' => 0,
-        ];
+        ];*/
 
         // Передаем URL для AJAX
         $build['#attached'] = [
@@ -145,6 +158,13 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           '#markup' => '<h1>Расходы бюджета</h1>',
           '#weight' => 0,
         ];
+        if ($body_content) {
+          $build['node_content'] = [
+              '#markup' => $body_content,
+              '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+              '#weight' => 0,
+          ];
+        }
 
         // Передаем URL для AJAX
         $build['#attached'] = [
@@ -173,6 +193,13 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           '#markup' => '<h1>Источники финансирования дефицита бюджета</h1>',
           '#weight' => 0,
         ];
+          if ($body_content) {
+              $build['node_content'] = [
+                  '#markup' => $body_content,
+                  '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+                  '#weight' => 0,
+              ];
+          }
 
         $build['#attached'] = [
           'library' => ['budget/inc_deficit_chart'],
@@ -218,6 +245,13 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
             '#markup' => '<h1>Доходы бюджета Екатеринбурга, млн руб.</h1>',
             '#weight' => 0,
           ];
+            if ($body_content) {
+                $build['node_content'] = [
+                    '#markup' => $body_content,
+                    '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+                    '#weight' => 0,
+                ];
+            }
           $library = 'budget/execution_chart';
           $route = 'budget.execution_incomes_ajax';
         }
@@ -235,6 +269,13 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
             '#markup' => '<h1>Расходы бюджета муниципального образования «город Екатеринбург» в разрезе отраслей</h1>',
             '#weight' => 0,
           ];
+            if ($body_content) {
+                $build['node_content'] = [
+                    '#markup' => $body_content,
+                    '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+                    '#weight' => 0,
+                ];
+            }
           $library = 'budget/execution_expens_chart';
           $route = 'budget.execution_expens_ajax';
         }
@@ -252,6 +293,13 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
             '#markup' => '<h1>Расходы бюджета муниципального образования «город Екатеринбург» в разрезе муниципальных программ</h1>',
             '#weight' => 0,
           ];
+            if ($body_content) {
+                $build['node_content'] = [
+                    '#markup' => $body_content,
+                    '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+                    '#weight' => 0,
+                ];
+            }
           $library = 'budget/execution_expens_chart';
           $route = 'budget.execution_expens_munprog_ajax';
         }
@@ -273,6 +321,13 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
             '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
             '#weight' => 0,
           ];
+            if ($body_content) {
+                $build['node_content'] = [
+                    '#markup' => $body_content,
+                    '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+                    '#weight' => 0,
+                ];
+            }
           $library = 'budget/execution_funding_chart';
           $route = 'budget.execution_funding_ajax';
         }
@@ -294,6 +349,13 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
             '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
             '#weight' => 0,
           ];
+            if ($body_content) {
+                $build['node_content'] = [
+                    '#markup' => $body_content,
+                    '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+                    '#weight' => 0,
+                ];
+            }
           $library = 'budget/execution_invest_chart';
           $route = 'budget.execution_invest_ajax';
         }
@@ -347,6 +409,13 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
             '#markup' => '<h1>Сравнение с городами аналогами</h1>',
             '#weight' => 0,
           ];
+            if ($body_content) {
+                $build['node_content'] = [
+                    '#markup' => $body_content,
+                    '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+                    '#weight' => 0,
+                ];
+            }
           $build['chart'] = [
             '#markup' => '<div class="budget">
     <form class="budget__show" name="add-estimation">
@@ -447,6 +516,13 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
               ]
             ]
           ];
+            if ($body_content) {
+                $build['node_content'] = [
+                    '#markup' => $body_content,
+                    '#allowed_tags' => ['h3', 'span', 'br', 'strong', 'em'],
+                    '#weight' => 0,
+                ];
+            }
 
           //$library = 'budget/execution_dynamic_chart';
           //$route = 'budget.execution_dynamic_ajax';

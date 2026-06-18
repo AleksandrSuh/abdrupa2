@@ -165,38 +165,6 @@ class NewsFetcher {
       }
     }
 
-    // Если не нашли через точный селектор, пробуем запасной вариант
-    /*if (empty($news)) {
-      $this->log("Не найдено через точный селектор, пробуем запасной", 'WARNING');
-
-      // Просто ищем все ссылки внутри news-list
-      $linkNodes = $xpath->query("//div[contains(@class, 'news-list')]//a[contains(@class, 'news-link')]");
-
-      foreach ($linkNodes as $index => $linkNode) {
-        if ($index >= 4) break;
-
-        $title = trim($linkNode->nodeValue);
-        $link = $linkNode->getAttribute('href');
-
-        if (strpos($link, 'http') !== 0) {
-          $baseUrl = 'https://xn--80acgfbsl1azdqr.xn--p1ai';
-          $link = rtrim($baseUrl, '/') . '/' . ltrim($link, '/');
-        }
-
-        // Пытаемся найти дату рядом (в предыдущем элементе с классом news-date)
-        $parent = $linkNode->parentNode;
-        $dateNode = $xpath->query(".//span[contains(@class, 'news-date')]", $parent);
-        $date = $dateNode->length > 0 ? trim($dateNode->item(0)->nodeValue) : '';
-
-        $news[] = [
-          'title' => $title,
-          'link' => $link,
-          'date' => $date,
-          'timestamp' => time(),
-        ];
-      }
-    }*/
-
     //$this->log("Всего найдено новостей: " . count($news), 'INFO');
     return $news;
   }

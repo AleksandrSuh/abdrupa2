@@ -42,6 +42,26 @@ function budget_theme($existing, $type, $theme, $path) {
   ];
 }
 
+function budget_preprocess_node(&$variables) {
+  $node = $variables['node'];
+  if (in_array($node->toUrl()->toString(), ['/budget/incomes',
+  '/budget/expenses',
+  '/budget/funding',
+  '/budgetproject/incomes',
+  '/budgetproject/expenses',
+  '/budgetproject/funding',
+  '/execution/incomes',
+  '/execution/expenses_industries',
+  '/execution/expenses_municipals',
+  '/execution/funding',
+  '/execution/dynamics',
+  '/execution/investment',
+  '/monitoring/cities_comparison'])) {
+    // Скрываем стандартный вывод body
+    unset($variables['content']['body']);
+  }
+}
+
 function budget_mail($key, &$message, $params) {
   $options = [
     'langcode' => $message['langcode'],
