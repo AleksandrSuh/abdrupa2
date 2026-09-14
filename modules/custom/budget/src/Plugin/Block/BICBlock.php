@@ -219,8 +219,11 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
       {
         $query = \Drupal::database()->select('budget_execution_base', 'b');
         $query->addField('b', 'date');
+        $query->addExpression("TO_DATE(b.date, 'DD.MM.YYYY')", 'date_real');
         $query->distinct();
-        $query->orderBy('b.date', 'DESC');
+        $query->condition('b.type', 'expense_sector');
+        //$query->orderBy('b.date', 'DESC');
+        $query->orderBy('date_real', 'DESC');
         $db_dates = $query->execute()->fetchCol();
         // Форматируем для JavaScript
         $js_dates = [];
