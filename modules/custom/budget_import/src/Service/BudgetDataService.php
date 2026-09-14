@@ -59,7 +59,9 @@ class BudgetDataService {
       $data['mundolg'][$row->year] = intval($row->amount);
     }
 
-    $query = $this->database->select('budget_execution_base', 'bt')->orderBy('bt.date', 'DESC');
+    $query = $this->database->select('budget_execution_base', 'bt');//->orderBy('bt.date', 'DESC');
+    $query->addExpression("TO_DATE(bt.date, 'DD.MM.YYYY')", 'date_real');
+    $query->orderBy('date_real', 'DESC');
     $query->fields('bt', ['date', 'plan_value', 'actual_value', 'type', 'category_name', 'category_code']);
     $results = $query->execute()->fetchAll(); // income expense_sector
     foreach ($results as $row) {

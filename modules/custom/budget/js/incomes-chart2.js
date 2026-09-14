@@ -72,6 +72,9 @@
         },
         yAxis: {
           stackLabels: {
+            style: {
+              textOutline: "none"
+            },
             enabled: true,
             formatter: function() {
               return formatNumber(this.total, 0);
