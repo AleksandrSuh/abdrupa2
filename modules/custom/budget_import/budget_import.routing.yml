@@ -2,7 +2,16 @@ budget_import.import_form:
   path: '/admin/budget/import'
   defaults:
     _form: '\Drupal\budget_import\Form\ImportXlsxForm'
-    _title: 'Импорт данных бюджета'
+    _title: 'Импорт данных проекта бюджета'
+  requirements:
+    _permission: 'administer site configuration'
+
+budget_import.import_form2:
+  path: '/admin/budget/import2'
+  defaults:
+    _form: '\Drupal\budget_import\Form\ImportXlsxForm'
+    _title: 'Импорт данных бюджета Екб'
+    budget_type: 'curr'
   requirements:
     _permission: 'administer site configuration'
 
@@ -10,7 +19,16 @@ budget_import.view_data:
   path: '/admin/budget/data'
   defaults:
     _controller: '\Drupal\budget_import\Controller\BudgetDataController::viewData'
-    _title: 'Просмотр данных бюджета'
+    _title: 'Просмотр данных проекта бюджета'
+  requirements:
+    _permission: 'administer site configuration'
+
+budget_import.view_data2:
+  path: '/admin/budget/data2'
+  defaults:
+    _controller: '\Drupal\budget_import\Controller\BudgetDataController::viewData'
+    _title: 'Просмотр данных бюджета Екб'
+    budget_type: 'curr'
   requirements:
     _permission: 'administer site configuration'
 

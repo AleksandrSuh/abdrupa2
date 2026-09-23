@@ -32,9 +32,9 @@ class BudgetDataService {
    * @return array
    *   Массив с данными.
    */
-  public function getBudgetData() {
+  public function getBudgetData(string $postfix = '') {
 
-    $query = $this->database->select('budget_incomes', 'bt');
+    $query = $this->database->select('budget_incomes'.$postfix, 'bt');
     $query->fields('bt', ['year', 'category', 'amount']);
     // ... условия, сортировка и т.д.
     $results = $query->execute()->fetchAll();
@@ -44,7 +44,7 @@ class BudgetDataService {
       $data['incomes'][$row->year][$row->category] = intval($row->amount);
     }
 
-    $query = $this->database->select('budget_expenses', 'bt');
+    $query = $this->database->select('budget_expenses'.$postfix, 'bt');
     $query->fields('bt', ['year', 'category', 'amount']);
     $results = $query->execute()->fetchAll();
 
@@ -52,7 +52,7 @@ class BudgetDataService {
       $data['expenses'][$row->year][$row->category] = intval($row->amount);
     }
 
-    $query = $this->database->select('budget_mundolg', 'bt');
+    $query = $this->database->select('budget_mundolg'.$postfix, 'bt');
     $query->fields('bt', ['year', 'amount']);
     $results = $query->execute()->fetchAll();
     foreach ($results as $row) {

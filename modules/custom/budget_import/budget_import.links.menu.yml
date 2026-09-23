@@ -1,22 +1,42 @@
-# Главный пункт меню
+# Главные пункты меню
 budget_import.admin:
-  title: 'Бюджет'
-  description: 'Импорт данных бюджета из XLSX'
+  title: 'Проект бюджета'
+  description: 'Импорт данных проекта бюджета из XLSX'
   parent: system.admin_config_system
   route_name: budget_import.import_form
   weight: 20
+budget_import.admin2:
+  title: 'Бюджет Екб'
+  description: 'Импорт данных бюджета из XLSX'
+  parent: system.admin_config_system
+  route_name: budget_import.import_form2
+  weight: 30
 
 # Подпункты
 budget_import.import_form:
   title: 'Импорт данных'
-  description: 'Загрузка XLSX файла с данными бюджета'
+  description: 'Загрузка XLSX файла с данными проекта бюджета'
   parent: budget_import.admin
   route_name: budget_import.import_form
   weight: 10
 
 budget_import.view_data:
   title: 'Просмотр данных'
-  description: 'Просмотр импортированных данных бюджета'
+  description: 'Просмотр импортированных данных проекта бюджета'
   parent: budget_import.admin
   route_name: budget_import.view_data
+  weight: 20
+
+budget_import.import_form2:
+  title: 'Импорт данных'
+  description: 'Загрузка XLSX файла с данными бюджета'
+  parent: budget_import.admin2
+  route_name: budget_import.import_form2
+  weight: 10
+
+budget_import.view_data2:
+  title: 'Просмотр данных'
+  description: 'Просмотр импортированных данных бюджета'
+  parent: budget_import.admin2
+  route_name: budget_import.view_data2
   weight: 20

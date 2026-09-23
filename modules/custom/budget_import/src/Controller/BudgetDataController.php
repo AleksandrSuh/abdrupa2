@@ -20,6 +20,8 @@ class BudgetDataController extends ControllerBase {
    */
   protected $database;
 
+  protected string $budgetType;
+
   /**
    * Constructs a new BudgetDataController.
    *
@@ -42,12 +44,30 @@ class BudgetDataController extends ControllerBase {
   /**
    * Display budget data.
    */
-  public function viewData(Request $request) {
+  public function viewData(Request $request, string $budget_type = '') {
+
+    $this->budgetType = $budget_type;
+    $label = empty($budget_type)
+      ? $this->t('Доходы бюджета (проект)')
+      : $this->t('Доходы бюджета Екб');
+    $table_bi = 'budget_incomes';
+    $table_be = 'budget_expenses';
+    $route_name = 'budget_import.view_data';
+    $import_route_name = 'budget_import.import_form';
+    if(!empty($budget_type))
+    {
+      $table_bi = 'budget_incomes2';
+      $table_be = 'budget_expenses2';
+      $route_name = 'budget_import.view_data2';
+      $import_route_name = 'budget_import.import_form2';
+    }
+
     // Если запрошен JSON формат
     if ($request->query->get('format') === 'json') {
       // Можно добавить параметр type для выбора таблицы
       $type = $request->query->get('type', 'incomes');
-      return new JsonResponse($this->generateBudgetJson($type));
+      $postfix = '';
+      return new JsonResponse($this->generateBudgetJson($type, $postfix));
     }
 
     $build = [];
@@ -56,11 +76,11 @@ class BudgetDataController extends ControllerBase {
     $build['incomes_title'] = [
       '#type' => 'html_tag',
       '#tag' => 'h2',
-      '#value' => $this->t('Доходы бюджета'),
+      '#value' => $label,
       '#attributes' => ['class' => ['section-title']],
     ];
 
-    $incomes_data = $this->getTableData('budget_incomes');
+    $incomes_data = $this->getTableData($table_bi);
     $build['incomes_table'] = $this->buildTable(
       $incomes_data['rows'],
       $incomes_data['header'],
@@ -76,7 +96,7 @@ class BudgetDataController extends ControllerBase {
       //'#weight' => 10,
     ];
 
-    $expenses_data = $this->getTableData('budget_expenses');
+    $expenses_data = $this->getTableData($table_be);
     $build['expenses_table'] = $this->buildTable(
       $expenses_data['rows'],
       $expenses_data['header'],
@@ -94,20 +114,20 @@ class BudgetDataController extends ControllerBase {
       'import' => [
         '#type' => 'link',
         '#title' => $this->t('Импортировать данные'),
-        '#url' => \Drupal\Core\Url::fromRoute('budget_import.import_form'),
+        '#url' => \Drupal\Core\Url::fromRoute($import_route_name),
         '#attributes' => ['class' => ['button', 'button--primary']],
       ],
       'json_incomes' => [
         '#type' => 'link',
         '#title' => $this->t('Доходы в JSON'),
-        '#url' => \Drupal\Core\Url::fromRoute('budget_import.view_data')
+        '#url' => \Drupal\Core\Url::fromRoute($route_name)
           ->setOption('query', ['format' => 'json', 'type' => 'incomes']),
         '#attributes' => ['class' => ['button']],
       ],
       'json_expenses' => [
         '#type' => 'link',
         '#title' => $this->t('Расходы в JSON'),
-        '#url' => \Drupal\Core\Url::fromRoute('budget_import.view_data')
+        '#url' => \Drupal\Core\Url::fromRoute($route_name)
           ->setOption('query', ['format' => 'json', 'type' => 'expenses']),
         '#attributes' => ['class' => ['button']],
       ],
@@ -326,10 +346,10 @@ class BudgetDataController extends ControllerBase {
     return $build;
   }
 
-  private function getBudgetDataForType($type_page) {
+  private function getBudgetDataForType($type_page, $postfix) {
     $database = \Drupal::database();
 
-    $query = $database->select('budget_'.$type_page, 'b')
+    $query = $database->select('budget_'.$type_page.$postfix, 'b')
       ->fields('b', ['category', 'year', 'amount'])
       ->orderBy('b.category')
       ->orderBy('b.year');
@@ -434,7 +454,7 @@ class BudgetDataController extends ControllerBase {
     return $data;
   }
 
-  private function generateBudgetJson($type_page) {
+  private function generateBudgetJson($type_page, $postfix) {
     //$database = \Drupal::database();
 
     if($type_page == 'all')
@@ -443,12 +463,12 @@ class BudgetDataController extends ControllerBase {
       $arTypes = ['incomes','expenses'];
       foreach ($arTypes as $type)
       {
-        $data[$type.'Data'] = $this->getBudgetDataForType($type);
+        $data[$type.'Data'] = $this->getBudgetDataForType($type, $postfix);
       }
     }
     else
     {
-      $data = $this->getBudgetDataForType($type_page);
+      $data = $this->getBudgetDataForType($type_page, $postfix);
     }
 
     return $data;
@@ -532,8 +552,9 @@ class BudgetDataController extends ControllerBase {
   public function apiData(Request $request) {
 
     $type_page = $request->query->get('type_data', 'incomes');
+    $postfix = $request->query->get('budget_type', '');
 
-    $data = $this->generateBudgetJson($type_page);
+    $data = $this->generateBudgetJson($type_page, $postfix);
 
     // Можно вернуть в разных форматах
     $format = $request->query->get('format', 'json');

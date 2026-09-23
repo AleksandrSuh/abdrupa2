@@ -73,6 +73,7 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
     {
       $node = $this->routeMatch->getParameter('node');
       $node_url = $node->toUrl()->toString();
+      $budget_type = '';
       if(strpos($node_url, 'budgetproject') !== false)
       {
         $crumb = 'Проект бюджета';
@@ -87,6 +88,7 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
       {
         $crumb = 'Бюджет Екатеринбурга';
         $path = 'budget';
+        $budget_type = '2';
       }
         $body_content = '';
         if ($node->hasField('body') && !$node->get('body')->isEmpty()) {
@@ -135,7 +137,7 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           'drupalSettings' => [
             'budget' => [
               'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.api_json')
-                ->setOption('query', ['format' => 'json', 'type_data' => 'incomes'])
+                ->setOption('query', ['format' => 'json', 'type_data' => 'incomes', 'budget_type' => $budget_type])
                 ->toString(),
               'fallbackData' => [
                   //'type' => 'incomes'
@@ -172,7 +174,7 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           'drupalSettings' => [
             'budget' => [
               'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.api_json')
-                ->setOption('query', ['format' => 'json', 'type_data' => 'expenses'])
+                ->setOption('query', ['format' => 'json', 'type_data' => 'expenses', 'budget_type' => $budget_type])
                 ->toString(),
               'fallbackData' => [
                 //'type' => 'expenses'
@@ -206,7 +208,7 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
           'drupalSettings' => [
             'budget' => [
               'ajaxUrl' => \Drupal\Core\Url::fromRoute('budget_import.api_json')
-                ->setOption('query', ['format' => 'json', 'type_data' => 'inc_deficit'])
+                ->setOption('query', ['format' => 'json', 'type_data' => 'inc_deficit', 'budget_type' => $budget_type])
                 ->toString(),
               'fallbackData' => [
                 //'type' => 'incomes'

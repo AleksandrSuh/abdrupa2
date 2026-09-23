@@ -12,6 +12,8 @@ use Drupal\Core\Url;
  */
 class ImportXlsxForm extends FormBase {
 
+  protected $budgetType;
+
   /**
    * {@inheritdoc}
    */
@@ -22,10 +24,14 @@ class ImportXlsxForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['description'] = [
+  public function buildForm(array $form, FormStateInterface $form_state, string $budget_type = '') {
+
+    $this->budgetType = $budget_type;
+    $route = empty($budget_type) ? 'budget_import.view_data' : 'budget_import.view_data2';
+    $filename = empty($budget_type) ? 'Проект бюджета' : 'Бюджет Екатеринбурга';
+      $form['description'] = [
       '#markup' => '<div class="messages messages--status">
-        <p>Загрузите XLSX-файл "Проект бюджета". Формат файла:</p>
+        <p>Загрузите XLSX-файл "'.$filename.'". Формат файла:</p>
         <p>Лист "Доходы (план)"</p>
         <ul>
           <li>Столбец A,B,C: игнорировать</li>
@@ -69,7 +75,7 @@ class ImportXlsxForm extends FormBase {
     $form['actions']['view_data'] = [
       '#type' => 'link',
       '#title' => $this->t('Просмотр данных'),
-      '#url' => Url::fromRoute('budget_import.view_data'),
+      '#url' => Url::fromRoute($route),
       '#attributes' => [
         'class' => ['button'],
       ],
@@ -112,6 +118,30 @@ class ImportXlsxForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $redir_route = 'budget_import.view_data';
+    $stat_query = "
+    SELECT
+      COUNT(*) as total,
+      COUNT(DISTINCT year) as years_count,
+      COUNT(DISTINCT category) as categories_count,
+      MIN(year) as min_year,
+      MAX(year) as max_year
+    FROM {budget_incomes}
+  ";
+    if(!empty($this->budgetType))
+    {
+      $redir_route = 'budget_import.view_data2';
+      $stat_query = "
+    SELECT
+      COUNT(*) as total,
+      COUNT(DISTINCT year) as years_count,
+      COUNT(DISTINCT category) as categories_count,
+      MIN(year) as min_year,
+      MAX(year) as max_year
+    FROM {budget_incomes2}
+  ";
+    }
+
     $file_id = $form_state->getValue('xlsx_file')[0];
     $clear_existing = $form_state->getValue('clear_existing');
 
@@ -136,7 +166,7 @@ class ImportXlsxForm extends FormBase {
         );
 
         // Перенаправляем на просмотр данных
-        $form_state->setRedirect('budget_import.view_data');
+        $form_state->setRedirect($redir_route);
       }
       catch (\Exception $e) {
         $this->messenger()->addError(
@@ -145,15 +175,7 @@ class ImportXlsxForm extends FormBase {
       }
     }
     $database = \Drupal::database();
-    $stats = $database->query("
-    SELECT
-      COUNT(*) as total,
-      COUNT(DISTINCT year) as years_count,
-      COUNT(DISTINCT category) as categories_count,
-      MIN(year) as min_year,
-      MAX(year) as max_year
-    FROM {budget_incomes}
-  ")->fetchAssoc();
+    $stats = $database->query($stat_query)->fetchAssoc();
 
     $this->messenger()->addMessage(
       $this->t('Статистика базы данных: всего @total записей, @years лет, @categories категорий, период: @min - @max год.', [
@@ -170,11 +192,22 @@ class ImportXlsxForm extends FormBase {
    * Clear existing budget data.
    */
   private function clearExistingData() {
+    $table_bi = 'budget_incomes';
+    $table_be = 'budget_expenses';
+    $table_bmd = 'budget_mundolg';
+    $table_bdf = 'budget_inc_deficit';
+    if(!empty($this->budgetType))
+    {
+      $table_bi = 'budget_incomes2';
+      $table_be = 'budget_expenses2';
+      $table_bmd = 'budget_mundolg2';
+      $table_bdf = 'budget_inc_deficit2';
+    }
     $connection = \Drupal::database();
-    $connection->truncate('budget_incomes')->execute();
-    $connection->truncate('budget_expenses')->execute();
-    $connection->truncate('budget_mundolg')->execute();
-    $connection->truncate('budget_inc_deficit')->execute();
+    $connection->truncate($table_bi)->execute();
+    $connection->truncate($table_be)->execute();
+    $connection->truncate($table_bmd)->execute();
+    $connection->truncate($table_bdf)->execute();
     $this->messenger()->addMessage($this->t('Существующие данные очищены.'));
   }
 
@@ -185,20 +218,24 @@ class ImportXlsxForm extends FormBase {
     if (!class_exists('\PhpOffice\PhpSpreadsheet\IOFactory')) {
       throw new \Exception('Установите PhpSpreadsheet: ddev composer require phpoffice/phpspreadsheet');
     }
-
+    $postfix = '';
+    if(!empty($this->budgetType))
+    {
+      $postfix = '2';
+    }
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file_path);
-    $table_name = 'budget_incomes';
+    $table_name = 'budget_incomes'.$postfix;
     if ($type === 'incomes') {
       $worksheet = $spreadsheet->getSheet(0);  // Первый лист - доходы
     } elseif ($type === 'expenses') {
       $worksheet = $spreadsheet->getSheet(1);  // Второй лист - расходы
-      $table_name = 'budget_expenses';
+      $table_name = 'budget_expenses'.$postfix;
     } elseif ($type === 'mundolg') {
       $worksheet = $spreadsheet->getSheet(3);  // Четвёртый лист - муниципальный долг
-      $table_name = 'budget_mundolg';
+      $table_name = 'budget_mundolg'.$postfix;
     } elseif ($type === 'inc_deficit') {
       $worksheet = $spreadsheet->getSheet(4);  // Пятый лист - источники финансирования дефицита бюджета
-      $table_name = 'budget_inc_deficit';
+      $table_name = 'budget_inc_deficit'.$postfix;
     }
 
     \Drupal::logger('budget_import')->info(
@@ -243,7 +280,7 @@ class ImportXlsxForm extends FormBase {
 
       // ДЕБАГ первых 10 строк
       if ($row <= $start_row + 10) {
-        \Drupal::logger('budget_import')->debug(
+        \Drupal::logger('budget_import'.$postfix)->debug(
           'Чтение строки @row: D="@year", E="@value", F="@category"',
           [
             '@row' => $row,
@@ -310,7 +347,7 @@ class ImportXlsxForm extends FormBase {
 
         // ДЕБАГ первых 3 записей
         if ($imported_count <= 3) {
-          \Drupal::logger('budget_import')->info(
+          \Drupal::logger('budget_import'.$postfix)->info(
             'Успешно импортировано: @year - "@category" = @amount',
             ['@year' => $year, '@category' => $category, '@amount' => $parsed_value]
           );
@@ -318,7 +355,7 @@ class ImportXlsxForm extends FormBase {
       }
     }
 
-    \Drupal::logger('budget_import')->info('Импорт завершен: @count записей', ['@count' => $imported_count]);
+    \Drupal::logger('budget_import'.$postfix)->info('Импорт завершен: @count записей', ['@count' => $imported_count]);
 
     return $imported_count;
   }
