@@ -71,12 +71,18 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
     //$controller = new \Drupal\budget_import\Controller\BudgetDataController();
     //$data = $controller->viewData();
 
-    $node = $this->routeMatch->getParameter('node');
-    $node_url = $node->toUrl()->toString();
+    $path_matcher = \Drupal::service('path.matcher');
+    $is_front = $path_matcher->isFrontPage();
+
     $budget_type = '2';
-    if(strpos($node_url, 'budgetproject') !== false || strpos($node_url, 'execution') !== false)
+
+    if(!$is_front)
     {
-      $budget_type = '';
+      $node = $this->routeMatch->getParameter('node');
+      $node_url = $node->toUrl()->toString();
+      if (strpos($node_url, 'budgetproject') !== false || strpos($node_url, 'execution') !== false) {
+        $budget_type = '';
+      }
     }
 
 
