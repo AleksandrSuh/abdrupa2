@@ -10,3 +10,9 @@ entity.budget_execution.collection:
   description: 'Управление данными исполнения бюджета'
   parent: system.admin_content
   weight: 100
+budget_execution.dynamic_indicators:
+  title: 'Динамика показателей'
+  description: 'Динамика основных показателей бюджета муниципального образования "город Екатеринбург"'
+  parent: system.admin_config_system
+  route_name: budget_execution.dynamic_indicators
+  weight: 110

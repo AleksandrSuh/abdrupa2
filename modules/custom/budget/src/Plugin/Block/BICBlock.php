@@ -465,11 +465,28 @@ class BICBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
         if ($node_url == '/execution/dynamics')
         {
+          /*
+          $query = \Drupal::database()->select('budget_execution_indicators', 'b');
+          $query->addExpression('MAX(b.year)', 'max_year');
+          $max_year = $query->execute()->fetchField();
 
-          $query = \Drupal::database()->select('budget_execution_indicators', 'b')->orderBy('b.year');
+
+            $query = \Drupal::database()->select('budget_execution_indicators', 'b');
+            $query->fields('b', ['year', 'type', 'category', 'value']);
+            $query->condition('b.year', (int) $max_year - 3, '>=');
+            $query->orderBy('b.year', 'DESC');
+            $results = $query->execute()->fetchAll();
+            $results = array_reverse($results);*/
+
+
+          $query = \Drupal::database()->select('budget_execution_indicators', 'b')
+            ->orderBy('b.year')
+            ->orderBy('b.type')
+            ->orderBy('b.category');
 
           $query->fields('b', ['year', 'type', 'category', 'value']);
-          $results = $query->execute()->fetchAll(); // income expense_sector
+          $results = $query->execute()->fetchAll();
+
           $first_year = false;
           foreach ($results as $row) {
             if(!$first_year)
