@@ -48,14 +48,14 @@
           iserie.name = 'Налоговые и неналоговые доходы (млн руб.)';
           eserie.name = 'Объем расходов местного бюджета (млн руб.)';
           ivals = parseFloat(incomes[n][0]);
-          evals = parseFloat(expenses[n][0]);
+          evals = parseFloat(expenses[n][1]);
           //console.log(incomes[n][0]);
         }
         else{
           iserie.name = 'Объем безвозмездных поступлений (млн руб.)';
           eserie.name = 'Объем межбюджетных трансфертов (млн руб.)';
           ivals = parseFloat(incomes[n][1]);
-          evals = parseFloat(expenses[n][1]);
+          evals = parseFloat(expenses[n][0]);
         }
         console.log(incomes[n]);
         iserie.data[n] = [incomes[n][2],ivals];
