@@ -68,52 +68,62 @@
 
   var getAjax = function(data) {
     if (typeof data !=  'undefined' && typeof data != 'undefined' ) {
-      var table = [],
-        series = [],
-        categories = ['НАЛОГОВЫЕ и НЕНАЛОГОВЫЕ ДОХОДЫ', 'БЕЗВОЗМЕЗДНЫЕ ПОСТУПЛЕНИЯ'],
-        secondCat = [],
-        plan = 0, fact = 0, code = 0,
-        total_fact_1 = 0, total_plan_1 = 0,
-        total_prcntg = 0, total_fact_2 = 0, total_plan_2 = 0,
-        name = "";
+      // Подпись строки определяется кодом категории, а не позицией в ответе:
+      // названия в базе меняются (встречаются и "НАЛОГОВЫЕ И НЕНАЛОГОВЫЕ ДОХОДЫ",
+      // и "Налоговые/неналоговые доходы"), а порядок строк базой не гарантирован.
+      var LABELS = {
+          '10000000000000': 'НАЛОГОВЫЕ и НЕНАЛОГОВЫЕ ДОХОДЫ',
+          '20000000000000': 'БЕЗВОЗМЕЗДНЫЕ ПОСТУПЛЕНИЯ'
+        },
+        ORDER = ['10000000000000', '20000000000000'],
+        rows = [];
 
       $.each(data, function( key, val ) {
-        name = jsonfld(val, 0);
-        plan = parseFloat(jsonfld(val, 1)) / 1e6;
-        fact = parseFloat(jsonfld(val, 2)) / 1e6;
+        // Код категории появился в ответе вместе с этой правкой: если сервер его ещё
+        // не отдаёт, берём пустую строку и подписываем строку названием из базы (см. ниже).
+        var codeField = (val.row && val.row.field) ? val.row.field[4] : null,
+          code = (codeField && typeof codeField.value != 'undefined') ? codeField.value : '',
+          plan = parseFloat(jsonfld(val, 1)) / 1e6,
+          fact = parseFloat(jsonfld(val, 2)) / 1e6;
 
-        /*table.push([
-            name,
-            plan,
-            fact,
-            fact / plan * 100
-        ]);console.log(name, plan, fact);*/
-
-        if (key == 0)
-        {
-          total_plan_1 += plan;
-          total_fact_1 += fact;
-        }
-        else
-        {
-          total_plan_2 = plan;
-          total_fact_2 = fact;
-        }
+        rows.push({
+          code: String(code),
+          name: jsonfld(val, 0),
+          plan: isNaN(plan) ? 0 : plan,
+          fact: isNaN(fact) ? 0 : fact
+        });
       });
-      secondCat.push(formatNumber(total_plan_1));
-      secondCat.push(formatNumber(total_plan_2));
-      series = [
-        {name: "План", data: [
-            {y: 100, currency: total_plan_1},
-            {y: 100, currency: total_plan_2}
-          ]},
-        {name: "Факт", data: [
-            {y: (total_fact_1 / total_plan_1 * 100), currency: total_fact_1},
-            {y: (total_fact_2 / total_plan_2 * 100), currency: total_fact_2}
-          ]}
+
+      // Явный порядок отображения: сначала налоговые, затем безвозмездные.
+      // Строки с незнакомым кодом не теряются - идут в конце под своим названием из базы.
+      rows.sort(function(a, b) {
+        var ia = ORDER.indexOf(a.code),
+          ib = ORDER.indexOf(b.code);
+        if (ia === -1) { ia = ORDER.length; }
+        if (ib === -1) { ib = ORDER.length; }
+        if (ia !== ib) { return ia - ib; }
+        return a.code < b.code ? -1 : (a.code > b.code ? 1 : 0);
+      });
+
+      var categories = [],
+        secondCat = [],
+        planData = [],
+        factData = [];
+
+      $.each(rows, function(i, row) {
+        // Если код незнакомый - показываем название из базы, чтобы число
+        // никогда не оказалось под чужой подписью.
+        categories.push(LABELS[row.code] || row.name);
+        secondCat.push(formatNumber(row.plan));
+        planData.push({y: 100, currency: row.plan});
+        factData.push({y: row.plan > 0 ? (row.fact / row.plan * 100) : 0, currency: row.fact});
+      });
+
+      var series = [
+        {name: "План", data: planData},
+        {name: "Факт", data: factData}
       ];
 
-      //fillTable($('#infotable'), table, undefined, [0, 'last']);
       var opts = {
         chart: {
           height: 300

@@ -40,12 +40,32 @@ class ExecIncomesAjaxCntr extends ControllerBase {
       $arIncomes = reset($data['execution']['income']);
     }
 
-
-    foreach ($arIncomes as $categ => $arCats)
-    {
-        $arData[] = ['row' => ['field' => [['id'=>'69', 'value' => $categ], ['id'=>'70', 'value' => $arCats['plan']], ['id'=>'71', 'value' => $arCats['actual']], ['id'=>'72', 'value' => $date]]]];
+    // Явный порядок строк - по коду категории.
+    // Внутри одной даты порядок строк базой не определён (в SQL сортировка только по дате),
+    // а страница подписывала строки по позиции - из-за этого числа путались местами.
+    $arRows = [];
+    foreach ($arIncomes as $categ => $arCats) {
+      $arRows[] = [
+        'name' => $categ,
+        'plan' => $arCats['plan'] ?? 0,
+        'actual' => $arCats['actual'] ?? 0,
+        'code' => (string) ($arCats['code'] ?? ''),
+      ];
     }
+    usort($arRows, static function (array $a, array $b) {
+      return strcmp($a['code'], $b['code']);
+    });
 
+    foreach ($arRows as $arRow) {
+      $arData[] = ['row' => ['field' => [
+        ['id' => '69', 'value' => $arRow['name']],
+        ['id' => '70', 'value' => $arRow['plan']],
+        ['id' => '71', 'value' => $arRow['actual']],
+        ['id' => '72', 'value' => $date],
+        // Код категории: по нему страница определяет подпись, а не по позиции строки.
+        ['id' => '73', 'value' => $arRow['code']],
+      ]]];
+    }
 
     return new JsonResponse([
       'success' => true,
