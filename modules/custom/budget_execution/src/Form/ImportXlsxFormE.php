@@ -222,19 +222,8 @@ class ImportXlsxFormE extends FormBase {
           'rows' => $arSheets[1]->getHighestRow(),
           'type' => $check_doc
         ];
-        $arColumns = [
-          'code_column' => 'C',
-          'date_column' => 'F',
-          'value_plan_column' => 'I',
-          'value_actual_column' => 'J',
-          'category_column' => 'K'
-        ];
-        $arSheetsData[] = [
-          'data' => $arSheets[0],
-          'cols' => $arColumns,
-          'rows' => 50,
-          'type' => 'expense_sector' // первый лист начинается с расходов по отраслям экономики
-        ];
+        // Лист «Расходы» в этот цикл не попадает: у него несколько блоков разной
+        // структуры. Он обрабатывается отдельно — см. importExpensesSheet().
       }
 
     }
@@ -262,20 +251,6 @@ class ImportXlsxFormE extends FormBase {
     $arShData['data']->getCell($arShData['cols']['date_column'] . $start_row)->getCalculatedValue(); // Принудительно вычисляем базовую ячейку //
 
     for ($row = $start_row; $row <= $arShData['rows']; $row++) {
-
-      if ($row >= 14)
-      {
-        $arShData['type'] = 'expense_program'; // с 14й строки - смена колонок и расходы по программам
-        $arShData['cols']['code_column'] = 'D';
-        $arShData['cols']['value_plan_column'] = 'G';
-        $arShData['cols']['value_actual_column'] = 'H';
-        $arShData['cols']['category_column'] = 'I';
-      }
-      if ($row >= 37)
-      {
-        $arShData['type'] = 'invest'; // с 37й строки - смена На инвестиции
-        $arShData['cols']['code_column'] = 'C';
-      }
 
       $date_raw = $this->getCellValue($arShData['data'], $arShData['cols']['date_column'] . $row);
       $code_raw = $this->getCellValue($arShData['data'], $arShData['cols']['code_column'] . $row);
@@ -307,43 +282,6 @@ class ImportXlsxFormE extends FormBase {
       // Пропускаем пустые строки
       if (($arShData['cols']['category_column'] && empty($category)) || empty($date)) {
         continue;
-      }
-
-      if ($row >= 37)
-      {
-          $code = substr($code,0,2).'00'; // "вычисляем" код основной категории
-          $category = $arInvestCateg[$code]; // берём имя основной категории
-          switch ($code)
-          { // выскребаем данные из нужных полей
-            case '0300':
-              $value_plan = $this->getCellValue($arShData['data'], 'J39');
-              $value_act = intval($this->getCellValue($arShData['data'], 'H38')) + intval($this->getCellValue($arShData['data'], 'H39'));
-              break;
-            case '0500':
-              $value_plan = $this->getCellValue($arShData['data'], 'J41');
-              $value_act = $this->getCellValue($arShData['data'], 'J42');
-              break;
-            case '0700':
-              $value_plan = $this->getCellValue($arShData['data'], 'J45');
-              $value_act = $this->getCellValue($arShData['data'], 'J46');
-              break;
-            case '1100':
-              $value_plan = $this->getCellValue($arShData['data'], 'J49');
-              $value_act = $this->getCellValue($arShData['data'], 'J50');
-              break;
-          }
-
-          \Drupal::logger($this->cl_name)->debug(
-            'Чтение строки @row: D="@year", E="@value", F="@category"',
-            [
-              '@row' => $row,
-              '@date' => $date_raw ?? 'NULL',
-              '@value_plan' => $value_plan ?? 'NULL',
-              '@value_act' => $value_act ?? 'NULL',
-              '@category' => $category_raw ?? 'NULL'
-            ]
-          );
-
       }
 
       if (is_string($date) && strpos($date, '=') === 0) {
@@ -384,7 +322,146 @@ class ImportXlsxFormE extends FormBase {
 
     }
 
+    // Лист «Расходы»: блоки определяются по содержимому строк, а не по номерам.
+    $imported_count += $this->importExpensesSheet($arSheets[0], $arInvestCateg);
+
+    \Drupal::logger($this->cl_name)->info(
+      'Импорт листа «Расходы» завершен, всего записей: @count',
+      ['@count' => $imported_count]
+    );
+
     return $imported_count;
+  }
+
+  /**
+   * Импорт листа «Расходы».
+   *
+   * Блоки определяются по содержимому строк, а не по их номерам: количество
+   * муниципальных программ в файле меняется, поэтому привязка «с 14-й строки —
+   * программы, с 37-й — инвестиции» приводила к чтению чужих ячеек и потерям.
+   *
+   * Правила:
+   *  - колонка E = 400      -> блок инвестиций: код в C, суммы в G/H, значения
+   *                            суммируются по отрасли (первые 2 цифры кода + 00);
+   *  - иначе D <> 0000000    -> программа: код в D, суммы в G/H, название в I;
+   *  - иначе C вида XX00     -> отрасль: код в C, уточнённые суммы в I/J,
+   *                            название в K;
+   *  - иначе C — прочий 4-значный код -> инвестиции (страховка, если колонка-
+   *                            признак не заполнена);
+   *  - остальное (строка ИТОГО, пустые строки) пропускается.
+   *
+   * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet
+   *   Лист «Расходы».
+   * @param array $arInvestCateg
+   *   Названия основных категорий для блока инвестиций.
+   *
+   * @return int
+   *   Количество сохранённых записей.
+   */
+  private function importExpensesSheet($sheet, array $arInvestCateg): int {
+    $imported = 0;
+    $last_row = $sheet->getHighestRow();
+
+    // Принудительно вычисляем базовую ячейку (как в исходной версии).
+    $sheet->getCell('F2')->getCalculatedValue();
+
+    // Инвестиции собираем отдельно: одна запись на отрасль для каждой даты.
+    $arInvest = [];
+
+    for ($row = 2; $row <= $last_row; $row++) {
+      $date = trim((string) $this->getCellValue($sheet, 'F' . $row));
+      if ($date === '' || strpos($date, '=') === 0) {
+        continue; // пустая строка либо строка без даты
+      }
+
+      $block = trim((string) $this->getCellValue($sheet, 'E' . $row));
+      $code_c = trim((string) $this->getCellValue($sheet, 'C' . $row));
+      $code_d = trim((string) $this->getCellValue($sheet, 'D' . $row));
+
+      // Страховка: строка блока инвестиций без заполненной колонки-признака.
+      $is_invest = ($block === '400');
+      if (!$is_invest && $code_d === '0000000'
+        && preg_match('/^\d{4}$/', $code_c) && substr($code_c, -2) !== '00') {
+        $is_invest = TRUE;
+      }
+
+      if ($is_invest) {
+        if (!preg_match('/^\d{4}$/', $code_c) || $code_c === '0000') {
+          continue;
+        }
+        $plan = $this->parseCellNumber($sheet, 'G', $row);
+        $actual = $this->parseCellNumber($sheet, 'H', $row);
+        if ($plan === NULL || $actual === NULL) {
+          \Drupal::logger($this->cl_name)->warning(
+            'Инвестиции, строка @row: не удалось разобрать суммы (код @code)',
+            ['@row' => $row, '@code' => $code_c]
+          );
+          continue;
+        }
+        $industry = substr($code_c, 0, 2) . '00';
+        if (!isset($arInvest[$date][$industry])) {
+          $arInvest[$date][$industry] = ['plan' => 0.0, 'actual' => 0.0];
+        }
+        $arInvest[$date][$industry]['plan'] += $plan;
+        $arInvest[$date][$industry]['actual'] += $actual;
+        continue;
+      }
+
+      if ($code_d !== '' && $code_d !== '0000000') {
+        // Программа: код в D, суммы в G/H, название в I.
+        $type = 'expense_program';
+        $code = $code_d;
+        $category = trim((string) $this->getCellValue($sheet, 'I' . $row));
+        $plan_col = 'G';
+        $actual_col = 'H';
+      }
+      elseif (preg_match('/^\d{2}00$/', $code_c)) {
+        // Отрасль: код в C, уточнённые суммы в I/J, название в K.
+        $type = 'expense_sector';
+        $code = $code_c;
+        $category = trim((string) $this->getCellValue($sheet, 'K' . $row));
+        $plan_col = 'I';
+        $actual_col = 'J';
+      }
+      else {
+        // Строка ИТОГО (C = 0000) и всё неопознанное.
+        continue;
+      }
+
+      if ($category === '') {
+        continue;
+      }
+      $plan = $this->parseCellNumber($sheet, $plan_col, $row);
+      $actual = $this->parseCellNumber($sheet, $actual_col, $row);
+      if ($plan === NULL || $actual === NULL) {
+        \Drupal::logger($this->cl_name)->warning(
+          'Расходы, строка @row: не удалось разобрать суммы (код @code)',
+          ['@row' => $row, '@code' => $code]
+        );
+        continue;
+      }
+      if ($this->saveBudgetData($code, $date, $category, $plan, $actual, $type)) {
+        $imported++;
+      }
+    }
+
+    // Сохраняем агрегированные инвестиции: одна запись на отрасль и дату.
+    foreach ($arInvest as $date => $arIndustries) {
+      foreach ($arIndustries as $industry => $sums) {
+        if (!isset($arInvestCateg[$industry])) {
+          \Drupal::logger($this->cl_name)->warning(
+            'Инвестиции: неизвестная отрасль @code за @date — запись не сохранена',
+            ['@code' => $industry, '@date' => $date]
+          );
+          continue;
+        }
+        if ($this->saveBudgetData($industry, $date, $arInvestCateg[$industry], $sums['plan'], $sums['actual'], 'invest')) {
+          $imported++;
+        }
+      }
+    }
+
+    return $imported;
   }
 
   private function parseRussianNumber($value) {
@@ -413,6 +490,31 @@ class ImportXlsxFormE extends FormBase {
     }
 
     return null;
+  }
+
+  /**
+   * Число из ячейки листа.
+   *
+   * Возвращает NULL, если значение получить или разобрать не удалось: такую
+   * строку лучше пропустить, чем записать в базу мусор.
+   *
+   * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet
+   *   Лист.
+   * @param string $column
+   *   Буква колонки.
+   * @param int $row
+   *   Номер строки.
+   *
+   * @return float|null
+   *   Число либо NULL.
+   */
+  private function parseCellNumber($sheet, string $column, int $row) {
+    $raw = $this->getCellValue($sheet, $column . $row);
+    if (is_string($raw) && strpos(trim($raw), '=') === 0) {
+      // Формула не вычислена — доверять такому значению нельзя.
+      return NULL;
+    }
+    return $this->parseRussianNumber($raw ?? '');
   }
 
   /**
