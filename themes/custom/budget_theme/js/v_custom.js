@@ -1,4 +1,4 @@
-﻿//Фильтрация Блоков с описанием файлов в Нормативной базе==================
+//Фильтрация Блоков с описанием файлов в Нормативной базе==================
 //=========================================================================
 function chosenLawtype()
 {
@@ -77,15 +77,15 @@ function budgetMainWidget() {
     .done(function(data) {
         if (typeof data[0] != "undefined") {
             if (typeof data[0].INC != "undefined")
-                eMainDatas[0] = +(parseFloat(data[0].INC)).toFixed(1);
+                eMainDatas[0] = truncNumber(parseFloat(data[0].INC), 1);
             if (typeof data[0].EXP != "undefined")
-                eMainDatas[1] = +(parseFloat(data[0].EXP)).toFixed(1);
+                eMainDatas[1] = truncNumber(parseFloat(data[0].EXP), 1);
         }
         if (typeof data[1] != "undefined") {
             if (typeof data[1].INC != "undefined")
-                eMainDatas[2] = +(parseFloat(data[1].INC)).toFixed(1);
+                eMainDatas[2] = truncNumber(parseFloat(data[1].INC), 1);
             if (typeof data[1].DEF != "undefined")
-                eMainDatas[3] = +(parseFloat(data[1].DEF)).toFixed(1);
+                eMainDatas[3] = truncNumber(parseFloat(data[1].DEF), 1);
         }
 		//eMainDatas[2] = Math.round(+data[0].DEF/100000)/10;
 		/*eMainDatas[0] = data[0].INC;
@@ -197,7 +197,9 @@ function formatNumber(nStr, toFixed) {
     if(toFixed !== 0){
         toFixed = toFixed || 0
     }
-    nStr = nStr.toFixed(toFixed);
+    // Дробную часть отбрасываем (см. truncNumber в k_custom.js), а не округляем:
+    // иначе в подписи попадает больше, чем есть на самом деле (101 603 вместо 101 602).
+    nStr = truncNumber(nStr, toFixed).toFixed(toFixed);
 
     nStr += '';
     var x = nStr.split('.');

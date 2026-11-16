@@ -17,9 +17,23 @@
     document.head.appendChild(localScript);
   }
 
-  // Функция для форматирования чисел
+  // Функция для форматирования чисел.
+  // Дробную часть отбрасываем, а не округляем: округление показывало значение
+  // больше реального (101 602 552 896 -> 101 603 вместо 101 602).
   function formatNumber(value, decimals) {
-    return Highcharts.numberFormat(value, decimals, '.', ' ');
+    var zeros = decimals || 0,
+      factor = Math.pow(10, zeros),
+      v = parseFloat(value);
+    if (isNaN(v)) {
+      v = 0;
+    }
+    else {
+      v = v * factor;
+      // +1e-9 гасит ошибки плавающей точки
+      v = v >= 0 ? Math.floor(v + 1e-9) : Math.ceil(v - 1e-9);
+      v = v / factor;
+    }
+    return Highcharts.numberFormat(v, zeros, '.', ' ');
   }
 
   // Функция для извлечения значения из структуры данных

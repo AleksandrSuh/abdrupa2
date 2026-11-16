@@ -56,15 +56,17 @@ class ExecutionAjaxController extends ControllerBase {
     }
 
     // Форматирование...
-    $arData['dohod']['plan'] = number_format(round($arData['dohod']['plan'] / 1000000), 0, '.', ' ');
-    $arData['dohod']['actual'] = number_format(round($arData['dohod']['actual'] / 1000000), 0, '.', ' ');
+    // floor, а не round: сумма в миллионах показывается без завышения
+    // (101602.55 млн -> 101 602, а не 101 603).
+    $arData['dohod']['plan'] = number_format(floor($arData['dohod']['plan'] / 1000000), 0, '.', ' ');
+    $arData['dohod']['actual'] = number_format(floor($arData['dohod']['actual'] / 1000000), 0, '.', ' ');
 
     $actual = floatval(str_replace(' ', '', $arData['dohod']['actual']));
     $plan = floatval(str_replace(' ', '', $arData['dohod']['plan']));
     $arData['dohod']['percent'] = $plan > 0 ? number_format(round($actual / $plan * 100, 1), 1, ',') : 0;
 
-    $arData['rashod']['plan'] = number_format(round($arData['rashod']['plan'] / 1000000), 0, '.', ' ');
-    $arData['rashod']['actual'] = number_format(round($arData['rashod']['actual'] / 1000000), 0, '.', ' ');
+    $arData['rashod']['plan'] = number_format(floor($arData['rashod']['plan'] / 1000000), 0, '.', ' ');
+    $arData['rashod']['actual'] = number_format(floor($arData['rashod']['actual'] / 1000000), 0, '.', ' ');
 
     $actual = floatval(str_replace(' ', '', $arData['rashod']['actual']));
     $plan = floatval(str_replace(' ', '', $arData['rashod']['plan']));

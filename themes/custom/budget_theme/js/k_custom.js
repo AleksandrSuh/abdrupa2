@@ -1,7 +1,21 @@
-﻿Number.prototype.numberFormat = function(decimals, dec_point, thousands_sep) {
+// Отбрасывает дробную часть, НЕ округляя: 101602.55 -> 101602.
+// Округление завышало показываемое значение (101 603 вместо 101 602).
+function truncNumber(val, decimals) {
+    var f = Math.pow(10, decimals || 0),
+        v = parseFloat(val);
+    if (isNaN(v)) {
+        return 0;
+    }
+    v = v * f;
+    // +1e-9 гасит ошибки плавающей точки (101603 может прийти как 101602.99999999999)
+    v = v >= 0 ? Math.floor(v + 1e-9) : Math.ceil(v - 1e-9);
+    return v / f;
+}
+
+Number.prototype.numberFormat = function(decimals, dec_point, thousands_sep) {
     dec_point = typeof dec_point !== 'undefined' ? dec_point : '.';
     thousands_sep = typeof thousands_sep !== 'undefined' ? thousands_sep : ',';
-    var parts = this.toFixed(decimals).toString().split('.');
+    var parts = truncNumber(this, decimals).toFixed(decimals).toString().split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_sep);
     return parts.join(dec_point);
 }
@@ -282,7 +296,7 @@ function columnChart() {
         stackLabels: {
         enabled: true
         }
-,          style: {           fontWeight: 'bold',           color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'          }
+,          style: {           fontWeight: 'bold',           color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'          }
         },
         plotOptions: {
             column: {
@@ -317,7 +331,8 @@ function horizontalPercentColChart() {
         },
 	    tooltip: {
 		    formatter: function() {
-			    return this.series.name + ': <b>' + currencyFormat(this.point.currency) + ' млн руб. (' + this.y.numberFormat(0) + '%)</b>';
+			    // Проценты остаются округлёнными: это отдельный показатель, а не сумма.
+			    return this.series.name + ': <b>' + currencyFormat(this.point.currency) + ' млн руб. (' + Math.round(this.y) + '%)</b>';
 		    },
 		    style: { fontSize: '14px' }
 	    },

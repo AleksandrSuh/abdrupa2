@@ -133,8 +133,10 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
       $arData['rashod']['plan'] += $arVals['plan'];
       $arData['rashod']['actual'] += $arVals['actual'];
     }
-    $arData['dohod']['plan'] = number_format(round($arData['dohod']['plan'] / 1000000), 0, '.', ' ');
-    $arData['dohod']['actual'] = number_format(round($arData['dohod']['actual'] / 1000000), 0, '.', ' ');
+    // floor, а не round: показываем сумму в миллионах без завышения
+    // (101602.55 млн -> 101 602, а не 101 603).
+    $arData['dohod']['plan'] = number_format(floor($arData['dohod']['plan'] / 1000000), 0, '.', ' ');
+    $arData['dohod']['actual'] = number_format(floor($arData['dohod']['actual'] / 1000000), 0, '.', ' ');
     $actual = floatval($arData['dohod']['actual'] ?? 0);
     $plan = floatval($arData['dohod']['plan'] ?? 0);
     if ($plan > 0) {
@@ -142,8 +144,10 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
     } else {
       $arData['dohod']['percent'] = 0;
     }
-    $arData['rashod']['plan'] = number_format(round($arData['rashod']['plan'] / 1000000), 0, '.', ' ');
-    $arData['rashod']['actual'] = number_format(round($arData['rashod']['actual'] / 1000000), 0, '.', ' ');
+    // floor, а не round: показываем сумму в миллионах без завышения
+    // (101602.55 млн -> 101 602, а не 101 603).
+    $arData['rashod']['plan'] = number_format(floor($arData['rashod']['plan'] / 1000000), 0, '.', ' ');
+    $arData['rashod']['actual'] = number_format(floor($arData['rashod']['actual'] / 1000000), 0, '.', ' ');
     $actual = floatval($arData['rashod']['actual'] ?? 0);
     $plan = floatval($arData['rashod']['plan'] ?? 0);
     if ($plan > 0) {
