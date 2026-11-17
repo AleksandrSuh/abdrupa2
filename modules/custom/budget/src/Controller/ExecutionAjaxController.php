@@ -55,22 +55,22 @@ class ExecutionAjaxController extends ControllerBase {
       $arData['rashod']['actual'] += $arVals['actual'] ?? 0;
     }
 
-    // Форматирование...
+    // Форматирование. Проценты считаем от сырых сумм и ДО форматирования:
+    // из отформатированной строки дробная часть теряется (именно из-за этого
+    // процент на главной странице расходился с этой).
     // floor, а не round: сумма в миллионах показывается без завышения
     // (101602.55 млн -> 101 602, а не 101 603).
-    $arData['dohod']['plan'] = number_format(floor($arData['dohod']['plan'] / 1000000), 0, '.', ' ');
-    $arData['dohod']['actual'] = number_format(floor($arData['dohod']['actual'] / 1000000), 0, '.', ' ');
+    $plan_raw = (float) $arData['dohod']['plan'];
+    $actual_raw = (float) $arData['dohod']['actual'];
+    $arData['dohod']['plan'] = number_format(floor($plan_raw / 1000000), 0, '.', ' ');
+    $arData['dohod']['actual'] = number_format(floor($actual_raw / 1000000), 0, '.', ' ');
+    $arData['dohod']['percent'] = $plan_raw > 0 ? number_format(round($actual_raw / $plan_raw * 100, 1), 1, ',') : 0;
 
-    $actual = floatval(str_replace(' ', '', $arData['dohod']['actual']));
-    $plan = floatval(str_replace(' ', '', $arData['dohod']['plan']));
-    $arData['dohod']['percent'] = $plan > 0 ? number_format(round($actual / $plan * 100, 1), 1, ',') : 0;
-
-    $arData['rashod']['plan'] = number_format(floor($arData['rashod']['plan'] / 1000000), 0, '.', ' ');
-    $arData['rashod']['actual'] = number_format(floor($arData['rashod']['actual'] / 1000000), 0, '.', ' ');
-
-    $actual = floatval(str_replace(' ', '', $arData['rashod']['actual']));
-    $plan = floatval(str_replace(' ', '', $arData['rashod']['plan']));
-    $arData['rashod']['percent'] = $plan > 0 ? number_format(round($actual / $plan * 100, 1), 1, ',') : 0;
+    $plan_raw = (float) $arData['rashod']['plan'];
+    $actual_raw = (float) $arData['rashod']['actual'];
+    $arData['rashod']['plan'] = number_format(floor($plan_raw / 1000000), 0, '.', ' ');
+    $arData['rashod']['actual'] = number_format(floor($actual_raw / 1000000), 0, '.', ' ');
+    $arData['rashod']['percent'] = $plan_raw > 0 ? number_format(round($actual_raw / $plan_raw * 100, 1), 1, ',') : 0;
 
     // Рендерим только контентную часть
     $render_array = [

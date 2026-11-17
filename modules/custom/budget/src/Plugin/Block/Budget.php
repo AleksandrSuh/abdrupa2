@@ -133,25 +133,27 @@ class Budget extends BlockBase implements ContainerFactoryPluginInterface
       $arData['rashod']['plan'] += $arVals['plan'];
       $arData['rashod']['actual'] += $arVals['actual'];
     }
+    // Процент считаем от сырых сумм и ДО форматирования: floatval() от строки
+    // с пробелами-разделителями ("101 602") возвращает только 101, из-за чего
+    // на главной странице процент расходился со страницей /execution.
+    $plan_raw = (float) $arData['dohod']['plan'];
+    $actual_raw = (float) $arData['dohod']['actual'];
     // floor, а не round: показываем сумму в миллионах без завышения
     // (101602.55 млн -> 101 602, а не 101 603).
-    $arData['dohod']['plan'] = number_format(floor($arData['dohod']['plan'] / 1000000), 0, '.', ' ');
-    $arData['dohod']['actual'] = number_format(floor($arData['dohod']['actual'] / 1000000), 0, '.', ' ');
-    $actual = floatval($arData['dohod']['actual'] ?? 0);
-    $plan = floatval($arData['dohod']['plan'] ?? 0);
-    if ($plan > 0) {
-      $arData['dohod']['percent'] = number_format(round($actual / $plan * 100, 1), 1, ',');
+    $arData['dohod']['plan'] = number_format(floor($plan_raw / 1000000), 0, '.', ' ');
+    $arData['dohod']['actual'] = number_format(floor($actual_raw / 1000000), 0, '.', ' ');
+    if ($plan_raw > 0) {
+      $arData['dohod']['percent'] = number_format(round($actual_raw / $plan_raw * 100, 1), 1, ',');
     } else {
       $arData['dohod']['percent'] = 0;
     }
-    // floor, а не round: показываем сумму в миллионах без завышения
-    // (101602.55 млн -> 101 602, а не 101 603).
-    $arData['rashod']['plan'] = number_format(floor($arData['rashod']['plan'] / 1000000), 0, '.', ' ');
-    $arData['rashod']['actual'] = number_format(floor($arData['rashod']['actual'] / 1000000), 0, '.', ' ');
-    $actual = floatval($arData['rashod']['actual'] ?? 0);
-    $plan = floatval($arData['rashod']['plan'] ?? 0);
-    if ($plan > 0) {
-      $arData['rashod']['percent'] = number_format(round($actual / $plan * 100, 1), 1, ',');
+    // То же для расходов: сначала запоминаем сырые суммы, потом форматируем.
+    $plan_raw = (float) $arData['rashod']['plan'];
+    $actual_raw = (float) $arData['rashod']['actual'];
+    $arData['rashod']['plan'] = number_format(floor($plan_raw / 1000000), 0, '.', ' ');
+    $arData['rashod']['actual'] = number_format(floor($actual_raw / 1000000), 0, '.', ' ');
+    if ($plan_raw > 0) {
+      $arData['rashod']['percent'] = number_format(round($actual_raw / $plan_raw * 100, 1), 1, ',');
     } else {
       $arData['rashod']['percent'] = 0;
     }
