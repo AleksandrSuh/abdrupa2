@@ -4,7 +4,14 @@
 
   {% for year, types in data %}
     <div class="year-block">
-      <h3>{{ year }} год</h3>
+      <h3>
+        {{ year }} год
+        {% if can_delete %}
+          <a href="{{ path('budget_execution.dynamic_indicators_delete', {'year': year}) }}"
+             class="button button--danger button--small"
+             title="Удалить все данные за {{ year }} год">Удалить</a>
+        {% endif %}
+      </h3>
 
       {% if types.income %}
         <div class="income-section">

@@ -10,3 +10,8 @@ Thumbs.db
 *.sql
 *.sql.gz
 /news_cache/
+
+# Служебные файлы Windows: метки загрузки (появляются при работе с файлами из-под WSL)
+*Zone.Identifier
+
+/themes/custom/budget_theme/js/highcharts/highcharts_.js

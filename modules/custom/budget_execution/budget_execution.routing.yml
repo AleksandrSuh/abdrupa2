@@ -61,3 +61,12 @@ budget_execution.dynamic_indicators_add:
     _title: 'Добавить показатель'
   requirements:
     _permission: 'administer budget execution'
+
+budget_execution.dynamic_indicators_delete:
+  path: '/admin/budget/execution/dynamic-indicators/delete/{year}'
+  defaults:
+    _form: '\Drupal\budget_execution\Form\DynamicIndicatorsDeleteForm'
+    _title: 'Удаление данных за год'
+  requirements:
+    _permission: 'administer budget execution'
+    year: '\d{4}'

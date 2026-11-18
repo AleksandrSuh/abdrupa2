@@ -87,6 +87,8 @@ class BudgetExecutionController extends ControllerBase {
       return [
         '#theme' => 'budget_execution_dynamic_indicators',
         '#data' => $data,
+        // Кнопку удаления показываем только тем, кому разрешено администрирование.
+        '#can_delete' => \Drupal::currentUser()->hasPermission('administer budget execution'),
         '#attached' => [
           'library' => [
             'budget/execution_index',

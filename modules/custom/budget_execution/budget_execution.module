@@ -18,7 +18,7 @@ function budget_execution_theme($existing, $type, $theme, $path) {
 
   return [
     'budget_execution_dynamic_indicators' => [
-      'variables' => ['data' => []],
+      'variables' => ['data' => [], 'can_delete' => FALSE],
       'template' => 'budget-execution-dynamic-indicators',
       'render element' => 'elements',
     ],
